@@ -72,6 +72,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarDependencia'])->name('dependencias.actualizar');
         Route::patch('/dependencias/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleDependenciaStatus'])->name('dependencias.toggle-status');
         Route::get('/trds', [App\Http\Controllers\Admin\AdminController::class, 'trds'])->name('trds');
+        Route::get('/trds/buscar', [App\Http\Controllers\Admin\AdminController::class, 'buscarTrds'])->name('trds.buscar');
+        Route::post('/trds', [App\Http\Controllers\Admin\AdminController::class, 'guardarTrd'])->name('trds.guardar');
+        Route::put('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarTrd'])->name('trds.actualizar');
+        Route::patch('/trds/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleTrdStatus'])->name('trds.toggle-status');
         Route::get('/reportes', [App\Http\Controllers\Admin\AdminController::class, 'reportes'])->name('reportes');
         Route::get('/configuracion', [App\Http\Controllers\Admin\AdminController::class, 'configuracion'])->name('configuracion');
         Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');

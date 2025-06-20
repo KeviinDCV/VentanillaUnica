@@ -302,6 +302,130 @@ class AdminController extends Controller
     }
 
     /**
+     * Buscar TRDs
+     */
+    public function buscarTrds(Request $request)
+    {
+        $termino = $request->get('termino', '');
+        $estado = $request->get('estado', '');
+
+        $query = Trd::withCount('radicados');
+
+        if (!empty($termino)) {
+            $query->where(function($q) use ($termino) {
+                $q->where('codigo', 'LIKE', "%{$termino}%")
+                  ->orWhere('serie', 'LIKE', "%{$termino}%")
+                  ->orWhere('subserie', 'LIKE', "%{$termino}%")
+                  ->orWhere('asunto', 'LIKE', "%{$termino}%");
+            });
+        }
+
+        if (!empty($estado)) {
+            if ($estado === 'activo') {
+                $query->where('activo', true);
+            } elseif ($estado === 'inactivo') {
+                $query->where('activo', false);
+            }
+        }
+
+        $trds = $query->orderBy('codigo')->get();
+
+        return response()->json([
+            'trds' => $trds
+        ]);
+    }
+
+    /**
+     * Guardar nuevo TRD
+     */
+    public function guardarTrd(Request $request)
+    {
+        $request->validate([
+            'codigo' => 'required|string|max:20|unique:trd,codigo',
+            'serie' => 'required|string|max:255',
+            'subserie' => 'nullable|string|max:255',
+            'asunto' => 'required|string',
+            'retencion_archivo_gestion' => 'required|integer|min:0',
+            'retencion_archivo_central' => 'required|integer|min:0',
+            'disposicion_final' => 'required|in:conservacion_total,eliminacion,seleccion,microfilmacion',
+            'observaciones' => 'nullable|string',
+            'activo' => 'boolean'
+        ]);
+
+        $trd = Trd::create([
+            'codigo' => $request->codigo,
+            'serie' => $request->serie,
+            'subserie' => $request->subserie,
+            'asunto' => $request->asunto,
+            'retencion_archivo_gestion' => $request->retencion_archivo_gestion,
+            'retencion_archivo_central' => $request->retencion_archivo_central,
+            'disposicion_final' => $request->disposicion_final,
+            'observaciones' => $request->observaciones,
+            'activo' => $request->has('activo')
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'TRD creado exitosamente',
+            'trd' => $trd->load('radicados')
+        ]);
+    }
+
+    /**
+     * Actualizar TRD
+     */
+    public function actualizarTrd(Request $request, $id)
+    {
+        $trd = Trd::findOrFail($id);
+
+        $request->validate([
+            'codigo' => 'required|string|max:20|unique:trd,codigo,' . $id,
+            'serie' => 'required|string|max:255',
+            'subserie' => 'nullable|string|max:255',
+            'asunto' => 'required|string',
+            'retencion_archivo_gestion' => 'required|integer|min:0',
+            'retencion_archivo_central' => 'required|integer|min:0',
+            'disposicion_final' => 'required|in:conservacion_total,eliminacion,seleccion,microfilmacion',
+            'observaciones' => 'nullable|string',
+            'activo' => 'boolean'
+        ]);
+
+        $trd->update([
+            'codigo' => $request->codigo,
+            'serie' => $request->serie,
+            'subserie' => $request->subserie,
+            'asunto' => $request->asunto,
+            'retencion_archivo_gestion' => $request->retencion_archivo_gestion,
+            'retencion_archivo_central' => $request->retencion_archivo_central,
+            'disposicion_final' => $request->disposicion_final,
+            'observaciones' => $request->observaciones,
+            'activo' => $request->has('activo')
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'TRD actualizado exitosamente',
+            'trd' => $trd->load('radicados')
+        ]);
+    }
+
+    /**
+     * Cambiar estado de TRD
+     */
+    public function toggleTrdStatus($id)
+    {
+        $trd = Trd::findOrFail($id);
+        $trd->activo = !$trd->activo;
+        $trd->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => $trd->activo ? 'TRD activado exitosamente' : 'TRD desactivado exitosamente',
+            'activo' => $trd->activo
+        ]);
+    }
+
+    /**
      * Reportes avanzados
      */
     public function reportes()

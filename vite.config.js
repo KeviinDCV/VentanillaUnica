@@ -12,7 +12,8 @@ export default defineConfig({
                 'resources/js/reportes.js',
                 'resources/js/preview.js',
                 'resources/js/admin-logs.js',
-                'resources/js/admin-dependencias.js'
+                'resources/js/admin-dependencias.js',
+                'resources/js/admin-trds.js'
             ],
             refresh: true,
         }),
@@ -35,7 +36,8 @@ export default defineConfig({
                 'resources/js/reportes.js',
                 'resources/js/preview.js',
                 'resources/js/admin-logs.js',
-                'resources/js/admin-dependencias.js'
+                'resources/js/admin-dependencias.js',
+                'resources/js/admin-trds.js'
             ],
             output: {
                 assetFileNames: 'assets/[name]-[hash][extname]',

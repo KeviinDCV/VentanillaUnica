@@ -9,6 +9,7 @@ import './notifications';
 import './form-protection';
 import './admin-logs';
 import './admin-usuarios';
+import './admin-trds';
 
 // Importar script de pruebas solo en desarrollo
 if (import.meta.env.DEV) {
