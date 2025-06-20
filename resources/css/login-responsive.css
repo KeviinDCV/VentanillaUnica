@@ -1,0 +1,299 @@
+/* UniRadic - Estilos Responsivos para Login */
+
+/* Variables CSS para consistencia */
+:root {
+    --hospital-blue: #052da2;
+    --hospital-white: #ffffff;
+    --text-gray: #374151;
+    --text-light: #6b7280;
+    --border-gray: #e5e7eb;
+    --bg-overlay: rgba(255, 255, 255, 0.85);
+}
+
+/* Reset y base */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Contenedor principal del login */
+.login-viewport {
+    height: 100vh;
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Fondo del hospital con overlay */
+.hospital-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('/images/hospital.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Grid principal responsivo */
+.login-main-grid {
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* Sección del logo del hospital */
+.hospital-logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    height: 100%;
+}
+
+.hospital-logo-container {
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.hospital-logo {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Sección del formulario */
+.login-form-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    height: 100%;
+}
+
+.login-form-card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(5, 45, 162, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+}
+
+/* Inputs modernos */
+.modern-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid var(--border-gray);
+    background: transparent;
+    padding: 12px 0;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.modern-input:focus {
+    border-bottom-color: var(--hospital-blue);
+    background: rgba(5, 45, 162, 0.02);
+}
+
+.modern-input::placeholder {
+    color: var(--text-light);
+    font-weight: 300;
+}
+
+/* Botón de login */
+.login-button {
+    width: 100%;
+    background: var(--hospital-blue);
+    color: var(--hospital-white);
+    border: none;
+    padding: 14px 28px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover {
+    background: #041f7a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(5, 45, 162, 0.3);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+
+
+/* Responsive Design */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 1024px) {
+    .login-main-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+    
+    .hospital-logo-section {
+        display: none;
+    }
+    
+    .login-form-section {
+        padding: 1rem;
+    }
+    
+    .hospital-background {
+        background-attachment: scroll;
+    }
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+    .login-viewport {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .login-main-grid {
+        height: auto;
+        min-height: 100vh;
+        padding: 1rem;
+    }
+    
+    .login-form-card {
+        padding: 1.5rem;
+        margin: 1rem 0;
+    }
+    
+    .hospital-logo-container {
+        max-width: 250px;
+        margin-bottom: 1rem;
+    }
+    
+    .modern-input {
+        font-size: 16px; /* Evita zoom en iOS */
+    }
+}
+
+/* Pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .login-form-card {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+    
+    .hospital-logo-container {
+        max-width: 200px;
+    }
+    
+
+}
+
+/* Pantallas con altura limitada */
+@media (max-height: 700px) {
+    .login-viewport {
+        overflow-y: auto;
+        height: auto;
+    }
+    
+    .login-main-grid {
+        height: auto;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+    
+    .hospital-logo-section,
+    .login-form-section {
+        padding: 1rem;
+    }
+}
+
+/* Pantallas muy bajas */
+@media (max-height: 600px) {
+    .hospital-logo-section {
+        display: none;
+    }
+    
+    .login-main-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .login-form-card {
+        padding: 1rem;
+    }
+}
+
+/* Modo landscape en móviles */
+@media (max-height: 500px) and (orientation: landscape) {
+    .login-viewport {
+        overflow-y: auto;
+    }
+    
+    .login-main-grid {
+        grid-template-columns: 1fr 1fr;
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .hospital-logo-section {
+        display: flex;
+        padding: 1rem;
+    }
+    
+    .hospital-logo-container {
+        max-width: 200px;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Optimizaciones de rendimiento */
+.hospital-logo,
+.hospital-background {
+    will-change: transform;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .modern-input,
+    .login-button {
+        transition: none;
+    }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .login-form-card {
+        background: rgba(31, 41, 55, 0.95);
+        color: white;
+    }
+    
+    .modern-input {
+        color: white;
+    }
+    
+    .modern-input::placeholder {
+        color: #9ca3af;
+    }
+}

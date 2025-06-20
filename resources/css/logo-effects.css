@@ -1,0 +1,275 @@
+/* UniRadic - Efectos CSS Avanzados para Logo Hospitalario */
+
+/* Variables CSS para efectos del logo */
+:root {
+    --logo-blend-brightness: 0.95;
+    --logo-blend-contrast: 1.1;
+    --logo-blend-saturate: 1.05;
+    --logo-shadow-primary: 0 4px 12px rgba(5, 45, 162, 0.15);
+    --logo-shadow-secondary: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --logo-mask-desktop: radial-gradient(ellipse 90% 85% at center, black 60%, transparent 100%);
+    --logo-mask-mobile: radial-gradient(ellipse 88% 82% at center, black 65%, transparent 100%);
+    --logo-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Clase principal para integración del logo */
+.logo-hospital-advanced {
+    /* Eliminación del fondo blanco */
+    mix-blend-mode: multiply;
+    
+    /* Filtros combinados para integración natural */
+    filter: 
+        brightness(var(--logo-blend-brightness)) 
+        contrast(var(--logo-blend-contrast)) 
+        saturate(var(--logo-blend-saturate))
+        drop-shadow(var(--logo-shadow-primary))
+        drop-shadow(var(--logo-shadow-secondary));
+    
+    /* Máscara para bordes suaves */
+    mask: var(--logo-mask-desktop);
+    -webkit-mask: var(--logo-mask-desktop);
+    
+    /* Propiedades de objeto */
+    object-fit: contain;
+    object-position: center;
+    
+    /* Transiciones suaves */
+    transition: var(--logo-transition);
+    
+    /* Optimización de rendimiento */
+    will-change: filter, transform, mask;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    
+    /* Animación sutil de flotación */
+    animation: logoFloatAdvanced 8s ease-in-out infinite;
+}
+
+/* Efectos de hover mejorados */
+.logo-hospital-advanced:hover {
+    filter: 
+        brightness(calc(var(--logo-blend-brightness) + 0.1)) 
+        contrast(calc(var(--logo-blend-contrast) + 0.05)) 
+        saturate(calc(var(--logo-blend-saturate) + 0.02))
+        drop-shadow(0 6px 16px rgba(5, 45, 162, 0.2))
+        drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+    
+    transform: translateZ(0) scale(1.02) translateY(-1px);
+    mask: radial-gradient(ellipse 92% 87% at center, black 55%, transparent 100%);
+    -webkit-mask: radial-gradient(ellipse 92% 87% at center, black 55%, transparent 100%);
+}
+
+/* Contenedor avanzado con efectos de fondo */
+.logo-container-advanced {
+    position: relative;
+    display: inline-block;
+    padding: 1.5rem;
+    border-radius: 50%;
+    
+    /* Backdrop filter para efecto de desenfoque */
+    backdrop-filter: blur(2px) brightness(1.1);
+    
+    /* Fondo radial sutil */
+    background: 
+        radial-gradient(ellipse 100% 90% at center, rgba(255, 255, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at center, rgba(5, 45, 162, 0.03) 0%, transparent 80%);
+    
+    /* Sombra del contenedor */
+    box-shadow: 
+        0 8px 32px rgba(5, 45, 162, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    
+    /* Transición del contenedor */
+    transition: var(--logo-transition);
+}
+
+/* Efecto pseudo-elemento para mayor integración */
+.logo-container-advanced::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    right: -20%;
+    bottom: -20%;
+    background: radial-gradient(ellipse, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(12px);
+    opacity: 0.6;
+    animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+
+/* Efecto hover del contenedor */
+.logo-container-advanced:hover {
+    backdrop-filter: blur(3px) brightness(1.15);
+    box-shadow: 
+        0 12px 40px rgba(5, 45, 162, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Variante móvil optimizada */
+.logo-hospital-mobile-advanced {
+    mix-blend-mode: multiply;
+    filter: 
+        brightness(0.96) 
+        contrast(1.08) 
+        saturate(1.03)
+        drop-shadow(0 2px 8px rgba(5, 45, 162, 0.12))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.08));
+    
+    mask: var(--logo-mask-mobile);
+    -webkit-mask: var(--logo-mask-mobile);
+    
+    object-fit: contain;
+    transition: var(--logo-transition);
+    transform: translateZ(0);
+}
+
+/* Animaciones personalizadas */
+@keyframes logoFloatAdvanced {
+    0%, 100% { 
+        transform: translateZ(0) translateY(0px) rotate(0deg); 
+        filter: 
+            brightness(var(--logo-blend-brightness)) 
+            contrast(var(--logo-blend-contrast)) 
+            saturate(var(--logo-blend-saturate))
+            drop-shadow(var(--logo-shadow-primary))
+            drop-shadow(var(--logo-shadow-secondary));
+    }
+    25% { 
+        transform: translateZ(0) translateY(-1px) rotate(0.2deg); 
+    }
+    50% { 
+        transform: translateZ(0) translateY(-2px) rotate(0deg); 
+        filter: 
+            brightness(calc(var(--logo-blend-brightness) + 0.02)) 
+            contrast(calc(var(--logo-blend-contrast) + 0.02)) 
+            saturate(calc(var(--logo-blend-saturate) + 0.01))
+            drop-shadow(0 5px 14px rgba(5, 45, 162, 0.18))
+            drop-shadow(0 2px 5px rgba(0, 0, 0, 0.12));
+    }
+    75% { 
+        transform: translateZ(0) translateY(-1px) rotate(-0.2deg); 
+    }
+}
+
+@keyframes pulseGlow {
+    0% { 
+        opacity: 0.4; 
+        transform: scale(1); 
+    }
+    100% { 
+        opacity: 0.8; 
+        transform: scale(1.05); 
+    }
+}
+
+/* Media queries responsivos */
+@media (max-width: 1024px) {
+    .logo-hospital-advanced {
+        mask: radial-gradient(ellipse 85% 80% at center, black 70%, transparent 100%);
+        -webkit-mask: radial-gradient(ellipse 85% 80% at center, black 70%, transparent 100%);
+        animation-duration: 10s;
+    }
+    
+    .logo-container-advanced {
+        padding: 1rem;
+        backdrop-filter: blur(1.5px) brightness(1.08);
+    }
+}
+
+@media (max-width: 768px) {
+    .logo-hospital-mobile-advanced {
+        mask: radial-gradient(ellipse 82% 78% at center, black 75%, transparent 100%);
+        -webkit-mask: radial-gradient(ellipse 82% 78% at center, black 75%, transparent 100%);
+    }
+    
+    .logo-container-advanced {
+        padding: 0.75rem;
+        backdrop-filter: blur(1px) brightness(1.05);
+    }
+    
+    .logo-container-advanced::before {
+        filter: blur(8px);
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-hospital-mobile-advanced {
+        mask: radial-gradient(ellipse 80% 75% at center, black 80%, transparent 100%);
+        -webkit-mask: radial-gradient(ellipse 80% 75% at center, black 80%, transparent 100%);
+        filter: 
+            brightness(0.98) 
+            contrast(1.04) 
+            saturate(1.02)
+            drop-shadow(0 1px 4px rgba(5, 45, 162, 0.08));
+    }
+    
+    .logo-container-advanced {
+        padding: 0.5rem;
+    }
+}
+
+/* Fallbacks para navegadores sin soporte */
+@supports not (mix-blend-mode: multiply) {
+    .logo-hospital-advanced,
+    .logo-hospital-mobile-advanced {
+        mix-blend-mode: normal;
+        filter: 
+            brightness(0.88) 
+            contrast(1.25) 
+            saturate(1.1)
+            drop-shadow(0 4px 12px rgba(5, 45, 162, 0.25))
+            drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+        opacity: 0.92;
+    }
+}
+
+@supports not (backdrop-filter: blur(2px)) {
+    .logo-container-advanced {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --logo-blend-brightness: 1.1;
+        --logo-blend-contrast: 0.9;
+        --logo-shadow-primary: 0 4px 12px rgba(255, 255, 255, 0.1);
+        --logo-shadow-secondary: 0 2px 4px rgba(255, 255, 255, 0.05);
+    }
+    
+    .logo-hospital-advanced,
+    .logo-hospital-mobile-advanced {
+        mix-blend-mode: screen;
+    }
+    
+    .logo-container-advanced {
+        background: 
+            radial-gradient(ellipse 100% 90% at center, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 50% at center, rgba(5, 45, 162, 0.08) 0%, transparent 80%);
+    }
+}
+
+/* Optimización de rendimiento */
+.logo-hospital-advanced,
+.logo-hospital-mobile-advanced,
+.logo-container-advanced {
+    contain: layout style paint;
+    isolation: isolate;
+}
+
+/* Desactivar efectos para movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+    .logo-hospital-advanced,
+    .logo-hospital-mobile-advanced {
+        animation: none;
+        transition: none;
+    }
+    
+    .logo-container-advanced::before {
+        animation: none;
+    }
+}

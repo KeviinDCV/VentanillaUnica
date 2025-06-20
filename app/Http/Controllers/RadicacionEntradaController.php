@@ -1,0 +1,285 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Radicado;
+use App\Models\Remitente;
+use App\Models\Dependencia;
+use App\Models\Trd;
+use App\Models\Documento;
+use Carbon\Carbon;
+
+class RadicacionEntradaController extends Controller
+{
+    /**
+     * Mostrar el formulario de radicación de entrada
+     */
+    public function index()
+    {
+        $dependencias = Dependencia::activas()->orderBy('nombre')->get();
+        $trds = Trd::activos()->orderBy('codigo')->get();
+
+        return view('radicacion.entrada.index', compact('dependencias', 'trds'));
+    }
+
+    /**
+     * Procesar la radicación de entrada
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // Datos del remitente
+            'tipo_remitente' => 'required|in:anonimo,registrado',
+            'tipo_documento' => 'required_if:tipo_remitente,registrado|in:CC,CE,TI,PP,NIT,OTRO',
+            'numero_documento' => 'required_if:tipo_remitente,registrado|string|max:20',
+            'nombre_completo' => 'required|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'direccion' => 'nullable|string',
+            'ciudad' => 'nullable|string|max:100',
+            'departamento' => 'nullable|string|max:100',
+            'entidad' => 'nullable|string|max:255',
+
+            // Datos del radicado
+            'medio_recepcion' => 'required|in:fisico,email,web,telefono,fax,otro',
+            'tipo_comunicacion' => 'required|in:fisico,verbal',
+            'numero_folios' => 'required|integer|min:1',
+            'observaciones' => 'nullable|string',
+
+            // TRD
+            'trd_id' => 'required|exists:trd,id',
+
+            // Destino
+            'dependencia_destino_id' => 'required|exists:dependencias,id',
+            'medio_respuesta' => 'required|in:fisico,email,telefono,presencial,no_requiere',
+            'tipo_anexo' => 'required|in:original,copia,ninguno',
+            'fecha_limite_respuesta' => 'nullable|date|after:today',
+
+            // Documento
+            'documento' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB max
+        ], [
+            'tipo_remitente.required' => 'Debe seleccionar el tipo de remitente',
+            'tipo_documento.required_if' => 'El tipo de documento es obligatorio para remitentes registrados',
+            'numero_documento.required_if' => 'El número de documento es obligatorio para remitentes registrados',
+            'nombre_completo.required' => 'El nombre completo es obligatorio',
+            'medio_recepcion.required' => 'Debe seleccionar el medio de recepción',
+            'tipo_comunicacion.required' => 'Debe seleccionar el tipo de comunicación',
+            'numero_folios.required' => 'El número de folios es obligatorio',
+            'numero_folios.min' => 'El número de folios debe ser al menos 1',
+            'trd_id.required' => 'Debe seleccionar un TRD',
+            'trd_id.exists' => 'El TRD seleccionado no es válido',
+            'dependencia_destino_id.required' => 'Debe seleccionar la dependencia destino',
+            'dependencia_destino_id.exists' => 'La dependencia seleccionada no es válida',
+            'medio_respuesta.required' => 'Debe seleccionar el medio de respuesta',
+            'tipo_anexo.required' => 'Debe seleccionar el tipo de anexo',
+            'fecha_limite_respuesta.after' => 'La fecha límite debe ser posterior a hoy',
+            'documento.required' => 'Debe adjuntar un documento',
+            'documento.mimes' => 'El documento debe ser PDF, Word o imagen',
+            'documento.max' => 'El documento no puede superar los 10MB',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Crear o buscar remitente
+            $remitenteData = [
+                'tipo' => $request->tipo_remitente,
+                'nombre_completo' => $request->nombre_completo,
+                'telefono' => $request->telefono,
+                'email' => $request->email,
+                'direccion' => $request->direccion,
+                'ciudad' => $request->ciudad,
+                'departamento' => $request->departamento,
+                'entidad' => $request->entidad,
+                'observaciones' => $request->observaciones_remitente,
+            ];
+
+            if ($request->tipo_remitente === 'registrado') {
+                $remitenteData['tipo_documento'] = $request->tipo_documento;
+                $remitenteData['numero_documento'] = $request->numero_documento;
+
+                // Buscar remitente existente
+                $remitente = Remitente::where('tipo_documento', $request->tipo_documento)
+                                    ->where('numero_documento', $request->numero_documento)
+                                    ->first();
+
+                if ($remitente) {
+                    // Actualizar datos del remitente existente
+                    $remitente->update($remitenteData);
+                } else {
+                    // Crear nuevo remitente
+                    $remitente = Remitente::create($remitenteData);
+                }
+            } else {
+                // Crear remitente anónimo
+                $remitente = Remitente::create($remitenteData);
+            }
+
+            // Generar número de radicado
+            $numeroRadicado = Radicado::generarNumeroRadicado('entrada');
+
+            // Crear radicado
+            $radicado = Radicado::create([
+                'numero_radicado' => $numeroRadicado,
+                'tipo' => 'entrada',
+                'fecha_radicado' => Carbon::now()->toDateString(),
+                'hora_radicado' => Carbon::now()->toTimeString(),
+                'remitente_id' => $remitente->id,
+                'trd_id' => $request->trd_id,
+                'dependencia_destino_id' => $request->dependencia_destino_id,
+                'usuario_radica_id' => auth()->id(),
+                'medio_recepcion' => $request->medio_recepcion,
+                'tipo_comunicacion' => $request->tipo_comunicacion,
+                'numero_folios' => $request->numero_folios,
+                'observaciones' => $request->observaciones,
+                'medio_respuesta' => $request->medio_respuesta,
+                'tipo_anexo' => $request->tipo_anexo,
+                'fecha_limite_respuesta' => $request->fecha_limite_respuesta,
+                'estado' => 'pendiente',
+            ]);
+
+            // Procesar documento adjunto
+            if ($request->hasFile('documento')) {
+                $archivo = $request->file('documento');
+                $nombreOriginal = $archivo->getClientOriginalName();
+                $extension = $archivo->getClientOriginalExtension();
+                $nombreArchivo = $numeroRadicado . '_' . time() . '.' . $extension;
+
+                // Guardar archivo
+                $rutaArchivo = $archivo->storeAs('documentos/entrada', $nombreArchivo, 'public');
+
+                // Calcular hash para integridad
+                $contenido = file_get_contents($archivo->getPathname());
+                $hashArchivo = hash('sha256', $contenido);
+
+                // Crear registro de documento
+                Documento::create([
+                    'radicado_id' => $radicado->id,
+                    'nombre_archivo' => $nombreOriginal,
+                    'ruta_archivo' => $rutaArchivo,
+                    'tipo_mime' => $archivo->getMimeType(),
+                    'tamaño_archivo' => $archivo->getSize(),
+                    'hash_archivo' => $hashArchivo,
+                    'descripcion' => 'Documento principal del radicado',
+                    'es_principal' => true,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('radicacion.entrada.show', $radicado->id)
+                           ->with('success', "Radicado {$numeroRadicado} creado exitosamente");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->withErrors(['error' => 'Error al crear el radicado: ' . $e->getMessage()])
+                        ->withInput();
+        }
+    }
+
+    /**
+     * Buscar remitente por documento para autocompletado
+     */
+    public function buscarRemitente(Request $request)
+    {
+        $numeroDocumento = $request->get('numero_documento');
+
+        if (!$numeroDocumento) {
+            return response()->json(['found' => false]);
+        }
+
+        $remitente = Remitente::where('numero_documento', $numeroDocumento)
+                             ->where('tipo', 'registrado')
+                             ->first();
+
+        if ($remitente) {
+            return response()->json([
+                'found' => true,
+                'data' => [
+                    'tipo_documento' => $remitente->tipo_documento,
+                    'numero_documento' => $remitente->numero_documento,
+                    'nombre_completo' => $remitente->nombre_completo,
+                    'telefono' => $remitente->telefono,
+                    'email' => $remitente->email,
+                    'direccion' => $remitente->direccion,
+                    'ciudad' => $remitente->ciudad,
+                    'departamento' => $remitente->departamento,
+                    'entidad' => $remitente->entidad,
+                ]
+            ]);
+        }
+
+        return response()->json(['found' => false]);
+    }
+
+    /**
+     * Generar previsualización del radicado
+     */
+    public function previsualizacion(Request $request)
+    {
+        // Validar datos básicos para la previsualización
+        $validator = Validator::make($request->all(), [
+            'nombre_completo' => 'required|string|max:255',
+            'trd_id' => 'required|exists:trd,id',
+            'dependencia_destino_id' => 'required|exists:dependencias,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Datos incompletos para la previsualización'], 400);
+        }
+
+        // Obtener datos relacionados
+        $trd = Trd::find($request->trd_id);
+        $dependencia = Dependencia::find($request->dependencia_destino_id);
+
+        // Generar número de radicado temporal para previsualización
+        $numeroRadicado = Radicado::generarNumeroRadicado('entrada');
+
+        // Datos para la previsualización
+        $datosPreview = [
+            'numero_radicado' => $numeroRadicado,
+            'fecha_radicado' => Carbon::now()->format('d/m/Y'),
+            'hora_radicado' => Carbon::now()->format('H:i:s'),
+            'remitente' => [
+                'nombre_completo' => $request->nombre_completo,
+                'tipo_documento' => $request->tipo_documento,
+                'numero_documento' => $request->numero_documento,
+                'telefono' => $request->telefono,
+                'email' => $request->email,
+            ],
+            'trd' => [
+                'codigo' => $trd->codigo,
+                'serie' => $trd->serie,
+                'subserie' => $trd->subserie,
+                'asunto' => $trd->asunto,
+            ],
+            'dependencia_destino' => $dependencia->nombre,
+            'medio_recepcion' => $request->medio_recepcion,
+            'tipo_comunicacion' => $request->tipo_comunicacion,
+            'numero_folios' => $request->numero_folios,
+            'observaciones' => $request->observaciones,
+        ];
+
+        return view('radicacion.entrada.preview', compact('datosPreview'));
+    }
+
+    /**
+     * Mostrar un radicado específico
+     */
+    public function show($id)
+    {
+        $radicado = Radicado::with(['remitente', 'trd', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
+                           ->findOrFail($id);
+
+        return view('radicacion.entrada.show', compact('radicado'));
+    }
+}
