@@ -137,7 +137,7 @@ a:focus-visible,
 
     /* Estilos para Sidebar */
     .sidebar {
-        @apply fixed left-0 top-0 h-full transition-all duration-300 ease-in-out z-50;
+        @apply fixed left-0 top-0 h-full z-50;
         background: linear-gradient(180deg, #dbeafe 0%, #e0f2fe 100%);
         width: 280px;
         box-shadow: 2px 0 10px rgba(59, 130, 246, 0.1);
@@ -149,6 +149,8 @@ a:focus-visible,
         border-top: none !important;
         border-bottom: none !important;
         outline: none !important;
+        transition: none !important;
+        animation: none !important;
     }
 
     /* Estado inicial para evitar parpadeo y animaciones */
@@ -423,7 +425,9 @@ a:focus-visible,
     }
 
     .sidebar-logo {
-        @apply flex items-center space-x-3 transition-all duration-300;
+        @apply flex items-center space-x-3;
+        transition: none !important;
+        animation: none !important;
     }
 
     .sidebar-logo.collapsed {
@@ -431,9 +435,11 @@ a:focus-visible,
     }
 
     .sidebar-logo-text {
-        @apply text-xl font-semibold transition-all duration-300;
+        @apply text-xl font-semibold;
         color: #1e40af;
         text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+        transition: none !important;
+        animation: none !important;
     }
 
     .sidebar.collapsed .sidebar-logo-text {
@@ -460,12 +466,14 @@ a:focus-visible,
     }
 
     .sidebar-link {
-        @apply flex items-center px-4 py-3 transition-all duration-200 border-l-4 border-transparent;
+        @apply flex items-center px-4 py-3 border-l-4 border-transparent;
         color: #1e3a8a;
         margin: 2px 8px;
         border-radius: 8px;
         max-width: calc(100% - 16px);
         overflow: hidden;
+        transition: none !important;
+        animation: none !important;
         white-space: nowrap;
         box-sizing: border-box;
     }
@@ -499,7 +507,9 @@ a:focus-visible,
     }
 
     .sidebar-link-icon {
-        @apply w-6 h-6 mr-3 transition-all duration-300;
+        @apply w-6 h-6 mr-3;
+        transition: none !important;
+        animation: none !important;
     }
 
     .sidebar.collapsed .sidebar-link-icon {
@@ -507,13 +517,15 @@ a:focus-visible,
     }
 
     .sidebar-link-text {
-        @apply font-medium transition-all duration-300;
+        @apply font-medium;
         text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         flex: 1;
         min-width: 0;
+        transition: none !important;
+        animation: none !important;
     }
 
     .sidebar.collapsed .sidebar-link-text {
@@ -530,8 +542,10 @@ a:focus-visible,
     }
 
     .sidebar-user {
-        @apply flex items-center space-x-3 transition-all duration-300;
+        @apply flex items-center space-x-3;
         color: #1e3a8a;
+        transition: none !important;
+        animation: none !important;
     }
 
     .sidebar.collapsed .sidebar-user {
@@ -539,10 +553,11 @@ a:focus-visible,
     }
 
     .sidebar-user-info {
-        @apply transition-all duration-300;
         overflow: hidden;
         min-width: 0;
         flex: 1;
+        transition: none !important;
+        animation: none !important;
     }
 
     .sidebar.collapsed .sidebar-user-info {
@@ -551,13 +566,11 @@ a:focus-visible,
 
     /* Layout principal con sidebar */
     .main-layout {
-        @apply transition-all duration-300 ease-in-out;
         margin-left: 280px;
         min-height: 100vh;
         overflow-x: hidden;
-        transition-property: margin-left, margin-right, width, padding-left, padding-right;
-        transition-duration: 300ms;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition: none !important;
+        animation: none !important;
     }
 
     .main-layout.sidebar-collapsed {
@@ -767,12 +780,14 @@ a:focus-visible,
     }
 
     .sidebar-section-header {
-        @apply w-full flex items-center justify-between px-4 py-2 transition-all duration-200;
+        @apply w-full flex items-center justify-between px-4 py-2;
         background: rgba(255, 255, 255, 0.2);
         border: none;
         border-radius: 8px;
         margin: 0 8px;
         cursor: pointer;
+        transition: none !important;
+        animation: none !important;
         max-width: calc(100% - 16px);
         box-sizing: border-box;
         overflow: hidden;

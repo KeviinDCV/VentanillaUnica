@@ -140,29 +140,23 @@
         </div>
     </aside>
 
-    <!-- Script para aplicar estado inicial inmediatamente -->
+    <!-- Script para aplicar estado inicial inmediatamente sin animaciones -->
     <script>
         (function() {
             try {
                 var sidebar = document.getElementById('main-sidebar');
                 if (!sidebar) return;
 
-                // Solo desactivar transiciones temporalmente para evitar animaciones
+                // Desactivar todas las transiciones y animaciones permanentemente
                 var allElements = sidebar.querySelectorAll('*');
                 allElements.forEach(function(el) {
                     el.style.transition = 'none';
                     el.style.animation = 'none';
                 });
 
-                // Programar restauración de transiciones después de que Alpine.js se inicialice
-                setTimeout(function() {
-                    sidebar.classList.remove('sidebar-no-animations');
-
-                    allElements.forEach(function(el) {
-                        el.style.transition = '';
-                        el.style.animation = '';
-                    });
-                }, 200);
+                // También desactivar en el sidebar principal
+                sidebar.style.transition = 'none';
+                sidebar.style.animation = 'none';
 
             } catch(e) {
                 // Silenciar errores
