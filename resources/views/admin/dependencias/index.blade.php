@@ -1,4 +1,5 @@
 <x-app-layout>
+    <div data-page="admin-dependencias"></div>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>

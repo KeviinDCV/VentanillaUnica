@@ -1,18 +1,23 @@
 // Gestión de Dependencias - Admin
-console.log('Admin dependencias module loading...');
 
 // Inicialización cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
+    // Solo ejecutar en la página de dependencias
+    if (!document.querySelector('[data-page="admin-dependencias"]')) {
+        return;
+    }
+
+    console.log('Admin dependencias module loading...');
     console.log('DOM loaded, initializing dependencias management...');
-    
+
     // Configurar event listeners
     setupEventListeners();
     setupConfirmModalEventListeners();
-    
+
     // Inicializar búsqueda en tiempo real
     initializeRealTimeSearch();
-    
-    console.log('Dependencias management initialized successfully');
+
+    console.log('Admin dependencias module loaded');
 });
 
 function setupEventListeners() {

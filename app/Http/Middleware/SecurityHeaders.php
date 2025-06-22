@@ -41,7 +41,11 @@ class SecurityHeaders
             $headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private, max-age=0';
             $headers['Pragma'] = 'no-cache';
             $headers['Expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
-            $headers['Clear-Site-Data'] = '"cache", "storage"';
+
+            // Clear-Site-Data solo funciona en HTTPS
+            if ($request->secure()) {
+                $headers['Clear-Site-Data'] = '"cache", "storage"';
+            }
         }
 
         foreach ($headers as $key => $value) {
