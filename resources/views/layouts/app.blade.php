@@ -28,7 +28,7 @@
             @include('layouts.navigation')
 
             <!-- Contenido principal con margen para la sidebar -->
-            <div :class="{ 'sidebar-collapsed': !sidebarOpen }" class="main-layout">
+            <div :class="{ 'sidebar-collapsed': !sidebarOpen && window.innerWidth >= 1024 }" class="main-layout">
                 <!-- Page Heading -->
                 @isset($header)
                     <header class="bg-white border-b border-gray-100">

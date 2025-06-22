@@ -302,10 +302,33 @@ a:focus-visible,
     @media (max-width: 1024px) {
         .sidebar {
             @apply -translate-x-full;
+            width: 280px; /* Forzar ancho completo en móvil */
         }
 
         .sidebar.mobile-open {
             @apply translate-x-0;
+        }
+
+        /* En móvil, nunca aplicar estilos collapsed */
+        .sidebar.mobile-open .sidebar-logo-text,
+        .sidebar.mobile-open .sidebar-link-text,
+        .sidebar.mobile-open .sidebar-user-info {
+            @apply opacity-100 w-auto overflow-visible;
+            display: block !important;
+        }
+
+        .sidebar.mobile-open .sidebar-link-icon {
+            @apply mr-3;
+        }
+
+        .sidebar.mobile-open .sidebar-link,
+        .sidebar.mobile-open .sidebar-section-header {
+            justify-content: flex-start !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
         }
 
         .main-layout {

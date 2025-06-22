@@ -25,13 +25,13 @@
 
     <!-- Sidebar -->
     <aside :class="{
-        'collapsed': !sidebarOpen,
+        'collapsed': !sidebarOpen && window.innerWidth >= 1024,
         'mobile-open': mobileOpen
     }" class="sidebar">
 
         <!-- Header de la Sidebar -->
         <div class="sidebar-header">
-            <div :class="{ 'collapsed': !sidebarOpen }" class="sidebar-logo">
+            <div :class="{ 'collapsed': !sidebarOpen && window.innerWidth >= 1024 }" class="sidebar-logo">
                 <a href="{{ route('dashboard') }}" class="flex items-center space-x-3">
                     <img src="{{ asset('images/LogoHospital.jpg') }}"
                          alt="Logo Hospital"
@@ -68,7 +68,7 @@
 
         <!-- Footer de la Sidebar -->
         <div class="sidebar-footer">
-            <div :class="{ 'collapsed': !sidebarOpen }" class="sidebar-user">
+            <div :class="{ 'collapsed': !sidebarOpen && window.innerWidth >= 1024 }" class="sidebar-user">
                 <div class="w-8 h-8 bg-uniradical-blue rounded-full flex items-center justify-center flex-shrink-0">
                     <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
                 </div>
