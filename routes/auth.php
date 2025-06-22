@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['guest', 'ensure.session.login'])->group(function () {
+Route::middleware(['ensure.session.login', 'guest'])->group(function () {
     // Registro deshabilitado para sistema interno
     // Route::get('register', [RegisteredUserController::class, 'create'])
     //     ->name('register');
