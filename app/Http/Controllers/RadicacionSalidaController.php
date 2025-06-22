@@ -11,6 +11,8 @@ use App\Models\Remitente;
 use App\Models\Dependencia;
 use App\Models\Trd;
 use App\Models\Documento;
+use App\Models\Ciudad;
+use App\Models\Departamento;
 use Carbon\Carbon;
 
 class RadicacionSalidaController extends Controller
@@ -22,8 +24,12 @@ class RadicacionSalidaController extends Controller
     {
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
         $trds = Trd::activos()->orderBy('codigo')->get();
+        $ciudades = Ciudad::with('departamento')->activo()->ordenado()->get();
+        $departamentos = Departamento::activo()->ordenado()->get();
 
-        return view('radicacion.salida.index', compact('dependencias', 'trds'));
+        $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
+
+        return view('radicacion.salida.index', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
     }
 
     /**
@@ -51,7 +57,7 @@ class RadicacionSalidaController extends Controller
 
             // Datos del documento
             'asunto' => 'required|string|max:500',
-            'tipo_comunicacion' => 'required|in:oficio,carta,circular,resolucion,certificacion,otro',
+            'tipo_comunicacion' => 'required|exists:tipos_solicitud,codigo',
             'numero_folios' => 'required|integer|min:1',
             'observaciones' => 'nullable|string',
             'prioridad' => 'required|in:baja,normal,alta,urgente',
@@ -113,6 +119,20 @@ class RadicacionSalidaController extends Controller
                 $numeroDocumento = $request->nit_destinatario;
             }
 
+            // Obtener nombres de ciudad y departamento si se seleccionaron
+            $ciudadNombre = null;
+            $departamentoNombre = null;
+
+            if ($request->ciudad_destinatario_id) {
+                $ciudad = Ciudad::find($request->ciudad_destinatario_id);
+                $ciudadNombre = $ciudad ? $ciudad->nombre : null;
+            }
+
+            if ($request->departamento_destinatario_id) {
+                $departamento = Departamento::find($request->departamento_destinatario_id);
+                $departamentoNombre = $departamento ? $departamento->nombre : null;
+            }
+
             $destinatario = Remitente::create([
                 'tipo' => 'registrado',
                 'tipo_documento' => $tipoDocumento,
@@ -121,8 +141,8 @@ class RadicacionSalidaController extends Controller
                 'telefono' => $request->telefono_destinatario,
                 'email' => $request->email_destinatario,
                 'direccion' => $request->direccion_destinatario,
-                'ciudad' => $request->ciudad_destinatario,
-                'departamento' => $request->departamento_destinatario,
+                'ciudad' => $ciudadNombre,
+                'departamento' => $departamentoNombre,
                 'entidad' => $request->tipo_destinatario === 'persona_natural' ? null : $request->nombre_destinatario,
                 'observaciones' => "DESTINATARIO EXTERNO - Tipo: " . ucfirst(str_replace('_', ' ', $request->tipo_destinatario)),
             ]);

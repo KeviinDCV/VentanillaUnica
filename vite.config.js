@@ -14,7 +14,11 @@ export default defineConfig({
                 'resources/js/admin-logs.js',
                 'resources/js/admin-dependencias.js',
                 'resources/js/admin-trds.js',
-                'resources/js/colombia-time.js'
+                'resources/js/admin-departamentos.js',
+                'resources/js/admin-ciudades.js',
+                'resources/js/admin-tipos-solicitud.js',
+                'resources/js/colombia-time.js',
+                'resources/js/ciudad-departamento.js'
             ],
             refresh: true,
         }),
@@ -39,7 +43,11 @@ export default defineConfig({
                 'resources/js/admin-logs.js',
                 'resources/js/admin-dependencias.js',
                 'resources/js/admin-trds.js',
-                'resources/js/colombia-time.js'
+                'resources/js/admin-departamentos.js',
+                'resources/js/admin-ciudades.js',
+                'resources/js/admin-tipos-solicitud.js',
+                'resources/js/colombia-time.js',
+                'resources/js/ciudad-departamento.js'
             ],
             output: {
                 assetFileNames: 'assets/[name]-[hash][extname]',

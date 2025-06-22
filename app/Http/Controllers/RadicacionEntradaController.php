@@ -11,6 +11,8 @@ use App\Models\Remitente;
 use App\Models\Dependencia;
 use App\Models\Trd;
 use App\Models\Documento;
+use App\Models\Ciudad;
+use App\Models\Departamento;
 use Carbon\Carbon;
 
 class RadicacionEntradaController extends Controller
@@ -36,8 +38,11 @@ class RadicacionEntradaController extends Controller
 
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
         $trds = Trd::activos()->orderBy('codigo')->get();
+        $ciudades = Ciudad::with('departamento')->activo()->ordenado()->get();
+        $departamentos = Departamento::activo()->ordenado()->get();
+        $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
 
-        return view('radicacion.entrada.index', compact('dependencias', 'trds'));
+        return view('radicacion.entrada.index', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
     }
 
     /**
@@ -60,7 +65,7 @@ class RadicacionEntradaController extends Controller
 
             // Datos del radicado
             'medio_recepcion' => 'required|in:fisico,email,web,telefono,fax,otro',
-            'tipo_comunicacion' => 'required|in:fisico,verbal',
+            'tipo_comunicacion' => 'required|exists:tipos_solicitud,codigo',
             'numero_folios' => 'required|integer|min:1',
             'observaciones' => 'nullable|string',
 
@@ -103,6 +108,20 @@ class RadicacionEntradaController extends Controller
         try {
             DB::beginTransaction();
 
+            // Obtener nombres de ciudad y departamento si se seleccionaron
+            $ciudadNombre = null;
+            $departamentoNombre = null;
+
+            if ($request->ciudad_id) {
+                $ciudad = Ciudad::find($request->ciudad_id);
+                $ciudadNombre = $ciudad ? $ciudad->nombre : null;
+            }
+
+            if ($request->departamento_id) {
+                $departamento = Departamento::find($request->departamento_id);
+                $departamentoNombre = $departamento ? $departamento->nombre : null;
+            }
+
             // Crear o buscar remitente
             $remitenteData = [
                 'tipo' => $request->tipo_remitente,
@@ -110,8 +129,8 @@ class RadicacionEntradaController extends Controller
                 'telefono' => $request->telefono,
                 'email' => $request->email,
                 'direccion' => $request->direccion,
-                'ciudad' => $request->ciudad,
-                'departamento' => $request->departamento,
+                'ciudad' => $ciudadNombre,
+                'departamento' => $departamentoNombre,
                 'entidad' => $request->entidad,
                 'observaciones' => $request->observaciones_remitente,
             ];
@@ -216,6 +235,20 @@ class RadicacionEntradaController extends Controller
                              ->first();
 
         if ($remitente) {
+            // Buscar IDs de ciudad y departamento basados en los nombres
+            $ciudadId = null;
+            $departamentoId = null;
+
+            if ($remitente->ciudad) {
+                $ciudad = Ciudad::where('nombre', $remitente->ciudad)->first();
+                $ciudadId = $ciudad ? $ciudad->id : null;
+            }
+
+            if ($remitente->departamento) {
+                $departamento = Departamento::where('nombre', $remitente->departamento)->first();
+                $departamentoId = $departamento ? $departamento->id : null;
+            }
+
             return response()->json([
                 'found' => true,
                 'data' => [
@@ -227,6 +260,8 @@ class RadicacionEntradaController extends Controller
                     'direccion' => $remitente->direccion,
                     'ciudad' => $remitente->ciudad,
                     'departamento' => $remitente->departamento,
+                    'ciudad_id' => $ciudadId,
+                    'departamento_id' => $departamentoId,
                     'entidad' => $remitente->entidad,
                 ]
             ]);

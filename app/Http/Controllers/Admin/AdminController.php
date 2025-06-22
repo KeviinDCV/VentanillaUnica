@@ -10,6 +10,9 @@ use App\Models\Dependencia;
 use App\Models\Trd;
 use App\Models\Remitente;
 use App\Models\Documento;
+use App\Models\Departamento;
+use App\Models\Ciudad;
+use App\Models\TipoSolicitud;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -30,6 +33,9 @@ class AdminController extends Controller
             'total_usuarios' => User::count(),
             'total_dependencias' => Dependencia::count(),
             'total_trds' => Trd::count(),
+            'total_departamentos' => Departamento::count(),
+            'total_ciudades' => Ciudad::count(),
+            'total_tipos_solicitud' => TipoSolicitud::count(),
             'total_remitentes' => Remitente::count(),
             'total_documentos' => Documento::count(),
             'pendientes' => Radicado::where('estado', 'pendiente')->count(),

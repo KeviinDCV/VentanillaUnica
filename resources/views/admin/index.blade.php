@@ -159,7 +159,7 @@
             </div>
 
             <!-- Accesos Rápidos -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 <!-- Gestión de Usuarios -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between mb-4">
@@ -214,9 +214,73 @@
                     </div>
                     <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_trds']) }}</p>
                     <p class="text-sm text-gray-500 mb-4">Series documentales</p>
-                    <a href="{{ route('admin.trds') }}" 
+                    <a href="{{ route('admin.trds') }}"
                        class="inline-flex items-center text-sm font-medium text-purple-600 hover:text-purple-500">
                         Gestionar TRD
+                        <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Gestión de Departamentos -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-800">Departamentos</h3>
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_departamentos']) }}</p>
+                    <p class="text-sm text-gray-500 mb-4">Departamentos activos</p>
+                    <a href="{{ route('admin.departamentos.index') }}"
+                       class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500">
+                        Gestionar departamentos
+                        <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Gestión de Ciudades -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-800">Ciudades</h3>
+                        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_ciudades']) }}</p>
+                    <p class="text-sm text-gray-500 mb-4">Ciudades registradas</p>
+                    <a href="{{ route('admin.ciudades.index') }}"
+                       class="inline-flex items-center text-sm font-medium text-orange-600 hover:text-orange-500">
+                        Gestionar ciudades
+                        <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Gestión de Tipos de Solicitud -->
+                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-800">Tipos de Solicitud</h3>
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_tipos_solicitud']) }}</p>
+                    <p class="text-sm text-gray-500 mb-4">Tipos parametrizados</p>
+                    <a href="{{ route('admin.tipos-solicitud.index') }}"
+                       class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                        Gestionar tipos
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>

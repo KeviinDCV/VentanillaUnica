@@ -95,6 +95,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/ciudades/{ciudad}', [App\Http\Controllers\Admin\CiudadController::class, 'destroy'])->name('ciudades.destroy');
         Route::patch('/ciudades/{ciudad}/toggle-status', [App\Http\Controllers\Admin\CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
 
+        // Gestión de Tipos de Solicitud
+        Route::get('/tipos-solicitud', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'index'])->name('tipos-solicitud.index');
+        Route::post('/tipos-solicitud', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'store'])->name('tipos-solicitud.store');
+        Route::put('/tipos-solicitud/{tipoSolicitud}', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'update'])->name('tipos-solicitud.update');
+        Route::delete('/tipos-solicitud/{tipoSolicitud}', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'destroy'])->name('tipos-solicitud.destroy');
+        Route::patch('/tipos-solicitud/{tipoSolicitud}/toggle-status', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'toggleStatus'])->name('tipos-solicitud.toggle-status');
+        Route::get('/tipos-solicitud/buscar', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'buscar'])->name('tipos-solicitud.buscar');
+
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');
     });

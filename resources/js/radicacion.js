@@ -108,8 +108,15 @@ window.RadicacionEntrada = {
                 document.getElementById('telefono').value = data.data.telefono || '';
                 document.getElementById('email').value = data.data.email || '';
                 document.getElementById('direccion').value = data.data.direccion || '';
-                document.getElementById('ciudad').value = data.data.ciudad || '';
-                document.getElementById('departamento').value = data.data.departamento || '';
+                // Usar las nuevas funciones para establecer ciudad y departamento
+                if (typeof window.setCiudadDepartamento === 'function') {
+                    window.setCiudadDepartamento(
+                        'departamento_id',
+                        'ciudad_id',
+                        data.data.departamento_id,
+                        data.data.ciudad_id
+                    );
+                }
                 document.getElementById('entidad').value = data.data.entidad || '';
 
                 // Mostrar mensaje de éxito

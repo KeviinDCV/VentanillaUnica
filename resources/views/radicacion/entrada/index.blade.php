@@ -139,26 +139,41 @@
                                               placeholder="Dirección completa">{{ old('direccion') }}</textarea>
                                 </div>
 
-                                <!-- Ciudad -->
-                                <div>
-                                    <label for="ciudad" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Ciudad
-                                    </label>
-                                    <input type="text" name="ciudad" id="ciudad" 
-                                           value="{{ old('ciudad') }}"
-                                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                                           placeholder="Ciudad">
-                                </div>
-
                                 <!-- Departamento -->
                                 <div>
-                                    <label for="departamento" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Departamento
+                                    <label for="departamento_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Departamento <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="departamento" id="departamento" 
-                                           value="{{ old('departamento') }}"
-                                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                                           placeholder="Departamento">
+                                    <select name="departamento_id" id="departamento_id" required
+                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                                        <option value="">Seleccionar departamento...</option>
+                                        @foreach($departamentos as $departamento)
+                                            <option value="{{ $departamento->id }}" {{ old('departamento_id') == $departamento->id ? 'selected' : '' }}>
+                                                {{ $departamento->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">Primero seleccione el departamento para ver las ciudades disponibles</p>
+                                </div>
+
+                                <!-- Ciudad -->
+                                <div>
+                                    <label for="ciudad_id" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Ciudad <span class="text-red-500">*</span>
+                                    </label>
+                                    <select name="ciudad_id" id="ciudad_id" required disabled
+                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                        <option value="">Primero seleccione un departamento...</option>
+                                        @foreach($ciudades as $ciudad)
+                                            <option value="{{ $ciudad->id }}"
+                                                    data-departamento="{{ $ciudad->departamento_id }}"
+                                                    {{ old('ciudad_id') == $ciudad->id ? 'selected' : '' }}
+                                                    style="display: none;">
+                                                {{ $ciudad->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">Las ciudades se mostrarán según el departamento seleccionado</p>
                                 </div>
 
                                 <!-- Entidad -->
@@ -206,8 +221,11 @@
                                     <select name="tipo_comunicacion" id="tipo_comunicacion" required
                                             class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                         <option value="">Seleccionar...</option>
-                                        <option value="fisico" {{ old('tipo_comunicacion') === 'fisico' ? 'selected' : '' }}>Físico</option>
-                                        <option value="verbal" {{ old('tipo_comunicacion') === 'verbal' ? 'selected' : '' }}>Verbal</option>
+                                        @foreach($tiposSolicitud as $tipo)
+                                            <option value="{{ $tipo->codigo }}" {{ old('tipo_comunicacion') === $tipo->codigo ? 'selected' : '' }}>
+                                                {{ $tipo->nombre }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
 
@@ -413,5 +431,8 @@
         </div>
     </div>
 
+    @push('scripts')
+    @vite('resources/js/ciudad-departamento.js')
+    @endpush
 
 </x-app-layout>

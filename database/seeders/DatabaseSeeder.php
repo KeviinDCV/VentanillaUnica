@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             DependenciaSeeder::class,
             TrdSeeder::class,
+            TipoSolicitudSeeder::class,
         ]);
     }
 }

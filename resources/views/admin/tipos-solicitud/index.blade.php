@@ -1,18 +1,18 @@
 <x-app-layout>
-    <div data-page="admin-ciudades"></div>
+    <div data-page="admin-tipos-solicitud"></div>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="font-light text-xl text-gray-800 leading-tight">
-                    Gestión de Ciudades
+                    Gestión de Tipos de Solicitud
                 </h2>
                 <p class="text-sm text-gray-600 font-light mt-1">
-                    Administración de ciudades del sistema
+                    Administración de tipos de solicitud del sistema
                 </p>
             </div>
             <div>
-                <button id="btn-crear-ciudad" class="create-button">
-                    Nueva Ciudad
+                <button id="btn-crear-tipo" class="create-button">
+                    Nuevo Tipo de Solicitud
                 </button>
             </div>
         </div>
@@ -51,20 +51,20 @@
                 </div>
             @endif
 
-            <!-- Estadísticas de Ciudades -->
+            <!-- Estadísticas de Tipos de Solicitud -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white border border-gray-200 rounded-lg p-4">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                             </div>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-500">Total Ciudades</p>
-                            <p class="text-lg font-semibold text-gray-900">{{ $ciudades->total() }}</p>
+                            <p class="text-sm font-medium text-gray-500">Total Tipos</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $tiposSolicitud->total() }}</p>
                         </div>
                     </div>
                 </div>
@@ -79,8 +79,24 @@
                             </div>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-500">Activas</p>
-                            <p class="text-lg font-semibold text-green-600">{{ $ciudades->where('activo', true)->count() }}</p>
+                            <p class="text-sm font-medium text-gray-500">Activos</p>
+                            <p class="text-lg font-semibold text-green-600">{{ $tiposSolicitud->where('activo', true)->count() }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-gray-500">Inactivos</p>
+                            <p class="text-lg font-semibold text-red-600">{{ $tiposSolicitud->where('activo', false)->count() }}</p>
                         </div>
                     </div>
                 </div>
@@ -90,45 +106,28 @@
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                 <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-500">Departamentos</p>
-                            <p class="text-lg font-semibold text-blue-600">{{ $departamentos->count() }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white border border-gray-200 rounded-lg p-4">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                             </div>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-500">Con Código</p>
-                            <p class="text-lg font-semibold text-orange-600">{{ $ciudades->whereNotNull('codigo')->count() }}</p>
+                            <p class="text-sm font-medium text-gray-500">En Uso</p>
+                            <p class="text-lg font-semibold text-blue-600">{{ $tiposSolicitud->sum('radicados_count') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tabla de Ciudades -->
+            <!-- Tabla de Tipos de Solicitud -->
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-medium text-gray-800">Lista de Ciudades</h3>
+                        <h3 class="text-lg font-medium text-gray-800">Lista de Tipos de Solicitud</h3>
                         <div class="flex-1 max-w-md ml-6">
                             <div class="relative">
                                 <input type="text"
-                                       id="buscar-ciudad"
-                                       placeholder="Buscar ciudades..."
+                                       id="buscar-tipo"
+                                       placeholder="Buscar tipos de solicitud..."
                                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,17 +136,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="ml-4 flex space-x-3">
-                            <select id="filtro-departamento" class="border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                <option value="">Todos los departamentos</option>
-                                @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
-                                @endforeach
-                            </select>
+                        <div class="ml-4">
                             <select id="filtro-estado" class="border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 <option value="">Todos los estados</option>
-                                <option value="1">Activos</option>
-                                <option value="0">Inactivos</option>
+                                <option value="activo">Activos</option>
+                                <option value="inactivo">Inactivos</option>
                             </select>
                         </div>
                     </div>
@@ -157,14 +150,17 @@
                     <table class="w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">
-                                    Ciudad
-                                </th>
-                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4 hidden md:table-cell">
-                                    Departamento
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
+                                    Tipo de Solicitud
                                 </th>
                                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 hidden md:table-cell">
                                     Código
+                                </th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3 hidden lg:table-cell">
+                                    Descripción
+                                </th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 hidden md:table-cell">
+                                    Uso
                                 </th>
                                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                     Estado
@@ -174,41 +170,45 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody id="tabla-ciudades" class="bg-white divide-y divide-gray-200">
-                            @foreach($ciudades as $ciudad)
-                            <tr class="hover:bg-gray-50 ciudad-row"
-                                data-id="{{ $ciudad->id }}"
-                                data-name="{{ strtolower($ciudad->nombre) }}"
-                                data-departamento-id="{{ $ciudad->departamento_id }}"
-                                data-departamento-name="{{ strtolower($ciudad->departamento->nombre) }}"
-                                data-active="{{ $ciudad->activo ? 'true' : 'false' }}">
+                        <tbody id="tabla-tipos" class="bg-white divide-y divide-gray-200">
+                            @foreach($tiposSolicitud as $tipo)
+                            <tr class="hover:bg-gray-50 tipo-row"
+                                data-id="{{ $tipo->id }}"
+                                data-name="{{ strtolower($tipo->nombre) }}"
+                                data-codigo="{{ strtolower($tipo->codigo) }}"
+                                data-active="{{ $tipo->activo ? 'true' : 'false' }}">
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                 </svg>
                                             </div>
                                         </div>
                                         <div class="ml-3 min-w-0 flex-1">
-                                            <div class="text-sm font-medium text-gray-900 truncate" title="{{ $ciudad->nombre }}">
-                                                {{ $ciudad->nombre }}
+                                            <div class="text-sm font-medium text-gray-900 truncate" title="{{ $tipo->nombre }}">
+                                                {{ $tipo->nombre }}
                                             </div>
                                             <div class="text-xs text-gray-500 md:hidden truncate">
-                                                {{ $ciudad->departamento->nombre }} • {{ $ciudad->codigo ?? 'Sin código' }}
+                                                {{ $tipo->codigo }} • {{ $tipo->radicados_count }} radicados
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">{{ $ciudad->departamento->nombre }}</div>
+                                    <div class="text-sm text-gray-900 font-mono">{{ $tipo->codigo }}</div>
+                                </td>
+                                <td class="px-3 py-4 hidden lg:table-cell">
+                                    <div class="text-sm text-gray-900 truncate" title="{{ $tipo->descripcion }}">
+                                        {{ $tipo->descripcion ?: 'Sin descripción' }}
+                                    </div>
                                 </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">{{ $ciudad->codigo ?? 'N/A' }}</div>
+                                    <div class="text-sm text-gray-900">{{ $tipo->radicados_count }}</div>
                                 </td>
                                 <td class="px-3 py-4">
-                                    @if($ciudad->activo)
+                                    @if($tipo->activo)
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <span class="w-1.5 h-1.5 mr-1.5 bg-green-400 rounded-full"></span>
                                             Activo
@@ -224,24 +224,24 @@
                                     <div class="relative inline-block text-left">
                                         <button type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
-                                                onclick="toggleDropdown('dropdown-ciudad-{{ $ciudad->id }}')">
+                                                onclick="toggleDropdown('dropdown-tipo-{{ $tipo->id }}')">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                             </svg>
                                         </button>
 
-                                        <div id="dropdown-ciudad-{{ $ciudad->id }}"
+                                        <div id="dropdown-tipo-{{ $tipo->id }}"
                                              class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                                              style="z-index: 9999;"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Editar -->
                                                 <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                                                        data-id="{{ $ciudad->id }}"
-                                                        data-nombre="{{ $ciudad->nombre }}"
-                                                        data-codigo="{{ $ciudad->codigo }}"
-                                                        data-departamento-id="{{ $ciudad->departamento_id }}"
-                                                        data-activo="{{ $ciudad->activo ? 'true' : 'false' }}">
+                                                        data-id="{{ $tipo->id }}"
+                                                        data-nombre="{{ $tipo->nombre }}"
+                                                        data-codigo="{{ $tipo->codigo }}"
+                                                        data-descripcion="{{ $tipo->descripcion }}"
+                                                        data-activo="{{ $tipo->activo ? 'true' : 'false' }}">
                                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                     </svg>
@@ -249,9 +249,9 @@
                                                 </button>
 
                                                 <!-- Activar/Desactivar -->
-                                                <button class="btn-toggle-estado w-full text-left px-4 py-2 text-sm {{ $ciudad->activo ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50' }} flex items-center"
-                                                        data-id="{{ $ciudad->id }}">
-                                                    @if($ciudad->activo)
+                                                <button class="btn-toggle-estado w-full text-left px-4 py-2 text-sm {{ $tipo->activo ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50' }} flex items-center"
+                                                        data-id="{{ $tipo->id }}">
+                                                    @if($tipo->activo)
                                                         <svg class="w-4 h-4 mr-3 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"/>
                                                         </svg>
@@ -269,8 +269,9 @@
 
                                                 <!-- Eliminar -->
                                                 <button class="btn-eliminar w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
-                                                        data-id="{{ $ciudad->id }}"
-                                                        data-nombre="{{ $ciudad->nombre }}">
+                                                        data-id="{{ $tipo->id }}"
+                                                        data-nombre="{{ $tipo->nombre }}"
+                                                        data-uso="{{ $tipo->radicados_count }}">
                                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
@@ -288,82 +289,80 @@
 
                 <!-- Paginación -->
                 <div class="px-6 py-4 border-t border-gray-200">
-                    {{ $ciudades->links() }}
+                    {{ $tiposSolicitud->links() }}
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para crear/editar ciudad -->
-    <div id="modal-ciudad" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+    <!-- Modal para crear/editar tipo de solicitud -->
+    <div id="modal-tipo" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
             <div class="mt-3">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-medium text-gray-900" id="modal-title">Nueva Ciudad</h3>
+                    <h3 class="text-lg font-medium text-gray-900" id="modal-title">Nuevo Tipo de Solicitud</h3>
                     <button id="btn-cerrar-modal" class="text-gray-400 hover:text-gray-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
-                
-                <form id="form-ciudad">
-                    <input type="hidden" id="ciudad-id">
-                    
+
+                <form id="form-tipo">
+                    <input type="hidden" id="tipo-id">
+
                     <div class="mb-4">
-                        <label for="ciudad-departamento" class="block text-sm font-medium text-gray-700 mb-2">
-                            Departamento <span class="text-red-500">*</span>
+                        <label for="tipo-nombre" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nombre del Tipo <span class="text-red-500">*</span>
                         </label>
-                        <select id="ciudad-departamento" 
-                                name="departamento_id" 
-                                required
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                            <option value="">Seleccionar departamento...</option>
-                            @foreach($departamentos as $departamento)
-                            <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="ciudad-nombre" class="block text-sm font-medium text-gray-700 mb-2">
-                            Nombre de la Ciudad <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" 
-                               id="ciudad-nombre" 
-                               name="nombre" 
+                        <input type="text"
+                               id="tipo-nombre"
+                               name="nombre"
                                required
                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                               placeholder="Ej: Cali">
+                               placeholder="Ej: Físico">
                     </div>
-                    
+
                     <div class="mb-4">
-                        <label for="ciudad-codigo" class="block text-sm font-medium text-gray-700 mb-2">
-                            Código (Opcional)
+                        <label for="tipo-codigo" class="block text-sm font-medium text-gray-700 mb-2">
+                            Código <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" 
-                               id="ciudad-codigo" 
-                               name="codigo" 
+                        <input type="text"
+                               id="tipo-codigo"
+                               name="codigo"
+                               required
                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                               placeholder="Ej: 76001">
+                               placeholder="Ej: fisico">
+                        <p class="text-xs text-gray-500 mt-1">El código debe ser único y se usará internamente en el sistema</p>
                     </div>
-                    
+
+                    <div class="mb-4">
+                        <label for="tipo-descripcion" class="block text-sm font-medium text-gray-700 mb-2">
+                            Descripción (Opcional)
+                        </label>
+                        <textarea id="tipo-descripcion"
+                                  name="descripcion"
+                                  rows="3"
+                                  class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                                  placeholder="Descripción del tipo de solicitud..."></textarea>
+                    </div>
+
                     <div class="mb-6" id="campo-activo" style="display: none;">
                         <label class="flex items-center">
-                            <input type="checkbox" 
-                                   id="ciudad-activo" 
-                                   name="activo" 
+                            <input type="checkbox"
+                                   id="tipo-activo"
+                                   name="activo"
                                    class="rounded border-gray-300 text-uniradical-blue shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                            <span class="ml-2 text-sm text-gray-700">Ciudad activa</span>
+                            <span class="ml-2 text-sm text-gray-700">Tipo de solicitud activo</span>
                         </label>
                     </div>
-                    
+
                     <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                         <button type="button" id="btn-cancelar" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue">
                             Cancelar
                         </button>
                         <button type="submit" id="btn-guardar" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-uniradical-blue hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue">
-                            Guardar Ciudad
+                            Guardar Tipo
                         </button>
                     </div>
                 </form>
@@ -391,7 +390,7 @@
     </div>
 
     @push('scripts')
-    @vite('resources/js/admin-ciudades.js')
+    @vite('resources/js/admin-tipos-solicitud.js')
     @endpush
 
     <script>
@@ -401,7 +400,7 @@
             const isHidden = dropdown.classList.contains('hidden');
 
             // Cerrar todos los dropdowns abiertos
-            document.querySelectorAll('[id^="dropdown-ciudad-"]').forEach(d => {
+            document.querySelectorAll('[id^="dropdown-tipo-"]').forEach(d => {
                 if (d.id !== dropdownId) {
                     d.classList.add('hidden');
                     // Resetear estilos
@@ -451,7 +450,7 @@
         // Cerrar dropdowns al hacer clic fuera
         document.addEventListener('click', function(e) {
             if (!e.target.closest('[data-dropdown-menu]') && !e.target.closest('button[onclick*="toggleDropdown"]')) {
-                document.querySelectorAll('[id^="dropdown-ciudad-"]').forEach(dropdown => {
+                document.querySelectorAll('[id^="dropdown-tipo-"]').forEach(dropdown => {
                     dropdown.classList.add('hidden');
                 });
             }
