@@ -73,7 +73,7 @@ class SecurityHeaders
         } else {
             $policies = [
                 "default-src 'self'",
-                "script-src 'self' 'nonce-{$nonce}' 'unsafe-eval' https://fonts.bunny.net",
+                "script-src 'self' 'nonce-{$nonce}' 'unsafe-inline' 'unsafe-eval' https://fonts.bunny.net",
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' https://fonts.bunny.net",
                 "img-src 'self' data: https:",
