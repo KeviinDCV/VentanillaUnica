@@ -18,7 +18,7 @@ class EnsureSessionForLogin
         // Si es una petición GET a la página de login, forzar logout de cualquier sesión activa
         if ($request->isMethod('GET') && $request->routeIs('login')) {
 
-            // Si hay un usuario autenticado, cerrar su sesión automáticamente
+            // Si hay un usuario autenticado, redirigir a una ruta especial de logout automático
             if (Auth::check()) {
                 $user = Auth::user();
 
@@ -31,22 +31,8 @@ class EnsureSessionForLogin
                     'timestamp' => now()->toISOString()
                 ]);
 
-                // Cerrar sesión completamente
-                Auth::guard('web')->logout();
-
-                // Invalidar sesión completamente
-                $request->session()->invalidate();
-
-                // Regenerar token CSRF para la nueva sesión
-                $request->session()->regenerateToken();
-
-                // Crear respuesta con cookie para limpiar remember me
-                $response = response()->view('auth.login')->withCookie(cookie()->forget('remember_web'));
-
-                // Agregar mensaje flash a la nueva sesión
-                $request->session()->flash('info', 'Su sesión anterior ha sido cerrada por seguridad.');
-
-                return $response;
+                // Redirigir a ruta especial que maneja el logout automático
+                return redirect()->route('auto-logout');
             }
         }
 

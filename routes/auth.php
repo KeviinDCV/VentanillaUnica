@@ -10,6 +10,27 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+// Ruta especial para logout automático al acceder a login
+Route::get('auto-logout', function () {
+    if (Auth::check()) {
+        // Cerrar sesión completamente
+        Auth::guard('web')->logout();
+
+        // Invalidar sesión completamente
+        request()->session()->invalidate();
+
+        // Regenerar token CSRF
+        request()->session()->regenerateToken();
+
+        // Redirigir al login con mensaje
+        return redirect()->route('login')->with('info', 'Su sesión anterior ha sido cerrada por seguridad.');
+    }
+
+    // Si no hay sesión activa, redirigir al login
+    return redirect()->route('login');
+})->name('auto-logout');
 
 Route::middleware(['ensure.session.login', 'guest'])->group(function () {
     // Registro deshabilitado para sistema interno
