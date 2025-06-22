@@ -37,12 +37,14 @@ class EnsureSessionForLogin
                 // Invalidar sesión completamente
                 $request->session()->invalidate();
 
-                // Regenerar token CSRF
+                // Regenerar token CSRF para la nueva sesión
                 $request->session()->regenerateToken();
 
-                // Limpiar cookies de remember me si existen
-                $response = redirect()->route('login')->with('info', 'Su sesión anterior ha sido cerrada por seguridad.');
-                $response->withCookie(cookie()->forget('remember_web'));
+                // Crear respuesta con cookie para limpiar remember me
+                $response = response()->view('auth.login')->withCookie(cookie()->forget('remember_web'));
+
+                // Agregar mensaje flash a la nueva sesión
+                $request->session()->flash('info', 'Su sesión anterior ha sido cerrada por seguridad.');
 
                 return $response;
             }
