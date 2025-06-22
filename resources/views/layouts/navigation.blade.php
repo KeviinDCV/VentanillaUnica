@@ -140,23 +140,34 @@
         </div>
     </aside>
 
-    <!-- Script para aplicar estado inicial inmediatamente sin animaciones -->
+    <!-- Script para aplicar estado inicial sin animaciones de carga -->
     <script>
         (function() {
             try {
                 var sidebar = document.getElementById('main-sidebar');
                 if (!sidebar) return;
 
-                // Desactivar todas las transiciones y animaciones permanentemente
+                // Desactivar transiciones solo temporalmente durante la carga inicial
                 var allElements = sidebar.querySelectorAll('*');
                 allElements.forEach(function(el) {
                     el.style.transition = 'none';
                     el.style.animation = 'none';
                 });
 
-                // También desactivar en el sidebar principal
                 sidebar.style.transition = 'none';
                 sidebar.style.animation = 'none';
+
+                // Restaurar transiciones después de que la página esté completamente cargada
+                // Esto permite las animaciones de toggle pero evita animaciones de carga
+                setTimeout(function() {
+                    sidebar.style.transition = '';
+                    sidebar.style.animation = '';
+
+                    allElements.forEach(function(el) {
+                        el.style.transition = '';
+                        el.style.animation = '';
+                    });
+                }, 100);
 
             } catch(e) {
                 // Silenciar errores

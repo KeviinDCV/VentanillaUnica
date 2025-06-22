@@ -172,23 +172,12 @@
                     }
                 }
 
-                // Aplicar estado inicial sin animaciones
-                document.documentElement.classList.remove('sidebar-collapsed-initial');
-                document.body.classList.remove('loading-initial');
-                document.documentElement.style.removeProperty('--sidebar-loading');
-
-                // Desactivar todas las transiciones y animaciones de la sidebar permanentemente
-                const sidebar = document.getElementById('main-sidebar');
-                if (sidebar) {
-                    sidebar.style.transition = 'none';
-                    sidebar.style.animation = 'none';
-
-                    const allElements = sidebar.querySelectorAll('*');
-                    allElements.forEach(function(el) {
-                        el.style.transition = 'none';
-                        el.style.animation = 'none';
-                    });
-                }
+                // Remover clases de carga después de un pequeño delay para asegurar que todo esté listo
+                setTimeout(function() {
+                    document.documentElement.classList.remove('sidebar-collapsed-initial');
+                    document.body.classList.remove('loading-initial');
+                    document.documentElement.style.removeProperty('--sidebar-loading');
+                }, 100);
             });
         </script>
     </body>
