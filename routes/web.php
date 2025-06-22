@@ -80,10 +80,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarTrd'])->name('trds.eliminar');
         Route::get('/reportes', [App\Http\Controllers\Admin\AdminController::class, 'reportes'])->name('reportes');
         Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');
+
+        // Gestión de Departamentos
+        Route::get('/departamentos', [App\Http\Controllers\Admin\DepartamentoController::class, 'index'])->name('departamentos.index');
+        Route::post('/departamentos', [App\Http\Controllers\Admin\DepartamentoController::class, 'store'])->name('departamentos.store');
+        Route::put('/departamentos/{departamento}', [App\Http\Controllers\Admin\DepartamentoController::class, 'update'])->name('departamentos.update');
+        Route::delete('/departamentos/{departamento}', [App\Http\Controllers\Admin\DepartamentoController::class, 'destroy'])->name('departamentos.destroy');
+        Route::patch('/departamentos/{departamento}/toggle-status', [App\Http\Controllers\Admin\DepartamentoController::class, 'toggleStatus'])->name('departamentos.toggle-status');
+
+        // Gestión de Ciudades
+        Route::get('/ciudades', [App\Http\Controllers\Admin\CiudadController::class, 'index'])->name('ciudades.index');
+        Route::post('/ciudades', [App\Http\Controllers\Admin\CiudadController::class, 'store'])->name('ciudades.store');
+        Route::put('/ciudades/{ciudad}', [App\Http\Controllers\Admin\CiudadController::class, 'update'])->name('ciudades.update');
+        Route::delete('/ciudades/{ciudad}', [App\Http\Controllers\Admin\CiudadController::class, 'destroy'])->name('ciudades.destroy');
+        Route::patch('/ciudades/{ciudad}/toggle-status', [App\Http\Controllers\Admin\CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
+
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');
     });
 
+});
+
+// Rutas API para obtener ciudades por departamento (para AJAX)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/ciudades/por-departamento', [App\Http\Controllers\Admin\CiudadController::class, 'porDepartamento'])->name('api.ciudades.por-departamento');
 });
 
 // Rutas del sistema de suspensión (fuera del middleware de autenticación)
