@@ -24,7 +24,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js'])
 
         <!-- Script para evitar parpadeo de sidebar -->
-        <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+        <script>
             // Ejecutar inmediatamente para evitar parpadeo
             (function() {
                 try {
@@ -45,7 +45,7 @@
         </script>
 
         <!-- Estilos inline críticos para evitar animaciones -->
-        <style nonce="{{ session('csp_nonce', 'default-nonce') }}">
+        <style>
             :root[style*="--sidebar-loading"] * {
                 transition: none !important;
                 animation: none !important;
@@ -161,7 +161,7 @@
         @stack('scripts')
 
         <!-- Inicialización de Alpine.js -->
-        <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+        <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Inicializar Alpine.js data para el body
                 if (window.Alpine) {

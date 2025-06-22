@@ -171,7 +171,7 @@
         </div>
     </div>
 
-    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+    <script>
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-icon');

@@ -105,7 +105,7 @@
         </div>
     </div>
 
-    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+    <script>
         // Manejar el envío del formulario
         document.getElementById('logoutForm').addEventListener('submit', function(e) {
             const submitBtn = e.target.querySelector('button[type="submit"]');

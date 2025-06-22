@@ -141,7 +141,7 @@
     </aside>
 
     <!-- Script para aplicar estado inicial inmediatamente -->
-    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+    <script>
         (function() {
             try {
                 var sidebar = document.getElementById('main-sidebar');
