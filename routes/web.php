@@ -71,25 +71,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/dependencias', [App\Http\Controllers\Admin\AdminController::class, 'guardarDependencia'])->name('dependencias.guardar');
         Route::put('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarDependencia'])->name('dependencias.actualizar');
         Route::patch('/dependencias/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleDependenciaStatus'])->name('dependencias.toggle-status');
+        Route::delete('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarDependencia'])->name('dependencias.eliminar');
         Route::get('/trds', [App\Http\Controllers\Admin\AdminController::class, 'trds'])->name('trds');
         Route::get('/trds/buscar', [App\Http\Controllers\Admin\AdminController::class, 'buscarTrds'])->name('trds.buscar');
         Route::post('/trds', [App\Http\Controllers\Admin\AdminController::class, 'guardarTrd'])->name('trds.guardar');
         Route::put('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarTrd'])->name('trds.actualizar');
         Route::patch('/trds/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleTrdStatus'])->name('trds.toggle-status');
+        Route::delete('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarTrd'])->name('trds.eliminar');
         Route::get('/reportes', [App\Http\Controllers\Admin\AdminController::class, 'reportes'])->name('reportes');
-        Route::get('/configuracion', [App\Http\Controllers\Admin\AdminController::class, 'configuracion'])->name('configuracion');
         Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');
     });
 
-    // Rutas del sistema de suspensión
-    Route::prefix('sistema')->name('sistema.')->group(function () {
-        Route::get('/suspendido', [App\Http\Controllers\SistemaController::class, 'suspendido'])->name('suspendido');
-        Route::get('/reactivar', [App\Http\Controllers\SistemaController::class, 'reactivar'])->name('reactivar');
-        Route::post('/reactivar', [App\Http\Controllers\SistemaController::class, 'procesarReactivacion'])->name('reactivar.procesar');
-        Route::get('/estado', [App\Http\Controllers\SistemaController::class, 'estado'])->name('estado');
-    });
+});
+
+// Rutas del sistema de suspensión (fuera del middleware de autenticación)
+Route::prefix('sistema')->name('sistema.')->group(function () {
+    Route::get('/suspendido', [App\Http\Controllers\SistemaController::class, 'suspendido'])->name('suspendido');
+    Route::get('/reactivar', [App\Http\Controllers\SistemaController::class, 'reactivar'])->name('reactivar');
+    Route::post('/reactivar', [App\Http\Controllers\SistemaController::class, 'procesarReactivacion'])->name('reactivar.procesar');
+    Route::get('/estado', [App\Http\Controllers\SistemaController::class, 'estado'])->name('estado');
 });
 
 require __DIR__.'/auth.php';

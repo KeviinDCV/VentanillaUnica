@@ -100,24 +100,24 @@
                                 
                                 <!-- Botones de tiempo rápido -->
                                 <div class="mt-2 flex flex-wrap gap-2">
-                                    <button type="button" onclick="setMinutos(15)" 
-                                            class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                                    <button type="button" data-minutos="15"
+                                            class="btn-tiempo px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
                                         15 min
                                     </button>
-                                    <button type="button" onclick="setMinutos(30)" 
-                                            class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                                    <button type="button" data-minutos="30"
+                                            class="btn-tiempo px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
                                         30 min
                                     </button>
-                                    <button type="button" onclick="setMinutos(60)" 
-                                            class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                                    <button type="button" data-minutos="60"
+                                            class="btn-tiempo px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
                                         1 hora
                                     </button>
-                                    <button type="button" onclick="setMinutos(120)" 
-                                            class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                                    <button type="button" data-minutos="120"
+                                            class="btn-tiempo px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
                                         2 horas
                                     </button>
-                                    <button type="button" onclick="setMinutos(480)" 
-                                            class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                                    <button type="button" data-minutos="480"
+                                            class="btn-tiempo px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
                                         8 horas
                                     </button>
                                 </div>
@@ -134,7 +134,7 @@
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Dejar vacío para reactivación automática">
                                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                        <button type="button" onclick="togglePassword()" class="text-gray-400 hover:text-gray-600">
+                                        <button type="button" id="toggle-password" class="text-gray-400 hover:text-gray-600">
                                             <svg id="eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -196,9 +196,8 @@
                                class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
                                 Cancelar
                             </a>
-                            <button type="submit" 
-                                    class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200"
-                                    onclick="return confirmarSuspension()">
+                            <button type="submit" id="btn-suspender"
+                                    class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">
                                 <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                                 </svg>
@@ -211,7 +210,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
         function setMinutos(minutos) {
             document.getElementById('minutos').value = minutos;
             actualizarInfo();
@@ -220,7 +219,7 @@
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-icon');
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 eyeIcon.innerHTML = `
@@ -272,6 +271,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             actualizarInfo();
             document.getElementById('minutos').addEventListener('input', actualizarInfo);
+
+            // Event listeners para botones de tiempo
+            document.querySelectorAll('.btn-tiempo').forEach(button => {
+                button.addEventListener('click', function() {
+                    const minutos = parseInt(this.dataset.minutos);
+                    setMinutos(minutos);
+                });
+            });
+
+            // Event listener para toggle password
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            if (togglePasswordBtn) {
+                togglePasswordBtn.addEventListener('click', togglePassword);
+            }
+
+            // Event listener para el formulario de suspensión
+            const btnSuspender = document.getElementById('btn-suspender');
+            if (btnSuspender) {
+                btnSuspender.addEventListener('click', function(e) {
+                    if (!confirmarSuspension()) {
+                        e.preventDefault();
+                    }
+                });
+            }
         });
     </script>
 </x-app-layout>

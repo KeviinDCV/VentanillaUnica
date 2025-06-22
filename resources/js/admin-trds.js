@@ -42,13 +42,16 @@ function setupEventListeners() {
     // Botones cambiar estado
     attachToggleStatusEventListeners();
 
+    // Botones eliminar
+    attachDeleteEventListeners();
+
     // Event listeners para los modales
     setupModalEventListeners();
     setupCreateModalEventListeners();
 }
 
 function attachToggleStatusEventListeners() {
-    const toggleButtons = document.querySelectorAll('button[data-trd-name][data-form-id]');
+    const toggleButtons = document.querySelectorAll('button[data-trd-name][data-form-id]:not([data-form-id*="delete"])');
     console.log(`Encontrados ${toggleButtons.length} botones de cambiar estado`);
 
     toggleButtons.forEach(button => {
@@ -56,6 +59,18 @@ function attachToggleStatusEventListeners() {
         button.removeEventListener('click', handleToggleStatus);
         // Agregar nuevo event listener
         button.addEventListener('click', handleToggleStatus);
+    });
+}
+
+function attachDeleteEventListeners() {
+    const deleteButtons = document.querySelectorAll('button[data-form-id*="delete-trd-form"]');
+    console.log(`Encontrados ${deleteButtons.length} botones de eliminar`);
+
+    deleteButtons.forEach(button => {
+        // Remover event listeners existentes
+        button.removeEventListener('click', handleDeleteTrd);
+        // Agregar nuevo event listener
+        button.addEventListener('click', handleDeleteTrd);
     });
 }
 
@@ -123,6 +138,55 @@ function handleToggleStatus(event) {
     }, 10);
 }
 
+function handleDeleteTrd(event) {
+    event.preventDefault();
+
+    const button = event.target;
+    const trdCodigo = button.dataset.trdName;
+    const formId = button.dataset.formId;
+
+    console.log(`Delete clicked for TRD: ${trdCodigo}`);
+
+    // Configurar modal de confirmación
+    const modal = document.getElementById('confirmStatusModal');
+    const title = document.getElementById('confirmModalTitle');
+    const message = document.getElementById('confirmModalMessage');
+    const icon = document.getElementById('confirmModalIcon');
+    const actionButton = document.getElementById('confirmModalAction');
+
+    title.textContent = 'Eliminar TRD';
+    message.textContent = `¿Estás seguro de que deseas eliminar permanentemente el TRD "${trdCodigo}"? Esta acción no se puede deshacer.`;
+    icon.innerHTML = '<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>';
+    icon.className = 'flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full bg-red-100';
+    actionButton.textContent = 'Eliminar';
+    actionButton.className = 'px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors min-w-[100px]';
+
+    // Como respaldo, aplicar estilos inline también
+    actionButton.style.backgroundColor = '#dc2626';
+    actionButton.style.borderColor = '#dc2626';
+    actionButton.style.color = '#ffffff';
+
+    // Configurar acción del botón
+    actionButton.onclick = function() {
+        deleteTrd(formId);
+        closeConfirmModal();
+    };
+
+    // Mostrar modal
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    // Animación de entrada
+    const modalContent = modal.querySelector('.relative');
+    modalContent.style.opacity = '0';
+    modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+    setTimeout(() => {
+        modalContent.style.opacity = '1';
+        modalContent.style.transform = 'scale(1) translateY(0)';
+    }, 10);
+}
+
 function closeConfirmModal() {
     const modal = document.getElementById('confirmStatusModal');
     const modalContent = modal.querySelector('.relative');
@@ -164,6 +228,35 @@ function toggleTrdStatus(formId) {
     .catch(error => {
         console.error('Error:', error);
         alert('Error al cambiar el estado del TRD');
+    });
+}
+
+function deleteTrd(formId) {
+    const form = document.getElementById(formId);
+    const url = form.action;
+
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showSuccessMessage(data.message);
+            // Recargar página para mostrar los cambios
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            alert(data.message || 'Error al eliminar el TRD');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar el TRD');
     });
 }
 
@@ -468,7 +561,8 @@ function updateTrdsTable(trds) {
 
     // Re-agregar event listeners
     attachToggleStatusEventListeners();
-    
+    attachDeleteEventListeners();
+
     // Re-agregar event listeners para editar
     document.querySelectorAll('[data-action="edit-trd"]').forEach(button => {
         button.addEventListener('click', function() {

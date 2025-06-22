@@ -21,7 +21,6 @@ class SuspenderSistema
         // Verificar si el sistema está suspendido
         $sistemaActivo = Cache::get('sistema_activo', true);
         $tiempoSuspension = Cache::get('tiempo_suspension');
-        $passwordSuspension = Cache::get('password_suspension');
 
         // Si el sistema no está suspendido, continuar normalmente
         if ($sistemaActivo) {
@@ -37,13 +36,26 @@ class SuspenderSistema
             return $next($request);
         }
 
-        // Permitir acceso a la página de reactivación
-        if ($request->is('sistema/reactivar') || $request->is('sistema/reactivar/*')) {
+        // Permitir acceso a rutas específicas del sistema de suspensión
+        if ($request->is('sistema/suspendido') ||
+            $request->is('sistema/reactivar') ||
+            $request->is('sistema/reactivar/*') ||
+            $request->is('sistema/estado')) {
             return $next($request);
         }
 
-        // Permitir acceso a rutas de logout
-        if ($request->is('logout') || $request->is('login')) {
+        // Permitir acceso a rutas de autenticación
+        if ($request->is('logout') ||
+            $request->is('login') ||
+            $request->is('login/*')) {
+            return $next($request);
+        }
+
+        // Permitir acceso a assets y archivos estáticos
+        if ($request->is('build/*') ||
+            $request->is('storage/*') ||
+            $request->is('css/*') ||
+            $request->is('js/*')) {
             return $next($request);
         }
 

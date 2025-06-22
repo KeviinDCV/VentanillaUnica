@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
         // Actualizar countdown cada minuto
         @if($estado['tiempo_restante'] && $estado['tiempo_restante'] > 0)
         let tiempoRestante = {{ $estado['tiempo_restante'] }};

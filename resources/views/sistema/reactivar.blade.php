@@ -95,7 +95,7 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-uniradical-blue focus:border-uniradical-blue"
                                    placeholder="Ingresa la contraseña de reactivación">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                <button type="button" onclick="togglePassword()" class="text-gray-400 hover:text-gray-600">
+                                <button type="button" id="toggle-password" class="text-gray-400 hover:text-gray-600">
                                     <svg id="eye-icon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -171,7 +171,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eye-icon');
@@ -194,6 +194,20 @@
         @if($estado['requiere_password'])
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('password').focus();
+
+            // Event listener para toggle password
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            if (togglePasswordBtn) {
+                togglePasswordBtn.addEventListener('click', togglePassword);
+            }
+        });
+        @else
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener para toggle password
+            const togglePasswordBtn = document.getElementById('toggle-password');
+            if (togglePasswordBtn) {
+                togglePasswordBtn.addEventListener('click', togglePassword);
+            }
         });
         @endif
     </script>

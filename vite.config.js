@@ -13,7 +13,8 @@ export default defineConfig({
                 'resources/js/preview.js',
                 'resources/js/admin-logs.js',
                 'resources/js/admin-dependencias.js',
-                'resources/js/admin-trds.js'
+                'resources/js/admin-trds.js',
+                'resources/js/colombia-time.js'
             ],
             refresh: true,
         }),
@@ -37,7 +38,8 @@ export default defineConfig({
                 'resources/js/preview.js',
                 'resources/js/admin-logs.js',
                 'resources/js/admin-dependencias.js',
-                'resources/js/admin-trds.js'
+                'resources/js/admin-trds.js',
+                'resources/js/colombia-time.js'
             ],
             output: {
                 assetFileNames: 'assets/[name]-[hash][extname]',

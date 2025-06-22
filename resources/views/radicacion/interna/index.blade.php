@@ -365,7 +365,5 @@
         </div>
     </div>
 
-    @push('scripts')
-        @vite(['resources/js/radicacion.js'])
-    @endpush
+
 </x-app-layout>

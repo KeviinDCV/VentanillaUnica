@@ -13,7 +13,7 @@ if ($disabled) {
 <a href="{{ $disabled ? '#' : $href }}"
    class="{{ $classes }}"
    @if($disabled)
-       onclick="event.preventDefault();"
+       data-disabled="true"
        aria-disabled="true"
        tabindex="-1"
    @endif

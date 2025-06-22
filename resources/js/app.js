@@ -10,6 +10,10 @@ import './form-protection';
 import './admin-logs';
 import './admin-usuarios';
 import './admin-trds';
+import './admin-dependencias';
+import './radicacion';
+import './reportes';
+import './preview';
 
 // Deshabilitar todos los logs en producción por seguridad
 if (import.meta.env.PROD) {

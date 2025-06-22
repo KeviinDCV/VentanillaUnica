@@ -205,7 +205,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
         // Auto-refresh cada 60 segundos para error 503
         setTimeout(function() {
             window.location.reload();

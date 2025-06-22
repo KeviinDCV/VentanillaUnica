@@ -36,6 +36,45 @@ function setupEventListeners() {
         });
     });
 
+    // Botones eliminar dependencia
+    document.querySelectorAll('[data-action="delete-dependencia"]').forEach(button => {
+        button.addEventListener('click', function() {
+            console.log('Delete button clicked for dependencia:', this.dataset.dependenciaName);
+
+            const dependenciaId = this.dataset.dependenciaId;
+            const dependenciaName = this.dataset.dependenciaName;
+            const radicadosCount = parseInt(this.dataset.radicadosCount);
+
+            if (radicadosCount > 0) {
+                console.log('Cannot delete - has radicados:', radicadosCount);
+                showConfirmModal({
+                    title: 'No se puede eliminar',
+                    message: `La dependencia "${dependenciaName}" tiene ${radicadosCount} radicado(s) asociado(s). No se puede eliminar. Puede desactivarla en su lugar.`,
+                    actionText: 'Entendido',
+                    actionClass: 'bg-blue-600 hover:bg-blue-700',
+                    iconClass: 'bg-yellow-100',
+                    iconColor: 'text-yellow-600',
+                    onConfirm: function() {
+                        closeConfirmModal();
+                    }
+                });
+            } else {
+                console.log('Showing delete confirmation modal');
+                showConfirmModal({
+                    title: 'Eliminar Dependencia',
+                    message: `¿Estás seguro de que deseas eliminar permanentemente la dependencia "${dependenciaName}"? Esta acción no se puede deshacer.`,
+                    actionText: 'Eliminar',
+                    actionClass: 'bg-red-600 hover:bg-red-700',
+                    iconClass: 'bg-red-100',
+                    iconColor: 'text-red-600',
+                    onConfirm: function() {
+                        eliminarDependencia(dependenciaId);
+                    }
+                });
+            }
+        });
+    });
+
     // Botones cambiar estado
     attachToggleStatusEventListeners();
 
@@ -75,19 +114,24 @@ function setupEventListeners() {
 }
 
 function attachToggleStatusEventListeners() {
-    document.querySelectorAll('button[data-dependencia-name]').forEach(button => {
+    // Selector más específico: solo botones que tienen data-dependencia-name Y data-form-id (botones de activar/desactivar)
+    document.querySelectorAll('button[data-dependencia-name][data-form-id]').forEach(button => {
         // Evitar duplicar event listeners
         if (button.hasAttribute('data-listener-attached')) return;
         button.setAttribute('data-listener-attached', 'true');
 
         button.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
+            console.log('Toggle status button clicked for dependencia:', this.dataset.dependenciaName);
+
             const dependenciaName = this.dataset.dependenciaName;
             const isActive = this.dataset.dependenciaActive === 'true';
             const formId = this.dataset.formId;
             const accion = isActive ? 'desactivar' : 'activar';
             const accionCapital = isActive ? 'Desactivar' : 'Activar';
+
+            console.log('Showing toggle status modal:', accionCapital);
 
             // Usar modal personalizado en lugar de confirm()
             showConfirmModal({
@@ -106,8 +150,12 @@ function attachToggleStatusEventListeners() {
 }
 
 function setupConfirmModalEventListeners() {
+    // Verificar si el modal existe antes de agregar event listeners
+    const confirmModal = document.getElementById('confirmStatusModal');
+    if (!confirmModal) return;
+
     // Cerrar modal al hacer clic fuera de él
-    document.getElementById('confirmStatusModal').addEventListener('click', function(e) {
+    confirmModal.addEventListener('click', function(e) {
         if (e.target === this) {
             closeConfirmModal();
         }
@@ -115,7 +163,7 @@ function setupConfirmModalEventListeners() {
 
     // Cerrar modal con tecla Escape
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !document.getElementById('confirmStatusModal').classList.contains('hidden')) {
+        if (e.key === 'Escape' && !confirmModal.classList.contains('hidden')) {
             closeConfirmModal();
         }
     });
@@ -126,29 +174,42 @@ function setupConfirmModalEventListeners() {
     });
 
     // Botón de confirmación
-    document.getElementById('confirmModalAction').addEventListener('click', function() {
-        closeConfirmModal();
-        if (currentConfirmAction) {
-            currentConfirmAction();
-            currentConfirmAction = null;
-        }
-    });
+    const confirmButton = document.getElementById('confirmModalAction');
+    if (confirmButton) {
+        confirmButton.addEventListener('click', function() {
+            closeConfirmModal();
+            if (currentConfirmAction) {
+                currentConfirmAction();
+                currentConfirmAction = null;
+            }
+        });
+    }
 }
 
 // Variable global para almacenar la función de confirmación
 let currentConfirmAction = null;
 
 function showConfirmModal(options) {
+    console.log('showConfirmModal called with options:', options);
+
     const modal = document.getElementById('confirmStatusModal');
     const title = document.getElementById('confirmModalTitle');
     const message = document.getElementById('confirmModalMessage');
     const actionButton = document.getElementById('confirmModalAction');
     const iconContainer = document.getElementById('confirmModalIcon');
 
+    // Limpiar contenido anterior del modal
+    title.textContent = '';
+    message.textContent = '';
+    actionButton.textContent = '';
+    iconContainer.innerHTML = '';
+
     // Configurar contenido del modal
     title.textContent = options.title;
     message.textContent = options.message;
     actionButton.textContent = options.actionText;
+
+    console.log('Modal content set - Title:', options.title, 'Message:', options.message, 'Action:', options.actionText);
     
     // Aplicar clases CSS completas
     actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
@@ -454,6 +515,55 @@ function showSuccessMessage(message) {
     }, 3000);
 }
 
+function eliminarDependencia(dependenciaId) {
+    fetch(`/admin/dependencias/${dependenciaId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        closeConfirmModal();
+
+        if (data.success) {
+            showSuccessMessage(data.message);
+            // Recargar la página para actualizar la tabla
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showConfirmModal({
+                title: 'Error al eliminar',
+                message: data.message || 'No se pudo eliminar la dependencia',
+                actionText: 'Entendido',
+                actionClass: 'bg-red-600 hover:bg-red-700',
+                iconClass: 'bg-red-100',
+                iconColor: 'text-red-600',
+                onConfirm: function() {
+                    closeConfirmModal();
+                }
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        closeConfirmModal();
+        showConfirmModal({
+            title: 'Error',
+            message: 'Error al eliminar la dependencia',
+            actionText: 'Entendido',
+            actionClass: 'bg-red-600 hover:bg-red-700',
+            iconClass: 'bg-red-100',
+            iconColor: 'text-red-600',
+            onConfirm: function() {
+                closeConfirmModal();
+            }
+        });
+    });
+}
+
 // Hacer funciones disponibles globalmente para debugging
 window.UniRadicDependenciaManagement = {
     openEditModal,
@@ -462,14 +572,15 @@ window.UniRadicDependenciaManagement = {
     closeCreateModal,
     showConfirmModal,
     closeConfirmModal,
-    showSuccessMessage
+    showSuccessMessage,
+    eliminarDependencia
 };
 
 // Funciones para búsqueda en tiempo real
 function initializeRealTimeSearch() {
     const searchInput = document.getElementById('buscar-dependencias');
     const filterSelect = document.getElementById('filtro-estado');
-    if (!searchInput) return;
+    if (!searchInput || !filterSelect) return;
 
     let searchTimeout;
 
@@ -558,6 +669,41 @@ function updateDependenciasTable(dependencias) {
             openEditModal(dependenciaId, codigo, nombre, sigla, descripcion, responsable, telefono, email, activa);
         });
     });
+
+    // Re-agregar event listeners para eliminar
+    document.querySelectorAll('[data-action="delete-dependencia"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const dependenciaId = this.dataset.dependenciaId;
+            const dependenciaName = this.dataset.dependenciaName;
+            const radicadosCount = parseInt(this.dataset.radicadosCount);
+
+            if (radicadosCount > 0) {
+                showConfirmModal({
+                    title: 'No se puede eliminar',
+                    message: `La dependencia "${dependenciaName}" tiene ${radicadosCount} radicado(s) asociado(s). No se puede eliminar. Puede desactivarla en su lugar.`,
+                    actionText: 'Entendido',
+                    actionClass: 'bg-blue-600 hover:bg-blue-700',
+                    iconClass: 'bg-yellow-100',
+                    iconColor: 'text-yellow-600',
+                    onConfirm: function() {
+                        closeConfirmModal();
+                    }
+                });
+            } else {
+                showConfirmModal({
+                    title: 'Eliminar Dependencia',
+                    message: `¿Estás seguro de que deseas eliminar permanentemente la dependencia "${dependenciaName}"? Esta acción no se puede deshacer.`,
+                    actionText: 'Eliminar',
+                    actionClass: 'bg-red-600 hover:bg-red-700',
+                    iconClass: 'bg-red-100',
+                    iconColor: 'text-red-600',
+                    onConfirm: function() {
+                        eliminarDependencia(dependenciaId);
+                    }
+                });
+            }
+        });
+    });
 }
 
 function createDependenciaRow(dependencia) {
@@ -640,6 +786,14 @@ function createDependenciaRow(dependencia) {
                         ${dependencia.activa ? 'Desactivar' : 'Activar'}
                     </button>
                 </form>
+
+                <button data-action="delete-dependencia"
+                        data-dependencia-id="${dependencia.id}"
+                        data-dependencia-name="${dependencia.nombre}"
+                        data-radicados-count="${dependencia.radicados_destino_count + dependencia.radicados_origen_count}"
+                        class="text-red-600 hover:text-red-900 font-medium text-xs sm:text-sm">
+                    Eliminar
+                </button>
             </div>
         </td>
     `;

@@ -192,7 +192,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    @vite(['resources/js/preview.js'])
+
 </body>
 </html>

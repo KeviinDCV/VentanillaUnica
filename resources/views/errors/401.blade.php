@@ -43,7 +43,7 @@
 
         <!-- Footer -->
         <div class="mt-8 text-center text-xs text-gray-500">
-            <p>&copy; {{ date('Y') }} Hospital Universitario - Sistema UniRadic</p>
+            <p>&copy; {{ date('Y') }} E.S.E Hospital San Agustín Puerto Merizalde - Sistema UniRadic</p>
         </div>
     </div>
 </body>

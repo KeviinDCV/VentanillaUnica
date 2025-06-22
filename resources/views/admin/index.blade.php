@@ -9,12 +9,7 @@
                     Dashboard administrativo del sistema UniRadic
                 </p>
             </div>
-            <div class="flex space-x-3">
-                <a href="{{ route('admin.configuracion') }}"
-                   class="btn-institutional">
-                    Configuración
-                </a>
-            </div>
+
         </div>
     </x-slot>
 

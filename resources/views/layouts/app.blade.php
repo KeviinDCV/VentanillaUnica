@@ -21,14 +21,126 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/session-manager.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js'])
+
+        <!-- Script para evitar parpadeo de sidebar -->
+        <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+            // Ejecutar inmediatamente para evitar parpadeo
+            (function() {
+                try {
+                    var stored = localStorage.getItem('sidebarOpen');
+                    var shouldBeCollapsed = stored !== null ? stored !== 'true' : false;
+                    var isDesktop = window.innerWidth >= 1024;
+
+                    if (shouldBeCollapsed && isDesktop) {
+                        document.documentElement.classList.add('sidebar-collapsed-initial');
+                    }
+
+                    // Aplicar estilos directamente para evitar cualquier animación
+                    document.documentElement.style.setProperty('--sidebar-loading', '1');
+                } catch (e) {
+                    // Silenciar errores de localStorage en caso de que no esté disponible
+                }
+            })();
+        </script>
+
+        <!-- Estilos inline críticos para evitar animaciones -->
+        <style nonce="{{ session('csp_nonce', 'default-nonce') }}">
+            :root[style*="--sidebar-loading"] * {
+                transition: none !important;
+                animation: none !important;
+                transform: none !important;
+                box-shadow: none !important;
+                border: none !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-top: none !important;
+                border-bottom: none !important;
+                border-color: transparent !important;
+                border-width: 0 !important;
+                border-style: none !important;
+                outline: none !important;
+                outline-color: transparent !important;
+                outline-width: 0 !important;
+                outline-style: none !important;
+                filter: none !important;
+            }
+
+            :root[style*="--sidebar-loading"] .sidebar {
+                border: none !important;
+                border-right: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+
+            :root[style*="--sidebar-loading"] *::before,
+            :root[style*="--sidebar-loading"] *::after {
+                display: none !important;
+                content: none !important;
+            }
+        </style>
     </head>
-    <body class="font-sans antialiased bg-white" x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') === 'true' || false }">
+    <body class="font-sans antialiased bg-white loading-initial" id="app-body">
         <div class="min-h-screen bg-white">
             @include('layouts.navigation')
 
             <!-- Contenido principal con margen para la sidebar -->
-            <div :class="{ 'sidebar-collapsed': !sidebarOpen && window.innerWidth >= 1024 }" class="main-layout">
+            <div x-data="{
+                    sidebarCollapsed: false,
+                    init() {
+                        this.updateLayout();
+
+                        // Escuchar cambios en localStorage
+                        window.addEventListener('storage', () => {
+                            this.updateLayout();
+                        });
+
+                        // Escuchar evento personalizado de toggle
+                        document.addEventListener('sidebarToggled', () => {
+                            this.updateLayout();
+                        });
+
+                        // Escuchar cambios de tamaño de ventana
+                        window.addEventListener('resize', () => {
+                            this.updateLayout();
+                        });
+
+                        // Watcher para cambios en sidebarCollapsed
+                        this.$watch('sidebarCollapsed', (value) => {
+                            // Aplicar clase inmediatamente
+                            if (value) {
+                                this.$el.classList.add('sidebar-collapsed');
+                            } else {
+                                this.$el.classList.remove('sidebar-collapsed');
+                            }
+                        });
+
+                        // Limpiar clases de carga
+                        document.documentElement.classList.remove('sidebar-collapsed-initial');
+                        document.body.classList.remove('loading-initial');
+                        document.documentElement.style.removeProperty('--sidebar-loading');
+                    },
+                    updateLayout() {
+                        const sidebarOpen = localStorage.getItem('sidebarOpen') === 'true' || (localStorage.getItem('sidebarOpen') === null && window.innerWidth >= 1024);
+                        const isDesktop = window.innerWidth >= 1024;
+                        const newState = !sidebarOpen && isDesktop;
+
+                        if (this.sidebarCollapsed !== newState) {
+                            this.sidebarCollapsed = newState;
+
+                            // Forzar re-render inmediato
+                            this.$nextTick(() => {
+                                // Disparar evento para otros componentes que puedan necesitar reaccionar
+                                window.dispatchEvent(new CustomEvent('layout-updated', {
+                                    detail: { sidebarCollapsed: this.sidebarCollapsed }
+                                }));
+                            });
+                        }
+                    }
+                 }"
+                 :class="{ 'sidebar-collapsed': sidebarCollapsed }"
+                 class="main-layout"
+                 @sidebar-state-changed.window="updateLayout()"
                 <!-- Page Heading -->
                 @isset($header)
                     <header class="bg-white border-b border-gray-100">
@@ -47,5 +159,26 @@
 
         <!-- Scripts adicionales -->
         @stack('scripts')
+
+        <!-- Inicialización de Alpine.js -->
+        <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+            document.addEventListener('DOMContentLoaded', function() {
+                // Inicializar Alpine.js data para el body
+                if (window.Alpine) {
+                    const appBody = document.getElementById('app-body');
+                    if (appBody) {
+                        appBody.setAttribute('x-data', '{ sidebarOpen: localStorage.getItem(\'sidebarOpen\') === \'true\' || false }');
+                        window.Alpine.initTree(appBody);
+                    }
+                }
+
+                // Remover clases de carga después de un pequeño delay para asegurar que todo esté listo
+                setTimeout(function() {
+                    document.documentElement.classList.remove('sidebar-collapsed-initial');
+                    document.body.classList.remove('loading-initial');
+                    document.documentElement.style.removeProperty('--sidebar-loading');
+                }, 100);
+            });
+        </script>
     </body>
 </html>

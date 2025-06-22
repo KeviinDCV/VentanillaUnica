@@ -384,7 +384,7 @@
                 Intentar Nuevamente
             </a>
             
-            <button onclick="window.location.reload()" class="btn-secondary">
+            <button id="btn-reload" class="btn-secondary">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1 4V10H7M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M20.49 9C19.9828 7.56678 19.1209 6.28392 17.9845 5.27304C16.8482 4.26216 15.4745 3.55682 13.9917 3.21834C12.5089 2.87986 10.9652 2.91902 9.50481 3.33329C8.04437 3.74757 6.71475 4.52306 5.64 5.58L1 10M23 14L18.36 18.42C17.2853 19.477 15.9556 20.2525 14.4952 20.6667C13.0348 21.081 11.4911 21.1201 10.0083 20.7817C8.52547 20.4432 7.1518 19.7378 6.01547 18.727C4.87913 17.7161 4.01717 16.4332 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -395,12 +395,13 @@
 
         <!-- Información del Sistema -->
         <div class="system-info">
-            <p><strong>UniRadic</strong> - Sistema de Gestión Documental Hospitalaria</p>
+            <p><strong>UniRadic</strong> - Sistema de Gestión Documental</p>
+            <p><strong>E.S.E Hospital San Agustín Puerto Merizalde</strong></p>
             <p>Si necesita asistencia inmediata, contacte al departamento de TI</p>
         </div>
     </div>
 
-    <script>
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
         // Auto-refresh cada 30 segundos
         setTimeout(function() {
             window.location.reload();
@@ -414,6 +415,16 @@
                 document.title = `Sistema No Disponible (${elapsed}s) - UniRadic`;
             }
         }, 1000);
+
+        // Event listener para el botón de recargar
+        document.addEventListener('DOMContentLoaded', function() {
+            const reloadBtn = document.getElementById('btn-reload');
+            if (reloadBtn) {
+                reloadBtn.addEventListener('click', function() {
+                    window.location.reload();
+                });
+            }
+        });
     </script>
 </body>
 </html>

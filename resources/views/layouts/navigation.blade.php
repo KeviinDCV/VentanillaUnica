@@ -1,10 +1,46 @@
 <!-- Sidebar Navigation -->
 <div x-data="{
-    sidebarOpen: localStorage.getItem('sidebarOpen') === 'true' || false,
+    sidebarOpen: localStorage.getItem('sidebarOpen') === 'true' || (localStorage.getItem('sidebarOpen') === null && window.innerWidth >= 1024),
     mobileOpen: false,
+    init() {
+        // Inicializar store global para sidebar
+        if (!this.$store.sidebar) {
+            Alpine.store('sidebar', {
+                isOpen: this.sidebarOpen,
+                toggle() {
+                    this.isOpen = !this.isOpen;
+                    localStorage.setItem('sidebarOpen', this.isOpen);
+                }
+            });
+        }
+
+        // Sincronizar con el store
+        this.$watch('sidebarOpen', (value) => {
+            this.$store.sidebar.isOpen = value;
+        });
+
+        this.$watch('$store.sidebar.isOpen', (value) => {
+            this.sidebarOpen = value;
+        });
+    },
     toggleSidebar() {
         this.sidebarOpen = !this.sidebarOpen;
         localStorage.setItem('sidebarOpen', this.sidebarOpen);
+        if (this.$store.sidebar) {
+            this.$store.sidebar.isOpen = this.sidebarOpen;
+        }
+
+        // Disparar múltiples eventos para asegurar que todos los componentes reaccionen
+        document.dispatchEvent(new CustomEvent('sidebarToggled', {
+            detail: { isOpen: this.sidebarOpen }
+        }));
+
+        document.dispatchEvent(new CustomEvent('sidebar-state-changed', {
+            detail: { isOpen: this.sidebarOpen }
+        }));
+
+        // Forzar actualización del layout inmediatamente
+        window.dispatchEvent(new Event('resize'));
     },
     toggleMobile() {
         this.mobileOpen = !this.mobileOpen;
@@ -27,7 +63,27 @@
     <aside :class="{
         'collapsed': !sidebarOpen && window.innerWidth >= 1024,
         'mobile-open': mobileOpen
-    }" class="sidebar">
+    }"
+    class="sidebar sidebar-no-animations"
+    id="main-sidebar"
+    x-init="
+        // Remover clase de no-animaciones
+        $el.classList.remove('sidebar-no-animations');
+
+        // Limpiar solo las transiciones y animaciones
+        var allElements = $el.querySelectorAll('*');
+        allElements.forEach(function(el) {
+            el.style.transition = '';
+            el.style.animation = '';
+        });
+
+        // Aplicar estado correcto
+        if (!sidebarOpen && window.innerWidth >= 1024) {
+            $el.classList.add('collapsed');
+        } else {
+            $el.classList.remove('collapsed');
+        }
+    ">
 
         <!-- Header de la Sidebar -->
         <div class="sidebar-header">
@@ -83,6 +139,36 @@
             @endauth
         </div>
     </aside>
+
+    <!-- Script para aplicar estado inicial inmediatamente -->
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+        (function() {
+            try {
+                var sidebar = document.getElementById('main-sidebar');
+                if (!sidebar) return;
+
+                // Solo desactivar transiciones temporalmente para evitar animaciones
+                var allElements = sidebar.querySelectorAll('*');
+                allElements.forEach(function(el) {
+                    el.style.transition = 'none';
+                    el.style.animation = 'none';
+                });
+
+                // Programar restauración de transiciones después de que Alpine.js se inicialice
+                setTimeout(function() {
+                    sidebar.classList.remove('sidebar-no-animations');
+
+                    allElements.forEach(function(el) {
+                        el.style.transition = '';
+                        el.style.animation = '';
+                    });
+                }, 200);
+
+            } catch(e) {
+                // Silenciar errores
+            }
+        })();
+    </script>
 
     <!-- Botón hamburguesa para móviles -->
     <button @click="toggleMobile()"

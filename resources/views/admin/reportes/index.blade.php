@@ -255,7 +255,5 @@
         </div>
     </div>
 
-    @push('scripts')
-        @vite(['resources/js/reportes.js'])
-    @endpush
+
 </x-app-layout>

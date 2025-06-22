@@ -89,8 +89,8 @@
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 12l2 2 4-4m5.25-4.5a.75.75 0 00-1.5 0v2.25H11a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0V11H17a.75.75 0 000-1.5h-2.25V7.25z"/>
+                                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                                 </svg>
                             </div>
                         </div>
@@ -105,8 +105,8 @@
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
                             </div>
                         </div>
@@ -139,29 +139,29 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden">
+                <div class="overflow-visible">
                     <table class="w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">
                                     Usuario
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5 hidden md:table-cell">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 hidden md:table-cell">
                                     Email
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                     Rol
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                     Estado
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 hidden lg:table-cell">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16 hidden lg:table-cell">
                                     Radicados
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/8 hidden xl:table-cell">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 hidden xl:table-cell">
                                     Registro
                                 </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
                                     Acciones
                                 </th>
                             </tr>
@@ -181,46 +181,48 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900 truncate max-w-32">
+                                        <div class="ml-3 min-w-0 flex-1">
+                                            <div class="text-sm font-medium text-gray-900 truncate" title="{{ $usuario->name }}">
                                                 {{ $usuario->name }}
                                             </div>
-                                            <div class="text-xs text-gray-500 md:hidden">
+                                            <div class="text-xs text-gray-500 md:hidden truncate" title="{{ $usuario->email }}">
                                                 {{ $usuario->email }}
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900 truncate max-w-40">{{ $usuario->email }}</div>
+                                <td class="px-3 py-4 hidden md:table-cell">
+                                    <div class="text-sm text-gray-900 truncate max-w-32" title="{{ $usuario->email }}">{{ $usuario->email }}</div>
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-3 py-4">
                                     @if($usuario->role === 'administrador')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                             Admin
                                         </span>
                                     @elseif($usuario->role === 'ventanilla')
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             Ventanilla
                                         </span>
                                     @else
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                             Sin rol
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-4">
+                                <td class="px-3 py-4">
                                     @if($usuario->active)
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="w-1.5 h-1.5 mr-1.5 bg-green-400 rounded-full"></span>
                                             Activo
                                         </span>
                                     @else
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <span class="w-1.5 h-1.5 mr-1.5 bg-red-400 rounded-full"></span>
                                             Inactivo
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-4 text-sm text-gray-900 hidden lg:table-cell">
+                                <td class="px-3 py-4 text-sm text-gray-900 hidden lg:table-cell">
                                     <div class="flex items-center">
                                         <span class="font-medium">{{ number_format($usuario->radicados_count) }}</span>
                                         @if($usuario->radicados_count > 0)
@@ -228,68 +230,114 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-4 py-4 text-sm text-gray-500 hidden xl:table-cell">
+                                <td class="px-3 py-4 text-xs text-gray-500 hidden xl:table-cell">
                                     {{ $usuario->created_at->format('d/m/Y') }}
                                 </td>
-                                <td class="px-4 py-4 text-sm font-medium">
-                                    <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                                        <button data-action="edit-user"
-                                                data-user-id="{{ $usuario->id }}"
-                                                data-user-name="{{ $usuario->name }}"
-                                                data-user-email="{{ $usuario->email }}"
-                                                data-user-role="{{ $usuario->role }}"
-                                                data-user-active="{{ $usuario->active ? 'true' : 'false' }}"
-                                                class="text-blue-600 hover:text-blue-900 font-medium text-xs sm:text-sm">
-                                            Editar
+                                <td class="px-3 py-4 text-sm font-medium">
+                                    <div class="relative inline-block text-left">
+                                        <button type="button"
+                                                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
+                                                onclick="toggleDropdown('dropdown-user-{{ $usuario->id }}')">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                            </svg>
                                         </button>
 
-                                        @if($usuario->id === auth()->id())
-                                            <span class="text-gray-400 font-medium text-xs sm:text-sm cursor-not-allowed"
-                                                  title="No puedes desactivar tu propia cuenta">
-                                                {{ $usuario->active ? 'Desactivar' : 'Activar' }}
-                                            </span>
-                                        @else
-                                            <form action="{{ route('admin.usuarios.toggle-status', $usuario->id) }}"
-                                                  method="POST"
-                                                  class="inline"
-                                                  id="toggle-form-{{ $usuario->id }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="button"
-                                                        class="{{ $usuario->active ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900' }} font-medium text-xs sm:text-sm cursor-pointer"
+                                        <div id="dropdown-user-{{ $usuario->id }}"
+                                             class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                             style="z-index: 9999;"
+                                             data-dropdown-menu>
+                                            <div class="py-1" role="menu">
+                                                <!-- Editar -->
+                                                <button data-action="edit-user"
+                                                        data-user-id="{{ $usuario->id }}"
                                                         data-user-name="{{ $usuario->name }}"
+                                                        data-user-email="{{ $usuario->email }}"
+                                                        data-user-role="{{ $usuario->role }}"
                                                         data-user-active="{{ $usuario->active ? 'true' : 'false' }}"
-                                                        data-form-id="toggle-form-{{ $usuario->id }}">
-                                                    {{ $usuario->active ? 'Desactivar' : 'Activar' }}
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                    </svg>
+                                                    Editar
                                                 </button>
-                                            </form>
-                                        @endif
 
-                                        @if($usuario->id === auth()->id())
-                                            <span class="text-gray-400 font-medium text-xs sm:text-sm cursor-not-allowed"
-                                                  title="No puedes eliminar tu propia cuenta">
-                                                Eliminar
-                                            </span>
-                                        @elseif($usuario->radicados_count > 0)
-                                            <span class="text-gray-400 font-medium text-xs sm:text-sm cursor-not-allowed"
-                                                  title="No se puede eliminar: tiene {{ $usuario->radicados_count }} radicado(s) asociado(s)">
-                                                Eliminar
-                                            </span>
-                                        @else
-                                            <form action="{{ route('admin.usuarios.eliminar', $usuario->id) }}"
-                                                  method="POST"
-                                                  class="inline"
-                                                  id="delete-form-{{ $usuario->id }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                        class="text-red-600 hover:text-red-900 font-medium text-xs sm:text-sm cursor-pointer"
-                                                        data-user-name="{{ $usuario->name }}"
-                                                        data-form-id="delete-form-{{ $usuario->id }}">
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        @endif
+                                                <!-- Activar/Desactivar -->
+                                                @if($usuario->id === auth()->id())
+                                                    <div class="w-full text-left px-4 py-2 text-sm text-gray-400 flex items-center cursor-not-allowed"
+                                                         title="No puedes desactivar tu propia cuenta">
+                                                        <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                        </svg>
+                                                        {{ $usuario->active ? 'Desactivar' : 'Activar' }}
+                                                    </div>
+                                                @else
+                                                    <form action="{{ route('admin.usuarios.toggle-status', $usuario->id) }}"
+                                                          method="POST"
+                                                          class="w-full"
+                                                          id="toggle-form-{{ $usuario->id }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="button"
+                                                                class="w-full text-left px-4 py-2 text-sm {{ $usuario->active ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50' }} flex items-center"
+                                                                data-user-name="{{ $usuario->name }}"
+                                                                data-user-active="{{ $usuario->active ? 'true' : 'false' }}"
+                                                                data-form-id="toggle-form-{{ $usuario->id }}">
+                                                            @if($usuario->active)
+                                                                <svg class="w-4 h-4 mr-3 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                                </svg>
+                                                                Desactivar
+                                                            @else
+                                                                <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                </svg>
+                                                                Activar
+                                                            @endif
+                                                        </button>
+                                                    </form>
+                                                @endif
+
+                                                <!-- Separador -->
+                                                <div class="border-t border-gray-100"></div>
+
+                                                <!-- Eliminar -->
+                                                @if($usuario->id === auth()->id())
+                                                    <div class="w-full text-left px-4 py-2 text-sm text-gray-400 flex items-center cursor-not-allowed"
+                                                         title="No puedes eliminar tu propia cuenta">
+                                                        <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                        Eliminar
+                                                    </div>
+                                                @elseif($usuario->radicados_count > 0)
+                                                    <div class="w-full text-left px-4 py-2 text-sm text-gray-400 flex items-center cursor-not-allowed"
+                                                         title="No se puede eliminar: tiene {{ $usuario->radicados_count }} radicado(s) asociado(s)">
+                                                        <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                        Eliminar
+                                                    </div>
+                                                @else
+                                                    <form action="{{ route('admin.usuarios.eliminar', $usuario->id) }}"
+                                                          method="POST"
+                                                          class="w-full"
+                                                          id="delete-form-{{ $usuario->id }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button"
+                                                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                                                                data-user-name="{{ $usuario->name }}"
+                                                                data-form-id="delete-form-{{ $usuario->id }}">
+                                                            <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                            </svg>
+                                                            Eliminar
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -615,6 +663,169 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Función para manejar los menús desplegables
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const isHidden = dropdown.classList.contains('hidden');
+
+            // Cerrar todos los dropdowns abiertos
+            document.querySelectorAll('[id^="dropdown-user-"]').forEach(d => {
+                if (d.id !== dropdownId) {
+                    d.classList.add('hidden');
+                    // Resetear estilos completamente
+                    d.style.position = '';
+                    d.style.top = '';
+                    d.style.bottom = '';
+                    d.style.left = '';
+                    d.style.right = '';
+                    d.style.transform = '';
+                    d.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+                }
+            });
+
+            // Toggle del dropdown actual
+            if (isHidden) {
+                dropdown.classList.remove('hidden');
+                // Ajustar posición del menú según el espacio disponible
+                adjustDropdownPosition(dropdown);
+            } else {
+                dropdown.classList.add('hidden');
+                // Resetear estilos al cerrar
+                dropdown.style.position = '';
+                dropdown.style.top = '';
+                dropdown.style.bottom = '';
+                dropdown.style.left = '';
+                dropdown.style.right = '';
+                dropdown.style.transform = '';
+                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+            }
+        }
+
+        // Función para ajustar la posición del dropdown
+        function adjustDropdownPosition(dropdown) {
+            // Encontrar el botón que activa este dropdown
+            const button = dropdown.parentElement.querySelector('button[onclick*="toggleDropdown"]');
+            if (!button) return;
+
+            // Esperar un frame para que el dropdown se renderice completamente
+            requestAnimationFrame(() => {
+                const buttonRect = button.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const viewportWidth = window.innerWidth;
+                const dropdownWidth = 192; // w-48 = 12rem = 192px
+
+                // Resetear estilos de posicionamiento
+                dropdown.style.top = '';
+                dropdown.style.bottom = '';
+                dropdown.style.left = '';
+                dropdown.style.right = '';
+                dropdown.style.transform = '';
+                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+
+                // Calcular posición horizontal (alineado a la derecha del botón)
+                let leftPosition = buttonRect.right - dropdownWidth;
+
+                // Asegurar que no se salga del viewport por la izquierda
+                if (leftPosition < 10) {
+                    leftPosition = buttonRect.left;
+                }
+
+                // Asegurar que no se salga del viewport por la derecha
+                if (leftPosition + dropdownWidth > viewportWidth - 10) {
+                    leftPosition = viewportWidth - dropdownWidth - 10;
+                }
+
+                // Calcular posición vertical
+                const dropdownHeight = dropdown.offsetHeight || 200;
+                const spaceBelow = viewportHeight - buttonRect.bottom;
+                const spaceAbove = buttonRect.top;
+
+                let topPosition;
+                if (spaceBelow >= dropdownHeight + 10) {
+                    // Hay espacio suficiente abajo
+                    topPosition = buttonRect.bottom + 8;
+                    dropdown.classList.add('origin-top-right');
+                } else if (spaceAbove >= dropdownHeight + 10) {
+                    // No hay espacio abajo pero sí arriba
+                    topPosition = buttonRect.top - dropdownHeight - 8;
+                    dropdown.classList.add('origin-bottom-right');
+                } else {
+                    // No hay espacio suficiente ni arriba ni abajo, priorizar abajo
+                    topPosition = buttonRect.bottom + 8;
+                    dropdown.classList.add('origin-top-right');
+                }
+
+                // Asegurar que no se salga del viewport por arriba
+                if (topPosition < 10) {
+                    topPosition = 10;
+                }
+
+                // Asegurar que no se salga del viewport por abajo
+                if (topPosition + dropdownHeight > viewportHeight - 10) {
+                    topPosition = viewportHeight - dropdownHeight - 10;
+                }
+
+                // Aplicar posicionamiento fijo
+                dropdown.style.position = 'fixed';
+                dropdown.style.left = leftPosition + 'px';
+                dropdown.style.top = topPosition + 'px';
+                dropdown.style.zIndex = '9999';
+            });
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id^="dropdown-user-"]')) {
+                document.querySelectorAll('[id^="dropdown-user-"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+        });
+
+        // Cerrar dropdown después de hacer clic en una acción
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('[id^="dropdown-user-"] button')) {
+                // Pequeño delay para permitir que la acción se ejecute
+                setTimeout(() => {
+                    document.querySelectorAll('[id^="dropdown-user-"]').forEach(dropdown => {
+                        dropdown.classList.add('hidden');
+                        // Resetear estilos
+                        dropdown.style.position = '';
+                        dropdown.style.top = '';
+                        dropdown.style.bottom = '';
+                        dropdown.style.left = '';
+                        dropdown.style.right = '';
+                        dropdown.style.transform = '';
+                        dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+                    });
+                }, 100);
+            }
+        });
+
+        // Reposicionar dropdowns al redimensionar la ventana
+        window.addEventListener('resize', function() {
+            document.querySelectorAll('[id^="dropdown-user-"]:not(.hidden)').forEach(dropdown => {
+                adjustDropdownPosition(dropdown);
+            });
+        });
+
+        // Cerrar dropdowns al hacer scroll
+        window.addEventListener('scroll', function() {
+            document.querySelectorAll('[id^="dropdown-user-"]:not(.hidden)').forEach(dropdown => {
+                dropdown.classList.add('hidden');
+                // Resetear estilos
+                dropdown.style.position = '';
+                dropdown.style.top = '';
+                dropdown.style.bottom = '';
+                dropdown.style.left = '';
+                dropdown.style.right = '';
+                dropdown.style.transform = '';
+                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+            });
+        });
+    </script>
 
 
 </x-app-layout>

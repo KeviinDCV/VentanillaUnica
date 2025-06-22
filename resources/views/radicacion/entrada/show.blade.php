@@ -14,7 +14,7 @@
                    class="create-button">
                     Nuevo Radicado
                 </a>
-                <button onclick="window.print()"
+                <button id="btn-print"
                         class="btn-institutional">
                     Imprimir
                 </button>
@@ -293,11 +293,22 @@
             .no-print {
                 display: none !important;
             }
-            
+
             .card-minimal {
                 box-shadow: none !important;
                 border: 1px solid #000 !important;
             }
         }
     </style>
+
+    <script nonce="{{ session('csp_nonce', 'default-nonce') }}">
+        document.addEventListener('DOMContentLoaded', function() {
+            const printButton = document.getElementById('btn-print');
+            if (printButton) {
+                printButton.addEventListener('click', function() {
+                    window.print();
+                });
+            }
+        });
+    </script>
 </x-app-layout>

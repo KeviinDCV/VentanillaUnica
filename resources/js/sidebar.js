@@ -92,10 +92,18 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTooltips();
     }
 
-    // Smooth scroll para navegación interna
+    // Smooth scroll para navegación interna y manejar enlaces deshabilitados
     document.addEventListener('click', function(e) {
-        const link = e.target.closest('a[href^="#"]');
-        if (link) {
+        const link = e.target.closest('a');
+
+        // Manejar enlaces deshabilitados
+        if (link && link.dataset.disabled === 'true') {
+            e.preventDefault();
+            return;
+        }
+
+        // Smooth scroll para navegación interna
+        if (link && link.getAttribute('href').startsWith('#')) {
             e.preventDefault();
             const target = document.querySelector(link.getAttribute('href'));
             if (target) {
@@ -200,3 +208,5 @@ function initializeLogoFallback() {
         }
     }
 }
+
+

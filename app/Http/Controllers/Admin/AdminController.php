@@ -290,6 +290,32 @@ class AdminController extends Controller
     }
 
     /**
+     * Eliminar dependencia
+     */
+    public function eliminarDependencia($id)
+    {
+        $dependencia = Dependencia::findOrFail($id);
+
+        // Verificar si la dependencia tiene radicados asociados
+        $radicadosCount = $dependencia->radicadosDestino()->count() + $dependencia->radicadosOrigen()->count();
+
+        if ($radicadosCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "No se puede eliminar la dependencia '{$dependencia->nombre}' porque tiene {$radicadosCount} radicado(s) asociado(s). Desactívela en su lugar."
+            ], 422);
+        }
+
+        $nombreDependencia = $dependencia->nombre;
+        $dependencia->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Dependencia '{$nombreDependencia}' eliminada exitosamente"
+        ]);
+    }
+
+    /**
      * Gestión de TRD
      */
     public function trds()
@@ -426,6 +452,32 @@ class AdminController extends Controller
     }
 
     /**
+     * Eliminar TRD
+     */
+    public function eliminarTrd($id)
+    {
+        $trd = Trd::findOrFail($id);
+
+        // Verificar si el TRD tiene radicados asociados
+        $radicadosCount = $trd->radicados()->count();
+
+        if ($radicadosCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "No se puede eliminar el TRD '{$trd->codigo}' porque tiene {$radicadosCount} radicado(s) asociado(s). Desactívelo en su lugar."
+            ], 422);
+        }
+
+        $codigoTrd = $trd->codigo;
+        $trd->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "TRD '{$codigoTrd}' eliminado exitosamente"
+        ]);
+    }
+
+    /**
      * Reportes avanzados
      */
     public function reportes()
@@ -472,42 +524,7 @@ class AdminController extends Controller
         ));
     }
 
-    /**
-     * Configuración del sistema
-     */
-    public function configuracion()
-    {
-        // Información del sistema
-        $infoSistema = [
-            'version' => '1.0.0',
-            'laravel_version' => app()->version(),
-            'php_version' => PHP_VERSION,
-            'base_datos' => config('database.default'),
-            'timezone' => config('app.timezone'),
-            'debug_mode' => config('app.debug'),
-            'environment' => config('app.env'),
-        ];
 
-        // Estadísticas de almacenamiento
-        $estadisticasAlmacenamiento = [
-            'total_documentos' => Documento::count(),
-            'tamaño_total' => Documento::sum('tamaño_archivo'),
-            'documentos_entrada' => Documento::whereHas('radicado', function($query) {
-                $query->where('tipo', 'entrada');
-            })->count(),
-            'documentos_interno' => Documento::whereHas('radicado', function($query) {
-                $query->where('tipo', 'interno');
-            })->count(),
-            'documentos_salida' => Documento::whereHas('radicado', function($query) {
-                $query->where('tipo', 'salida');
-            })->count(),
-        ];
-
-        return view('admin.configuracion.index', compact(
-            'infoSistema',
-            'estadisticasAlmacenamiento'
-        ));
-    }
 
     /**
      * Logs del sistema
