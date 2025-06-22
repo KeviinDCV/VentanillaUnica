@@ -17,6 +17,11 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        // Verificación manual de autenticación
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('message', 'Por favor, inicia sesión para acceder al dashboard.');
+        }
+
         $user = auth()->user();
 
         // Redirigir según el rol del usuario

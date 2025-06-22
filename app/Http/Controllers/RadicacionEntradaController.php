@@ -16,10 +16,23 @@ use Carbon\Carbon;
 class RadicacionEntradaController extends Controller
 {
     /**
+     * Constructor - aplicar middleware de autenticación
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Mostrar el formulario de radicación de entrada
      */
     public function index()
     {
+        // Verificación manual de autenticación
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('message', 'Por favor, inicia sesión para acceder a esta página.');
+        }
+
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
         $trds = Trd::activos()->orderBy('codigo')->get();
 

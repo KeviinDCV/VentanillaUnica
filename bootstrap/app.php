@@ -12,7 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Configurar redirección para usuarios no autenticados
+        $middleware->redirectUsersTo('/login');
+
         $middleware->alias([
+            'auth' => \App\Http\Middleware\Authenticate::class,
             'role' => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\EnsureUserHasPermission::class,
             'session.timeout' => \App\Http\Middleware\SessionTimeout::class,
@@ -43,6 +47,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Manejo de errores de autenticación
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'No autenticado.',
+                    'error' => 'unauthenticated'
+                ], 401);
+            }
+
+            // Redirigir a login
+            return redirect()->route('login')->with('message',
+                'Por favor, inicia sesión para acceder a esta página.');
+        });
+
         // Manejo de errores 419 (CSRF Token Mismatch)
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
             if ($request->expectsJson()) {

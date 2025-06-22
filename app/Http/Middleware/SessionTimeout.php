@@ -19,7 +19,12 @@ class SessionTimeout
     {
         // Solo aplicar timeout a usuarios autenticados
         // No interferir con el proceso de login/logout
-        if (Auth::check() && !$this->isExcludedRoute($request)) {
+        if (!Auth::check()) {
+            // Si no hay usuario autenticado, continuar sin procesar
+            return $next($request);
+        }
+
+        if (!$this->isExcludedRoute($request)) {
             $user = Auth::user();
             $lastActivity = session('last_activity');
             $timeout = config('session.lifetime') * 60; // Convertir minutos a segundos

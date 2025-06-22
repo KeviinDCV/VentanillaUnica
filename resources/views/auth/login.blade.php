@@ -1445,6 +1445,12 @@
                             </div>
                         @endif
 
+                        @if (session('message'))
+                            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-700 text-sm">
+                                {{ session('message') }}
+                            </div>
+                        @endif
+
                         <!-- Formulario de Login Mejorado -->
                         <form method="POST" action="{{ route('login') }}" id="loginForm" class="space-y-6" novalidate>
                             @csrf

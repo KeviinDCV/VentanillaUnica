@@ -63,20 +63,24 @@
 
         <!-- Navegación basada en roles -->
         <nav class="sidebar-nav">
-            <x-role-based-navigation :user="Auth::user()" />
+            @auth
+                <x-role-based-navigation :user="Auth::user()" />
+            @endauth
         </nav>
 
         <!-- Footer de la Sidebar -->
         <div class="sidebar-footer">
-            <div :class="{ 'collapsed': !sidebarOpen && window.innerWidth >= 1024 }" class="sidebar-user">
-                <div class="w-8 h-8 bg-uniradical-blue rounded-full flex items-center justify-center flex-shrink-0">
-                    <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+            @auth
+                <div :class="{ 'collapsed': !sidebarOpen && window.innerWidth >= 1024 }" class="sidebar-user">
+                    <div class="w-8 h-8 bg-uniradical-blue rounded-full flex items-center justify-center flex-shrink-0">
+                        <span class="text-white text-sm font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                    </div>
+                    <div class="sidebar-user-info">
+                        <div class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</div>
+                        <div class="text-xs text-uniradical-blue">{{ ucfirst(Auth::user()->role) }}</div>
+                    </div>
                 </div>
-                <div class="sidebar-user-info">
-                    <div class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="text-xs text-uniradical-blue">{{ ucfirst(Auth::user()->role) }}</div>
-                </div>
-            </div>
+            @endauth
         </div>
     </aside>
 
