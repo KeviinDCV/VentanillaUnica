@@ -20,7 +20,8 @@ class RadicacionEntradaController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // En Laravel 11+, el middleware se aplica en las rutas
+        // La verificación de autenticación se hace manualmente en cada método
     }
 
     /**
