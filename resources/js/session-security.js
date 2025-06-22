@@ -131,12 +131,10 @@ class SessionSecurityHandler {
     }
 
     handleSessionExpired() {
-        console.warn('SessionSecurityHandler: Sesión expirada detectada');
-        
         // Limpiar storage
         sessionStorage.removeItem(this.sessionKey);
         sessionStorage.removeItem(this.lastActivityKey);
-        
+
         // Mostrar mensaje y redirigir
         alert('Su sesión ha expirado por inactividad. Será redirigido al login.');
         window.location.href = '/login';
@@ -144,10 +142,9 @@ class SessionSecurityHandler {
 
     showSessionWarning(timeRemaining) {
         const minutes = Math.ceil(timeRemaining / 60000);
-        console.warn(`SessionSecurityHandler: Sesión expirará en ${minutes} minuto(s)`);
-        
+
         // Aquí se podría mostrar una notificación no intrusiva
-        // Por ahora solo log para debugging
+        // Funcionalidad de advertencia de sesión
     }
 
     setupNavigationHandlers() {
@@ -190,7 +187,7 @@ class SessionSecurityHandler {
         if (!sessionActive && lastActivity) {
             const timeSinceActivity = Date.now() - parseInt(lastActivity);
             if (timeSinceActivity > this.sessionTimeout) {
-                console.warn('SessionSecurityHandler: Página cargada desde cache después de logout');
+                // Página cargada desde cache después de logout
                 window.location.replace('/login');
                 return;
             }

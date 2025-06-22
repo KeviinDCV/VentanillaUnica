@@ -167,7 +167,7 @@ function generateReportData() {
         return data;
 
     } catch (error) {
-        console.error('Error al generar datos del reporte:', error);
+        // Error silencioso en producción por seguridad
         // Retornar datos mínimos en caso de error
         return [
             ['Fecha', 'Tipo', 'Número Radicado', 'Estado'],
@@ -235,7 +235,7 @@ function exportToCSV(data, filename) {
         }
 
     } catch (error) {
-        console.error('Error al exportar CSV:', error);
+        // Error silencioso en producción por seguridad
         showNotification(`Error al exportar: ${error.message}`, 'error');
         throw error; // Re-lanzar para manejo en función llamadora
     }
@@ -468,11 +468,11 @@ function generateCustomReportData(fechaDesde, fechaHasta, tipoRadicado) {
         return data;
 
     } catch (error) {
-        console.error('Error al generar datos del reporte personalizado:', error);
+        // Error silencioso en producción por seguridad
         // Retornar datos mínimos en caso de error
         return [
             ['Fecha', 'Tipo', 'Número Radicado', 'Estado', 'Error'],
-            [new Date().toLocaleDateString('es-CO'), 'Error', 'N/A', 'Error al generar datos', error.message]
+            [new Date().toLocaleDateString('es-CO'), 'Error', 'N/A', 'Error al generar datos', 'Error interno']
         ];
     }
 }
@@ -482,7 +482,7 @@ function generateCustomReportData(fechaDesde, fechaHasta, tipoRadicado) {
  */
 function initializeCharts() {
     // Placeholder para gráficos con Chart.js o similar
-    console.log('Charts initialization placeholder');
+    // Charts initialization placeholder
 }
 
 /**

@@ -45,17 +45,12 @@ class LoginFormHandler {
         if (!this.loginButton) missingElements.push('login-button');
 
         if (missingElements.length > 0) {
-            console.warn('LoginFormHandler: Elementos no encontrados:', missingElements.join(', '));
+            // Elementos críticos no encontrados
             return false;
         }
 
-        // Elementos opcionales - solo advertir si no existen
-        if (!this.formStatus) {
-            console.info('LoginFormHandler: Elemento opcional "form-status" no encontrado');
-        }
-        if (!this.passwordToggle) {
-            console.info('LoginFormHandler: Elemento opcional "password-toggle" no encontrado');
-        }
+        // Elementos opcionales - verificación silenciosa
+        // form-status y password-toggle son opcionales
 
         this.elementsInitialized = true;
         return true;

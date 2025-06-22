@@ -56,7 +56,7 @@ function handleExportLogs(event) {
                 showWarningNotification('No hay datos para exportar');
             }
         } catch (error) {
-            console.error('Error al exportar logs:', error);
+            // Error silencioso en producción por seguridad
             showErrorNotification('Error al exportar los logs');
         } finally {
             // Restaurar botón
