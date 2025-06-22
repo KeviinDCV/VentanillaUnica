@@ -29,10 +29,19 @@ class SecurityHeaders
             $headers['Content-Security-Policy'] = $csp;
         }
 
+        // Headers de cache para usuarios autenticados
         if (auth()->check()) {
             $headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private, max-age=0';
             $headers['Pragma'] = 'no-cache';
             $headers['Expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
+        }
+
+        // Headers de cache específicos para página de login (evitar cache)
+        if ($request->routeIs('login')) {
+            $headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, private, max-age=0';
+            $headers['Pragma'] = 'no-cache';
+            $headers['Expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT';
+            $headers['Clear-Site-Data'] = '"cache", "storage"';
         }
 
         foreach ($headers as $key => $value) {

@@ -1565,7 +1565,62 @@
 
     <!-- JavaScript del formulario ahora se maneja desde resources/js/login-form.js -->
 
+    <!-- Script para prevenir navegación hacia atrás -->
+    <script>
+        // Prevenir navegación hacia atrás después de acceder al login
+        (function() {
+            // Reemplazar el estado actual del historial
+            if (window.history && window.history.pushState) {
+                // Agregar una entrada al historial para prevenir el botón atrás
+                window.history.pushState(null, null, window.location.href);
 
+                // Manejar el evento popstate (botón atrás/adelante)
+                window.addEventListener('popstate', function(event) {
+                    // Prevenir la navegación hacia atrás
+                    window.history.pushState(null, null, window.location.href);
+
+                    // Mostrar mensaje opcional
+                    console.log('Navegación hacia atrás bloqueada desde página de login');
+                });
+            }
+
+            // Limpiar cualquier dato de sesión del lado del cliente
+            try {
+                // Limpiar localStorage relacionado con sesiones
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('session') || key.includes('auth') || key.includes('uniradical'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+
+                // Limpiar sessionStorage
+                sessionStorage.clear();
+            } catch (e) {
+                // Silenciar errores de storage
+                console.debug('Error limpiando storage:', e);
+            }
+        })();
+
+        // Prevenir cache de la página
+        window.addEventListener('beforeunload', function() {
+            // Forzar recarga desde servidor en próxima visita
+            if (window.performance && window.performance.navigation.type === 1) {
+                // Página fue recargada
+                window.location.reload(true);
+            }
+        });
+
+        // Manejar evento pageshow para páginas cargadas desde cache
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Página cargada desde cache, forzar recarga
+                window.location.reload(true);
+            }
+        });
+    </script>
 
     <style>
         /* Animación inicial del formulario */

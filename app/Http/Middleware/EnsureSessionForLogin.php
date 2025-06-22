@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,9 +15,42 @@ class EnsureSessionForLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Si es una petición GET a la página de login, forzar logout de cualquier sesión activa
+        if ($request->isMethod('GET') && $request->routeIs('login')) {
+
+            // Si hay un usuario autenticado, cerrar su sesión automáticamente
+            if (Auth::check()) {
+                $user = Auth::user();
+
+                Log::info('Logout automático al acceder a página de login', [
+                    'user_id' => $user->id,
+                    'user_email' => $user->email,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'session_id' => $request->session()->getId(),
+                    'timestamp' => now()->toISOString()
+                ]);
+
+                // Cerrar sesión completamente
+                Auth::guard('web')->logout();
+
+                // Invalidar sesión completamente
+                $request->session()->invalidate();
+
+                // Regenerar token CSRF
+                $request->session()->regenerateToken();
+
+                // Limpiar cookies de remember me si existen
+                $response = redirect()->route('login')->with('info', 'Su sesión anterior ha sido cerrada por seguridad.');
+                $response->withCookie(cookie()->forget('remember_web'));
+
+                return $response;
+            }
+        }
+
         // Asegurar que la sesión esté iniciada para rutas de login
         if ($request->routeIs('login') || $request->routeIs('login.store')) {
-            
+
             // Iniciar sesión si no está iniciada
             if (!session()->isStarted()) {
                 session()->start();
@@ -26,7 +60,7 @@ class EnsureSessionForLogin
                     'ip' => $request->ip()
                 ]);
             }
-            
+
             // Regenerar token CSRF si es una petición GET al login
             if ($request->isMethod('GET') && $request->routeIs('login')) {
                 session()->regenerateToken();
@@ -35,7 +69,7 @@ class EnsureSessionForLogin
                     'ip' => $request->ip()
                 ]);
             }
-            
+
             // Verificar que el token CSRF esté disponible
             $token = csrf_token();
             if (empty($token)) {
@@ -44,12 +78,12 @@ class EnsureSessionForLogin
                     'session_id' => session()->getId(),
                     'ip' => $request->ip()
                 ]);
-                
+
                 // Forzar regeneración del token
                 session()->regenerateToken();
             }
         }
-        
+
         return $next($request);
     }
 }
