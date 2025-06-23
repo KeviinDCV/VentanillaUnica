@@ -280,7 +280,7 @@
                                     @endforeach
                                 </div>
                                 <div class="mt-3 text-center">
-                                    <a href="{{ route('consultar.index') }}" class="text-xs text-uniradical-blue hover:text-opacity-80">
+                                    <a href="{{ route('radicacion.index') }}" class="text-xs text-uniradical-blue hover:text-opacity-80">
                                         Ver todos →
                                     </a>
                                 </div>

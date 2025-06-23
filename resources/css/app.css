@@ -17,14 +17,39 @@ a:focus,
     box-shadow: none !important;
 }
 
-/* Mantener accesibilidad con un sutil indicador de foco personalizado */
+/* Eliminar específicamente el outline del navegador en inputs */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+input[type="datetime-local"]:focus,
+input[type="search"]:focus,
+input[type="url"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    border-color: #082ca4 !important;
+    box-shadow: 0 0 0 1px #082ca4 !important;
+}
+
+/* Eliminar outline de checkboxes y radios */
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px #082ca4 !important;
+}
+
+/* Mantener accesibilidad con un sutil indicador de foco personalizado para navegación por teclado */
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
-    outline: 2px solid rgba(59, 130, 246, 0.3) !important;
+    outline: 2px solid rgba(8, 44, 164, 0.3) !important;
     outline-offset: 2px !important;
 }
 

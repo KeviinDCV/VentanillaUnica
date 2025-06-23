@@ -151,7 +151,7 @@
                                 @endforeach
                             </div>
                             <div class="mt-4 text-center">
-                                <a href="{{ route('consultar.index') }}" 
+                                <a href="{{ route('radicacion.index') }}"
                                    class="text-sm font-medium text-blue-600 hover:text-blue-500">
                                     Ver todos mis radicados
                                 </a>

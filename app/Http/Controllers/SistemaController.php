@@ -5,9 +5,34 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Middleware\SuspenderSistema;
+use App\Models\User;
+use App\Models\Radicado;
+use Carbon\Carbon;
 
 class SistemaController extends Controller
 {
+    /**
+     * Mostrar la vista principal de sistema
+     */
+    public function index()
+    {
+        // Verificación manual de autenticación
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('message', 'Por favor, inicia sesión para acceder a esta página.');
+        }
+
+        // Estadísticas del sistema para el usuario actual
+        $estadisticas = [
+            'radicados_usuario_hoy' => Radicado::where('usuario_radica_id', auth()->id())
+                                              ->whereDate('fecha_radicado', Carbon::today())
+                                              ->count(),
+            'total_usuarios' => User::count(),
+            'total_radicados' => Radicado::count(),
+        ];
+
+        return view('sistema.index', compact('estadisticas'));
+    }
+
     /**
      * Mostrar página de sistema suspendido
      */

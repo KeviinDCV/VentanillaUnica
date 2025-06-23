@@ -163,7 +163,7 @@ class DashboardController extends Controller
             [
                 'titulo' => 'Consultar Radicados',
                 'descripcion' => 'Buscar y consultar documentos',
-                'url' => route('consultar.index'),
+                'url' => route('radicacion.index'),
                 'icono' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
                 'color' => 'yellow'
             ]

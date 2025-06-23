@@ -17,6 +17,26 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Radicación - Vista principal con consulta integrada
+Route::get('/radicacion', [App\Http\Controllers\RadicacionController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('radicacion.index');
+
+// Radicación - Exportar consulta
+Route::get('/radicacion/exportar', [App\Http\Controllers\RadicacionController::class, 'exportar'])
+    ->middleware(['auth', 'verified'])
+    ->name('radicacion.exportar');
+
+// Gestión - Vista principal (solo administradores)
+Route::get('/gestion', [App\Http\Controllers\GestionController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('gestion.index');
+
+// Sistema - Vista principal
+Route::get('/sistema', [App\Http\Controllers\SistemaController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('sistema.index');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -49,11 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    // Rutas del módulo de consultar radicados
-    Route::prefix('consultar')->name('consultar.')->group(function () {
-        Route::get('/', [App\Http\Controllers\ConsultarRadicadosController::class, 'index'])->name('index');
-        Route::get('/exportar', [App\Http\Controllers\ConsultarRadicadosController::class, 'exportar'])->name('exportar');
-    });
+
 
     // Rutas del módulo de administración (solo para administradores)
     Route::prefix('admin')->name('admin.')->middleware('role:administrador')->group(function () {
