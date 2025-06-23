@@ -24,82 +24,6 @@
 
     <div class="py-12">
         <div class="container-minimal">
-            <!-- Estadísticas Principales -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <!-- Total Radicados -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Total Radicados</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ number_format($estadisticas['total_radicados']) }}</p>
-                            <p class="text-xs text-gray-500 mt-1">
-                                {{ number_format($estadisticas['radicados_hoy']) }} hoy
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pendientes -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Pendientes</p>
-                            <p class="text-2xl font-bold text-yellow-600">{{ number_format($estadisticas['pendientes']) }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Requieren atención</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vencidos -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Vencidos</p>
-                            <p class="text-2xl font-bold text-red-600">{{ number_format($estadisticas['vencidos']) }}</p>
-                            <p class="text-xs text-gray-500 mt-1">Fuera de tiempo</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Este Mes -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Este Mes</p>
-                            <p class="text-2xl font-bold text-green-600">{{ number_format($estadisticas['radicados_mes']) }}</p>
-                            <p class="text-xs text-gray-500 mt-1">{{ date('F Y') }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Estadísticas por Tipo y Estado -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -167,7 +91,7 @@
                 </div>
             </div>
 
-            <!-- Accesos Rápidos -->
+            <!-- Gestión Administrativa -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 <!-- 1. Usuarios -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
