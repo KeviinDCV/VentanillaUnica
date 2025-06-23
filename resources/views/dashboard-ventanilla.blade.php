@@ -9,9 +9,7 @@
                     Bienvenido, {{ $user->name }}
                 </p>
             </div>
-            <div class="text-sm text-gray-500">
-                {{ now()->format('d/m/Y H:i') }}
-            </div>
+            <x-hospital-brand />
         </div>
     </x-slot>
 

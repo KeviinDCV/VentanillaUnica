@@ -7,6 +7,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/js/simple-navigation.js',
                 'resources/js/radicacion.js',
                 'resources/js/session-manager.js',
                 'resources/js/reportes.js',
@@ -36,6 +37,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/js/simple-navigation.js',
                 'resources/js/radicacion.js',
                 'resources/js/session-manager.js',
                 'resources/js/reportes.js',

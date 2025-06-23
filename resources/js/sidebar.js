@@ -3,14 +3,18 @@
  * Maneja el estado de la sidebar, persistencia y responsive behavior
  */
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar estado de la sidebar desde localStorage
-    const sidebarState = localStorage.getItem('sidebarOpen');
-    const defaultOpen = window.innerWidth >= 1024; // Abierta por defecto en desktop
-    
-    if (sidebarState === null) {
-        localStorage.setItem('sidebarOpen', defaultOpen.toString());
-    }
+// Evitar reinicialización múltiple
+if (!window.sidebarInitialized) {
+    window.sidebarInitialized = true;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar estado de la sidebar desde localStorage
+        const sidebarState = localStorage.getItem('sidebarOpen');
+        const defaultOpen = window.innerWidth >= 1024; // Abierta por defecto en desktop
+
+        if (sidebarState === null) {
+            localStorage.setItem('sidebarOpen', defaultOpen.toString());
+        }
 
     // Manejar cambios de tamaño de ventana
     window.addEventListener('resize', function() {
@@ -121,8 +125,33 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manejar error de carga de imagen del logo
     initializeLogoFallback();
 
-    console.log('Sidebar functionality initialized');
-});
+
+    });
+
+    // Escuchar eventos SPA para actualizar enlaces activos
+    document.addEventListener('spa:pageLoaded', function(e) {
+        updateActiveLinks(e.detail.path);
+    });
+
+    function updateActiveLinks(pathname) {
+        // Actualizar enlaces activos en el sidebar
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href) {
+                try {
+                    const linkPath = new URL(href, window.location.origin).pathname;
+                    if (linkPath === pathname) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                } catch (e) {
+                    // Ignorar URLs malformadas
+                }
+            }
+        });
+    }
+}
 
 /**
  * Inicializar funcionalidad de menús desplegables
@@ -185,7 +214,7 @@ function initializeCollapsibleMenus() {
     handleMobileCollapse();
     window.addEventListener('resize', handleMobileCollapse);
 
-    console.log('Collapsible menus initialized');
+
 }
 
 /**

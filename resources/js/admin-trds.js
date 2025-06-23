@@ -542,7 +542,7 @@ function searchTrds(termino, filtroEstado = '') {
             updateTrdsTable(data.trds);
         })
         .catch(error => {
-            console.error('Error en la búsqueda:', error);
+            // Error silencioso por seguridad
         });
 }
 

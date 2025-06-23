@@ -11,12 +11,13 @@
                     Análisis detallado del sistema UniRadic
                 </p>
             </div>
-            <div class="flex space-x-3">
+            <div class="flex items-center space-x-4">
                 <button type="button"
                         id="exportReportBtn"
                         class="export-button">
                     Exportar Reporte
                 </button>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

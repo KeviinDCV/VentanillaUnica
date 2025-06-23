@@ -373,17 +373,15 @@ function initializeLoginFormHandler() {
                        document.getElementById('loginForm') !== null;
 
     if (!isLoginPage) {
-        console.debug('LoginFormHandler: No es página de login, omitiendo inicialización');
         return;
     }
 
     try {
         if (!loginFormHandler) {
             loginFormHandler = new LoginFormHandler();
-            console.info('LoginFormHandler: Inicializado correctamente en página de login');
         }
     } catch (error) {
-        console.error('LoginFormHandler: Error durante la inicialización:', error);
+        // Error silencioso por seguridad
     }
 }
 

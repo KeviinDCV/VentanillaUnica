@@ -1,11 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-light text-xl text-gray-800 leading-tight">
-            Radicación de Documentos de Entrada
-        </h2>
-        <p class="text-sm text-gray-600 font-light mt-1">
-            Formulario para radicar documentos externos recibidos
-        </p>
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-light text-xl text-gray-800 leading-tight">
+                    Radicación de Documentos de Entrada
+                </h2>
+                <p class="text-sm text-gray-600 font-light mt-1">
+                    Formulario para radicar documentos externos recibidos
+                </p>
+            </div>
+            <x-hospital-brand />
+        </div>
     </x-slot>
 
     <div class="py-12">

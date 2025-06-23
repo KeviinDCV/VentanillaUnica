@@ -15,7 +15,7 @@ class DashboardController extends Controller
     /**
      * Display the main dashboard based on user role.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Verificación manual de autenticación
         if (!auth()->check()) {
@@ -26,16 +26,16 @@ class DashboardController extends Controller
 
         // Redirigir según el rol del usuario
         if ($user->isAdmin()) {
-            return $this->adminDashboard($user);
+            return $this->adminDashboard($user, $request);
         } else {
-            return $this->ventanillaDashboard($user);
+            return $this->ventanillaDashboard($user, $request);
         }
     }
 
     /**
      * Dashboard para administradores con acceso completo
      */
-    private function adminDashboard($user)
+    private function adminDashboard($user, $request)
     {
         // Estadísticas generales del sistema (solo para administradores)
         $estadisticasGenerales = [
@@ -86,7 +86,7 @@ class DashboardController extends Controller
         // Accesos rápidos para administradores
         $accesosRapidos = $this->getAccesosRapidos($user);
 
-        return view('dashboard', compact(
+        $view = view('dashboard', compact(
             'user',
             'estadisticasGenerales',
             'estadisticasTipo',
@@ -96,12 +96,19 @@ class DashboardController extends Controller
             'actividadHoy',
             'accesosRapidos'
         ));
+
+        // Si es una petición AJAX/SPA, devolver solo el contenido
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return $view;
+        }
+
+        return $view;
     }
 
     /**
      * Dashboard para usuarios de ventanilla con acceso limitado
      */
-    private function ventanillaDashboard($user)
+    private function ventanillaDashboard($user, $request)
     {
         // Estadísticas personales del usuario (solo sus propios datos)
         $estadisticasPersonales = [
@@ -130,13 +137,20 @@ class DashboardController extends Controller
         // Accesos rápidos limitados para ventanilla
         $accesosRapidos = $this->getAccesosRapidos($user);
 
-        return view('dashboard-ventanilla', compact(
+        $view = view('dashboard-ventanilla', compact(
             'user',
             'estadisticasPersonales',
             'misRadicadosRecientes',
             'actividadHoy',
             'accesosRapidos'
         ));
+
+        // Si es una petición AJAX/SPA, devolver solo el contenido
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return $view;
+        }
+
+        return $view;
     }
 
     /**

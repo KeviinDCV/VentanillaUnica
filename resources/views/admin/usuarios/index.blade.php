@@ -10,10 +10,11 @@
                     Administración de usuarios del sistema UniRadic
                 </p>
             </div>
-            <div>
+            <div class="flex items-center space-x-4">
                 <button data-action="create-user" class="create-button">
                     Nuevo Usuario
                 </button>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

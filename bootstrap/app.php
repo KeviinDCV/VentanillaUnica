@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'login.ratelimit' => \App\Http\Middleware\LoginRateLimit::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
             'ensure.session.login' => \App\Http\Middleware\EnsureSessionForLogin::class,
+
         ]);
 
         // Middleware para servir archivos estáticos (debe ir primero)

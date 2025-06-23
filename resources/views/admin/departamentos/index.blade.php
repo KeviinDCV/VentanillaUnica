@@ -10,10 +10,11 @@
                     Administración de departamentos del sistema
                 </p>
             </div>
-            <div>
+            <div class="flex items-center space-x-4">
                 <button id="btn-crear-departamento" class="create-button">
                     Nuevo Departamento
                 </button>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

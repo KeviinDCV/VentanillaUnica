@@ -21,7 +21,7 @@
     Radicación
 </x-sidebar-link>
 
-@if($user->isAdmin())
+@if($user && $user->isAdmin())
 <!-- Gestión (solo para administradores) -->
 <x-sidebar-link :href="route('gestion.index')" :active="request()->routeIs('gestion.*')">
     <x-slot name="icon">

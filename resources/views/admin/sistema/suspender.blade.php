@@ -9,11 +9,12 @@
                     Suspensión temporal del sistema UniRadic
                 </p>
             </div>
-            <div class="flex space-x-3">
-                <a href="{{ route('admin.index') }}" 
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('admin.index') }}"
                    class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
                     Volver al Dashboard
                 </a>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

@@ -27,6 +27,11 @@ Route::get('/radicacion/exportar', [App\Http\Controllers\RadicacionController::c
     ->middleware(['auth', 'verified'])
     ->name('radicacion.exportar');
 
+// Radicación - Cargar formularios para modal
+Route::get('/radicacion/form/{tipo}', [App\Http\Controllers\RadicacionController::class, 'cargarFormulario'])
+    ->middleware(['auth', 'verified'])
+    ->name('radicacion.form');
+
 // Gestión - Vista principal (solo administradores)
 Route::get('/gestion', [App\Http\Controllers\GestionController::class, 'index'])
     ->middleware(['auth', 'verified'])

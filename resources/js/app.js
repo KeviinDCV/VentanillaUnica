@@ -4,6 +4,7 @@ import './logout-handler';
 import './login-form';
 import './session-security';
 import './sidebar';
+import './simple-navigation';
 import './colombia-time';
 import './notifications';
 import './form-protection';

@@ -9,6 +9,7 @@
                     Herramientas de administración y reportes del sistema
                 </p>
             </div>
+            <x-hospital-brand />
         </div>
     </x-slot>
 

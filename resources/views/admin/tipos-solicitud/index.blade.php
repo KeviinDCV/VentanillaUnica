@@ -10,10 +10,11 @@
                     Administración de tipos de solicitud del sistema
                 </p>
             </div>
-            <div>
+            <div class="flex items-center space-x-4">
                 <button id="btn-crear-tipo" class="create-button">
                     Nuevo Tipo de Solicitud
                 </button>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

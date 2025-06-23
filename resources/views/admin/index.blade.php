@@ -9,7 +9,7 @@
                     Dashboard administrativo del sistema UniRadic
                 </p>
             </div>
-
+            <x-hospital-brand />
         </div>
     </x-slot>
 

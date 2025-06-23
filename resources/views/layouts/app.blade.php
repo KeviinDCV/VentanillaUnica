@@ -21,7 +21,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js', 'resources/js/simple-navigation.js'])
 
         <!-- Script para evitar parpadeo de sidebar -->
         <script>
@@ -162,23 +162,28 @@
 
         <!-- Inicialización de Alpine.js -->
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Inicializar Alpine.js data para el body
-                if (window.Alpine) {
-                    const appBody = document.getElementById('app-body');
-                    if (appBody) {
-                        appBody.setAttribute('x-data', '{ sidebarOpen: localStorage.getItem(\'sidebarOpen\') === \'true\' || false }');
-                        window.Alpine.initTree(appBody);
-                    }
-                }
+            // Solo inicializar una vez para evitar conflictos con SPA
+            if (!window.alpineInitialized) {
+                window.alpineInitialized = true;
 
-                // Remover clases de carga después de un pequeño delay para asegurar que todo esté listo
-                setTimeout(function() {
-                    document.documentElement.classList.remove('sidebar-collapsed-initial');
-                    document.body.classList.remove('loading-initial');
-                    document.documentElement.style.removeProperty('--sidebar-loading');
-                }, 100);
-            });
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Inicializar Alpine.js data para el body
+                    if (window.Alpine) {
+                        const appBody = document.getElementById('app-body');
+                        if (appBody) {
+                            appBody.setAttribute('x-data', '{ sidebarOpen: localStorage.getItem(\'sidebarOpen\') === \'true\' || false }');
+                            window.Alpine.initTree(appBody);
+                        }
+                    }
+
+                    // Remover clases de carga después de un pequeño delay para asegurar que todo esté listo
+                    setTimeout(function() {
+                        document.documentElement.classList.remove('sidebar-collapsed-initial');
+                        document.body.classList.remove('loading-initial');
+                        document.documentElement.style.removeProperty('--sidebar-loading');
+                    }, 100);
+                });
+            }
         </script>
     </body>
 </html>

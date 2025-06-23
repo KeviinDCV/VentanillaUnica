@@ -56,7 +56,7 @@ class RadicacionController extends Controller
                                     ->limit(10)
                                     ->get();
 
-        return view('radicacion.index', compact(
+        $view = view('radicacion.index', compact(
             'radicadosRecientes',
             'radicadosConsulta',
             'dependencias',
@@ -64,6 +64,13 @@ class RadicacionController extends Controller
             'filtros',
             'estadisticas'
         ));
+
+        // Si es una petición AJAX/SPA, devolver solo el contenido
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return $view;
+        }
+
+        return $view;
     }
 
     /**
@@ -284,5 +291,44 @@ class RadicacionController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Cargar formulario específico para el modal
+     */
+    public function cargarFormulario($tipo)
+    {
+        // Verificación manual de autenticación
+        if (!auth()->check()) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
+
+        $user = auth()->user();
+
+        // Verificar permisos para radicación de salida
+        if ($tipo === 'salida' && !$user->isAdmin()) {
+            return response()->json(['error' => 'No tienes permisos para radicar documentos de salida'], 403);
+        }
+
+        // Obtener datos necesarios para los formularios
+        $dependencias = \App\Models\Dependencia::activas()->orderBy('nombre')->get();
+        $trds = \App\Models\Trd::activos()->orderBy('codigo')->get();
+        $ciudades = \App\Models\Ciudad::with('departamento')->activo()->ordenado()->get();
+        $departamentos = \App\Models\Departamento::activo()->ordenado()->get();
+        $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
+
+        switch ($tipo) {
+            case 'entrada':
+                return view('radicacion.forms.entrada', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
+
+            case 'interno':
+                return view('radicacion.forms.interno', compact('dependencias', 'trds'));
+
+            case 'salida':
+                return view('radicacion.forms.salida', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
+
+            default:
+                return response()->json(['error' => 'Tipo de formulario no válido'], 400);
+        }
     }
 }

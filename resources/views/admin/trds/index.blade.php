@@ -10,11 +10,12 @@
                     Administración de Tabla de Retención Documental
                 </p>
             </div>
-            <div class="flex space-x-3">
+            <div class="flex items-center space-x-4">
                 <button data-action="create-trd"
                         class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
                     Nuevo TRD
                 </button>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

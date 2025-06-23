@@ -7,17 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    console.log('Admin dependencias module loading...');
-    console.log('DOM loaded, initializing dependencias management...');
-
     // Configurar event listeners
     setupEventListeners();
     setupConfirmModalEventListeners();
 
     // Inicializar búsqueda en tiempo real
     initializeRealTimeSearch();
-
-    console.log('Admin dependencias module loaded');
 });
 
 function setupEventListeners() {
@@ -553,7 +548,7 @@ function eliminarDependencia(dependenciaId) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        // Error silencioso por seguridad
         closeConfirmModal();
         showConfirmModal({
             title: 'Error',

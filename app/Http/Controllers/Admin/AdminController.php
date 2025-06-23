@@ -22,7 +22,7 @@ class AdminController extends Controller
     /**
      * Dashboard principal de administración
      */
-    public function index()
+    public function index(Request $request)
     {
         // Estadísticas generales del sistema
         $estadisticas = [
@@ -91,7 +91,7 @@ class AdminController extends Controller
             ];
         }
 
-        return view('admin.index', compact(
+        $view = view('admin.index', compact(
             'estadisticas',
             'estadisticasTipo',
             'estadisticasEstado',
@@ -100,6 +100,13 @@ class AdminController extends Controller
             'dependenciasActivas',
             'radicadosPorDia'
         ));
+
+        // Si es una petición AJAX/SPA, devolver solo el contenido
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return $view;
+        }
+
+        return $view;
     }
 
     /**

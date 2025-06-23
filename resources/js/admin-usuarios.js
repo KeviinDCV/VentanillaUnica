@@ -588,7 +588,7 @@ function searchUsers(termino) {
             updateUsersTable(data.usuarios);
         })
         .catch(error => {
-            console.error('Error en la búsqueda:', error);
+            // Error silencioso por seguridad
         });
 }
 
@@ -779,4 +779,4 @@ function createUserRow(usuario) {
     return row;
 }
 
-console.log('Admin usuarios module loaded');
+

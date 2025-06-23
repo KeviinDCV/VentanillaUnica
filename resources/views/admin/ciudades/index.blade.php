@@ -10,10 +10,11 @@
                     Administración de ciudades del sistema
                 </p>
             </div>
-            <div>
+            <div class="flex items-center space-x-4">
                 <button id="btn-crear-ciudad" class="create-button">
                     Nueva Ciudad
                 </button>
+                <x-hospital-brand />
             </div>
         </div>
     </x-slot>

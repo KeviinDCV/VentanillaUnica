@@ -9,6 +9,7 @@
                     Gestión integral de documentos y radicados
                 </p>
             </div>
+            <x-hospital-brand />
         </div>
     </x-slot>
 
@@ -18,8 +19,8 @@
             <!-- Botón Crear Radicado -->
             <div class="mb-8 text-center">
                 <button id="btn-crear-radicado"
-                        class="inline-flex items-center px-8 py-4 text-white font-medium rounded-lg shadow-sm transition-all duration-200 transform hover:scale-105"
-                        style="background-color: #082ca4; hover:background-color: #061f7a;"
+                        class="inline-flex items-center px-8 py-4 text-white font-medium rounded-lg shadow-sm transition-colors duration-200"
+                        style="background-color: #082ca4;"
                         onmouseover="this.style.backgroundColor='#061f7a'"
                         onmouseout="this.style.backgroundColor='#082ca4'">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,10 +33,10 @@
             <!-- Modal Crear Radicado -->
             <div id="modal-crear-radicado" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
                 <div class="flex items-center justify-center min-h-screen p-4">
-                    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[95vh] overflow-y-auto">
                         <!-- Header del Modal -->
                         <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                            <h3 class="text-xl font-semibold text-gray-800">Seleccionar Tipo de Radicado</h3>
+                            <h3 id="modal-title" class="text-xl font-semibold text-gray-800">Seleccionar Tipo de Radicado</h3>
                             <button id="btn-cerrar-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -44,11 +45,11 @@
                         </div>
 
                         <!-- Contenido del Modal -->
-                        <div class="p-6">
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div id="modal-content" class="p-6">
+                            <!-- Selección de Tipo de Radicado -->
+                            <div id="seleccion-tipo" class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Entrada -->
-                                <a href="{{ route('radicacion.entrada.index') }}"
-                                   class="group bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
+                                <button data-tipo="entrada" class="opcion-radicado group bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:shadow-md transition-colors duration-200 text-left w-full">
                                     <div class="flex items-center justify-between mb-4">
                                         <h4 class="text-lg font-medium text-gray-800 group-hover:text-blue-600">Entrada</h4>
                                         <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
@@ -64,11 +65,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </div>
-                                </a>
+                                </button>
 
                                 <!-- Interno -->
-                                <a href="{{ route('radicacion.interna.index') }}"
-                                   class="group bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-green-300 hover:shadow-lg transition-all duration-200">
+                                <button data-tipo="interno" class="opcion-radicado group bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-green-300 hover:shadow-md transition-colors duration-200 text-left w-full">
                                     <div class="flex items-center justify-between mb-4">
                                         <h4 class="text-lg font-medium text-gray-800 group-hover:text-green-600">Interno</h4>
                                         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
@@ -84,12 +84,11 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </div>
-                                </a>
+                                </button>
 
                                 <!-- Salida -->
                                 @if(Auth::user()->isAdmin())
-                                <a href="{{ route('radicacion.salida.index') }}"
-                                   class="group bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-300 hover:shadow-lg transition-all duration-200">
+                                <button data-tipo="salida" class="opcion-radicado group bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-300 hover:shadow-md transition-colors duration-200 text-left w-full">
                                     <div class="flex items-center justify-between mb-4">
                                         <h4 class="text-lg font-medium text-gray-800 group-hover:text-orange-600">Salida</h4>
                                         <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
@@ -105,7 +104,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </div>
-                                </a>
+                                </button>
                                 @else
                                 <div class="bg-gray-50 border-2 border-gray-200 rounded-lg p-6 opacity-50">
                                     <div class="flex items-center justify-between mb-4">
@@ -125,6 +124,17 @@
                                     </div>
                                 </div>
                                 @endif
+                            </div>
+
+                            <!-- Contenedor para el formulario dinámico -->
+                            <div id="formulario-dinamico" class="hidden">
+                                <!-- Aquí se cargará el formulario dinámicamente -->
+                            </div>
+
+                            <!-- Loading spinner -->
+                            <div id="loading-spinner" class="hidden text-center py-8">
+                                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-uniradical-blue"></div>
+                                <p class="mt-2 text-gray-600">Cargando formulario...</p>
                             </div>
                         </div>
                     </div>
@@ -629,6 +639,7 @@
 
             // Abrir modal
             btnCrearRadicado.addEventListener('click', function() {
+                mostrarSeleccionTipo();
                 modalCrearRadicado.classList.remove('hidden');
                 document.body.style.overflow = 'hidden'; // Prevenir scroll del body
             });
@@ -655,6 +666,180 @@
             function cerrarModal() {
                 modalCrearRadicado.classList.add('hidden');
                 document.body.style.overflow = ''; // Restaurar scroll del body
+                mostrarSeleccionTipo(); // Volver a la selección de tipo
+            }
+
+            // Funciones para el modal dinámico
+            function mostrarSeleccionTipo() {
+                document.getElementById('modal-title').textContent = 'Seleccionar Tipo de Radicado';
+                document.getElementById('seleccion-tipo').classList.remove('hidden');
+                document.getElementById('formulario-dinamico').classList.add('hidden');
+                document.getElementById('loading-spinner').classList.add('hidden');
+            }
+
+            function mostrarLoading() {
+                document.getElementById('seleccion-tipo').classList.add('hidden');
+                document.getElementById('formulario-dinamico').classList.add('hidden');
+                document.getElementById('loading-spinner').classList.remove('hidden');
+            }
+
+            function mostrarFormulario(tipo) {
+                const titulos = {
+                    'entrada': 'Crear Radicado de Entrada',
+                    'interno': 'Crear Radicado Interno',
+                    'salida': 'Crear Radicado de Salida'
+                };
+
+                document.getElementById('modal-title').textContent = titulos[tipo] || 'Crear Radicado';
+                document.getElementById('seleccion-tipo').classList.add('hidden');
+                document.getElementById('loading-spinner').classList.add('hidden');
+                document.getElementById('formulario-dinamico').classList.remove('hidden');
+            }
+
+            // Event listeners para las opciones de radicado
+            document.querySelectorAll('.opcion-radicado').forEach(boton => {
+                boton.addEventListener('click', function() {
+                    const tipo = this.getAttribute('data-tipo');
+                    cargarFormulario(tipo);
+                });
+            });
+
+            // Función para cargar formulario via AJAX
+            function cargarFormulario(tipo) {
+                mostrarLoading();
+
+                fetch(`/radicacion/form/${tipo}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al cargar el formulario');
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        document.getElementById('formulario-dinamico').innerHTML = html;
+                        mostrarFormulario(tipo);
+
+                        // Inicializar funcionalidades del formulario
+                        inicializarFormulario(tipo);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error al cargar el formulario. Por favor, intenta de nuevo.');
+                        mostrarSeleccionTipo();
+                    });
+            }
+
+            // Función para inicializar funcionalidades específicas del formulario
+            function inicializarFormulario(tipo) {
+                // Botón volver a selección
+                const btnVolver = document.getElementById('btn-volver-seleccion');
+                if (btnVolver) {
+                    btnVolver.addEventListener('click', mostrarSeleccionTipo);
+                }
+
+                // Funcionalidades específicas según el tipo
+                if (tipo === 'entrada') {
+                    inicializarFormularioEntrada();
+                } else if (tipo === 'interno') {
+                    inicializarFormularioInterno();
+                } else if (tipo === 'salida') {
+                    inicializarFormularioSalida();
+                }
+            }
+
+            // Funcionalidades específicas del formulario de entrada
+            function inicializarFormularioEntrada() {
+                // Cascada de departamento-ciudad
+                const departamentoSelect = document.getElementById('departamento_remitente');
+                const ciudadSelect = document.getElementById('ciudad_remitente');
+
+                if (departamentoSelect && ciudadSelect) {
+                    departamentoSelect.addEventListener('change', function() {
+                        const departamentoSeleccionado = this.value;
+                        const opciones = ciudadSelect.querySelectorAll('option');
+
+                        opciones.forEach(opcion => {
+                            if (opcion.value === '') {
+                                opcion.style.display = 'block';
+                            } else {
+                                const departamentoOpcion = opcion.getAttribute('data-departamento');
+                                opcion.style.display = departamentoOpcion === departamentoSeleccionado ? 'block' : 'none';
+                            }
+                        });
+
+                        ciudadSelect.value = '';
+                    });
+                }
+
+                // Buscar remitente existente
+                const btnBuscarRemitente = document.getElementById('btn-buscar-remitente');
+                if (btnBuscarRemitente) {
+                    btnBuscarRemitente.addEventListener('click', function() {
+                        const numeroDocumento = document.getElementById('numero_documento').value;
+                        if (numeroDocumento) {
+                            buscarRemitente(numeroDocumento);
+                        } else {
+                            alert('Por favor, ingrese un número de documento para buscar.');
+                        }
+                    });
+                }
+            }
+
+            // Función para buscar remitente existente
+            function buscarRemitente(numeroDocumento) {
+                // Esta función se puede implementar más adelante para buscar remitentes existentes
+                console.log('Buscando remitente:', numeroDocumento);
+            }
+
+            // Funcionalidades específicas del formulario interno
+            function inicializarFormularioInterno() {
+                // Mostrar/ocultar fecha límite según requiere respuesta
+                const requiereRespuesta = document.getElementById('requiere_respuesta');
+                const fechaLimiteContainer = document.getElementById('fecha-limite-container');
+
+                if (requiereRespuesta && fechaLimiteContainer) {
+                    requiereRespuesta.addEventListener('change', function() {
+                        if (this.value === 'si') {
+                            fechaLimiteContainer.classList.remove('hidden');
+                            document.getElementById('fecha_limite_respuesta').required = true;
+                        } else {
+                            fechaLimiteContainer.classList.add('hidden');
+                            document.getElementById('fecha_limite_respuesta').required = false;
+                            document.getElementById('fecha_limite_respuesta').value = '';
+                        }
+                    });
+
+                    // Verificar estado inicial
+                    if (requiereRespuesta.value === 'si') {
+                        fechaLimiteContainer.classList.remove('hidden');
+                        document.getElementById('fecha_limite_respuesta').required = true;
+                    }
+                }
+            }
+
+            // Funcionalidades específicas del formulario de salida
+            function inicializarFormularioSalida() {
+                // Cascada de departamento-ciudad para destinatario
+                const departamentoSelect = document.getElementById('departamento_destinatario');
+                const ciudadSelect = document.getElementById('ciudad_destinatario');
+
+                if (departamentoSelect && ciudadSelect) {
+                    departamentoSelect.addEventListener('change', function() {
+                        const departamentoSeleccionado = this.value;
+                        const opciones = ciudadSelect.querySelectorAll('option');
+
+                        opciones.forEach(opcion => {
+                            if (opcion.value === '') {
+                                opcion.style.display = 'block';
+                            } else {
+                                const departamentoOpcion = opcion.getAttribute('data-departamento');
+                                opcion.style.display = departamentoOpcion === departamentoSeleccionado ? 'block' : 'none';
+                            }
+                        });
+
+                        ciudadSelect.value = '';
+                    });
+                }
             }
 
             // Funcionalidad de consulta desplegable

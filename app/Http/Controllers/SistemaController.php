@@ -14,7 +14,7 @@ class SistemaController extends Controller
     /**
      * Mostrar la vista principal de sistema
      */
-    public function index()
+    public function index(Request $request)
     {
         // Verificación manual de autenticación
         if (!auth()->check()) {
@@ -30,7 +30,14 @@ class SistemaController extends Controller
             'total_radicados' => Radicado::count(),
         ];
 
-        return view('sistema.index', compact('estadisticas'));
+        $view = view('sistema.index', compact('estadisticas'));
+
+        // Si es una petición AJAX/SPA, devolver solo el contenido
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return $view;
+        }
+
+        return $view;
     }
 
     /**

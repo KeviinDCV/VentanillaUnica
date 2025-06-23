@@ -14,7 +14,7 @@ class GestionController extends Controller
     /**
      * Mostrar la vista principal de gestión
      */
-    public function index()
+    public function index(Request $request)
     {
         // Verificación manual de autenticación
         if (!auth()->check()) {
@@ -36,6 +36,13 @@ class GestionController extends Controller
             'radicados_hoy' => Radicado::whereDate('fecha_radicado', Carbon::today())->count(),
         ];
 
-        return view('gestion.index', compact('estadisticas'));
+        $view = view('gestion.index', compact('estadisticas'));
+
+        // Si es una petición AJAX/SPA, devolver solo el contenido
+        if ($request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return $view;
+        }
+
+        return $view;
     }
 }
