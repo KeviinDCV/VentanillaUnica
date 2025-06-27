@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('retencion_archivo_central')->default(0)->comment('Años en archivo central');
             $table->enum('disposicion_final', ['conservacion_total', 'eliminacion', 'seleccion', 'microfilmacion'])
                   ->default('conservacion_total')->comment('Disposición final del documento');
+            $table->integer('dias_respuesta')->nullable()->comment('Días límite para respuesta según TRD o ley');
             $table->text('observaciones')->nullable()->comment('Observaciones adicionales');
             $table->boolean('activo')->default(true)->comment('Estado del registro TRD');
             $table->timestamps();

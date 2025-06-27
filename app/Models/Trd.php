@@ -17,6 +17,7 @@ class Trd extends Model
         'retencion_archivo_gestion',
         'retencion_archivo_central',
         'disposicion_final',
+        'dias_respuesta',
         'observaciones',
         'activo',
     ];
@@ -25,6 +26,7 @@ class Trd extends Model
         'activo' => 'boolean',
         'retencion_archivo_gestion' => 'integer',
         'retencion_archivo_central' => 'integer',
+        'dias_respuesta' => 'integer',
     ];
 
     /**

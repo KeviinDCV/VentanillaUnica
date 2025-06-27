@@ -156,42 +156,23 @@
                     </a>
                 </div>
 
-                <!-- 4. Subserie -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-800">Subserie</h3>
-                        <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">0</p>
-                    <p class="text-sm text-gray-500 mb-4">Subseries documentales</p>
-                    <a href="#"
-                       class="inline-flex items-center text-sm font-medium text-pink-600 hover:text-pink-500">
-                        Gestionar subseries
-                        <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </a>
-                </div>
 
-                <!-- 5. Pendiente (nombre por definir) -->
+
+                <!-- 5. Comunicaciones -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-800">Pendiente</h3>
-                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <h3 class="text-lg font-medium text-gray-800">Comunicaciones</h3>
+                        <div class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">0</p>
-                    <p class="text-sm text-gray-500 mb-4">Por definir</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_comunicaciones']) }}</p>
+                    <p class="text-sm text-gray-500 mb-4">Tipos de comunicación</p>
                     <a href="#"
-                       class="inline-flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-500">
-                        Gestionar pendiente
+                       class="inline-flex items-center text-sm font-medium text-cyan-600 hover:text-cyan-500">
+                        Gestionar comunicaciones
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
@@ -219,33 +200,14 @@
                     </a>
                 </div>
 
-                <!-- 7. TRD -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-800">TRD</h3>
-                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_trds']) }}</p>
-                    <p class="text-sm text-gray-500 mb-4">Tablas de retención</p>
-                    <a href="{{ route('admin.trds') }}"
-                       class="inline-flex items-center text-sm font-medium text-purple-600 hover:text-purple-500">
-                        Gestionar TRD
-                        <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </a>
-                </div>
 
-                <!-- 8. Departamentos -->
+
+                <!-- 4. Departamentos -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-medium text-gray-800">Departamentos</h3>
-                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
@@ -254,7 +216,7 @@
                     <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_departamentos']) }}</p>
                     <p class="text-sm text-gray-500 mb-4">Departamentos activos</p>
                     <a href="{{ route('admin.departamentos.index') }}"
-                       class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500">
+                       class="inline-flex items-center text-sm font-medium text-teal-600 hover:text-teal-500">
                         Gestionar departamentos
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -262,7 +224,7 @@
                     </a>
                 </div>
 
-                <!-- 9. Ciudad -->
+                <!-- 5. Ciudad -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-medium text-gray-800">Ciudad</h3>
@@ -283,7 +245,7 @@
                     </a>
                 </div>
 
-                <!-- 10. Cliente y proveedores -->
+                <!-- 6. Cliente y proveedores -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-medium text-gray-800">Cliente y Proveedores</h3>
@@ -310,7 +272,7 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-800">Actividad Reciente</h3>
-                        <a href="{{ route('admin.logs') }}" 
+                        <a href="{{ route('admin.logs') }}"
                            class="text-sm font-medium text-blue-600 hover:text-blue-500">
                             Ver todos los logs
                         </a>

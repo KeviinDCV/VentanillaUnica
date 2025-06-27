@@ -2,13 +2,27 @@
     <div data-page="admin-trds"></div>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-light text-xl text-gray-800 leading-tight">
-                    Gestión de TRD
-                </h2>
-                <p class="text-sm text-gray-600 font-light mt-1">
-                    Administración de Tabla de Retención Documental
-                </p>
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('gestion.index') }}"
+                   class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Volver
+                </a>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="font-light text-xl text-gray-800 leading-tight">
+                            TRD Tradicional
+                        </h2>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Sistema Legacy
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 font-light mt-1">
+                        Sistema anterior de Tabla de Retención Documental
+                    </p>
+                </div>
             </div>
             <div class="flex items-center space-x-4">
                 <button data-action="create-trd"
@@ -22,6 +36,41 @@
 
     <div class="py-12">
         <div class="container-minimal">
+            <!-- Alerta del nuevo sistema -->
+            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">
+                            Sistema TRD Jerárquico Disponible
+                        </h3>
+                        <div class="mt-2 text-sm text-blue-700">
+                            <p>
+                                Recomendamos usar el nuevo <strong>Sistema TRD Jerárquico</strong> que ofrece mejor organización
+                                con Unidades Administrativas → Series → Subseries. Este sistema tradicional se mantiene
+                                para compatibilidad con radicados existentes.
+                            </p>
+                        </div>
+                        <div class="mt-4">
+                            <div class="flex space-x-4">
+                                <a href="{{ route('admin.unidades-administrativas.index') }}"
+                                   class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Usar Sistema Jerárquico
+                                </a>
+                                <a href="{{ route('gestion.index') }}"
+                                   class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Ver Gestión TRD
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Estadísticas de TRD -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white border border-gray-200 rounded-lg p-4">
@@ -233,6 +282,7 @@
                                                         data-trd-retencion-gestion="{{ $trd->retencion_archivo_gestion }}"
                                                         data-trd-retencion-central="{{ $trd->retencion_archivo_central }}"
                                                         data-trd-disposicion="{{ $trd->disposicion_final }}"
+                                                        data-trd-dias-respuesta="{{ $trd->dias_respuesta }}"
                                                         data-trd-observaciones="{{ $trd->observaciones }}"
                                                         data-trd-activo="{{ $trd->activo ? 'true' : 'false' }}"
                                                         class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
@@ -412,18 +462,31 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label for="create_disposicion_final" class="block text-sm font-medium text-gray-700 mb-1">Disposición Final *</label>
-                        <select id="create_disposicion_final"
-                                name="disposicion_final"
-                                required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
-                            <option value="">Seleccionar...</option>
-                            <option value="conservacion_total">Conservación Total</option>
-                            <option value="eliminacion">Eliminación</option>
-                            <option value="seleccion">Selección</option>
-                            <option value="microfilmacion">Microfilmación</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="create_disposicion_final" class="block text-sm font-medium text-gray-700 mb-1">Disposición Final *</label>
+                            <select id="create_disposicion_final"
+                                    name="disposicion_final"
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">Seleccionar...</option>
+                                <option value="conservacion_total">Conservación Total</option>
+                                <option value="eliminacion">Eliminación</option>
+                                <option value="seleccion">Selección</option>
+                                <option value="microfilmacion">Microfilmación</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="create_dias_respuesta" class="block text-sm font-medium text-gray-700 mb-1">Días de Respuesta</label>
+                            <input type="number"
+                                   id="create_dias_respuesta"
+                                   name="dias_respuesta"
+                                   min="1"
+                                   max="365"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                   placeholder="Ej: 15">
+                            <p class="mt-1 text-xs text-gray-500">Días límite para respuesta según TRD o ley</p>
+                        </div>
                     </div>
 
                     <div>
@@ -564,18 +627,31 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label for="edit_disposicion_final" class="block text-sm font-medium text-gray-700 mb-1">Disposición Final *</label>
-                        <select id="edit_disposicion_final"
-                                name="disposicion_final"
-                                required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
-                            <option value="">Seleccionar...</option>
-                            <option value="conservacion_total">Conservación Total</option>
-                            <option value="eliminacion">Eliminación</option>
-                            <option value="seleccion">Selección</option>
-                            <option value="microfilmacion">Microfilmación</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit_disposicion_final" class="block text-sm font-medium text-gray-700 mb-1">Disposición Final *</label>
+                            <select id="edit_disposicion_final"
+                                    name="disposicion_final"
+                                    required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">Seleccionar...</option>
+                                <option value="conservacion_total">Conservación Total</option>
+                                <option value="eliminacion">Eliminación</option>
+                                <option value="seleccion">Selección</option>
+                                <option value="microfilmacion">Microfilmación</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="edit_dias_respuesta" class="block text-sm font-medium text-gray-700 mb-1">Días de Respuesta</label>
+                            <input type="number"
+                                   id="edit_dias_respuesta"
+                                   name="dias_respuesta"
+                                   min="1"
+                                   max="365"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                                   placeholder="Ej: 15">
+                            <p class="mt-1 text-xs text-gray-500">Días límite para respuesta según TRD o ley</p>
+                        </div>
                     </div>
 
                     <div>

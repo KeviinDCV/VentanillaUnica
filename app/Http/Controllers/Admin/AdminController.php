@@ -32,7 +32,7 @@ class AdminController extends Controller
                                      ->whereYear('fecha_radicado', Carbon::now()->year)->count(),
             'total_usuarios' => User::count(),
             'total_dependencias' => Dependencia::count(),
-            'total_trds' => Trd::count(),
+            'total_comunicaciones' => 0, // TODO: Implementar cuando se cree el modelo Comunicacion
             'total_departamentos' => Departamento::count(),
             'total_ciudades' => Ciudad::count(),
             'total_tipos_solicitud' => TipoSolicitud::count(),
@@ -387,6 +387,7 @@ class AdminController extends Controller
             'retencion_archivo_gestion' => 'required|integer|min:0',
             'retencion_archivo_central' => 'required|integer|min:0',
             'disposicion_final' => 'required|in:conservacion_total,eliminacion,seleccion,microfilmacion',
+            'dias_respuesta' => 'nullable|integer|min:1|max:365',
             'observaciones' => 'nullable|string',
             'activo' => 'boolean'
         ]);
@@ -399,6 +400,7 @@ class AdminController extends Controller
             'retencion_archivo_gestion' => $request->retencion_archivo_gestion,
             'retencion_archivo_central' => $request->retencion_archivo_central,
             'disposicion_final' => $request->disposicion_final,
+            'dias_respuesta' => $request->dias_respuesta,
             'observaciones' => $request->observaciones,
             'activo' => $request->has('activo')
         ]);
@@ -425,6 +427,7 @@ class AdminController extends Controller
             'retencion_archivo_gestion' => 'required|integer|min:0',
             'retencion_archivo_central' => 'required|integer|min:0',
             'disposicion_final' => 'required|in:conservacion_total,eliminacion,seleccion,microfilmacion',
+            'dias_respuesta' => 'nullable|integer|min:1|max:365',
             'observaciones' => 'nullable|string',
             'activo' => 'boolean'
         ]);
@@ -437,6 +440,7 @@ class AdminController extends Controller
             'retencion_archivo_gestion' => $request->retencion_archivo_gestion,
             'retencion_archivo_central' => $request->retencion_archivo_central,
             'disposicion_final' => $request->disposicion_final,
+            'dias_respuesta' => $request->dias_respuesta,
             'observaciones' => $request->observaciones,
             'activo' => $request->has('activo')
         ]);
@@ -568,6 +572,7 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'documento_identidad' => 'required|string|max:20|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:administrador,ventanilla',
@@ -586,6 +591,7 @@ class AdminController extends Controller
 
         $usuario = User::create([
             'name' => $request->name,
+            'documento_identidad' => $request->documento_identidad,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => $request->role,

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     // Botón crear TRD
     document.querySelector('[data-action="create-trd"]')?.addEventListener('click', openCreateModal);
-    
+
     // Botones editar TRD
     document.querySelectorAll('[data-action="edit-trd"]').forEach(button => {
         button.addEventListener('click', function() {
@@ -32,10 +32,11 @@ function setupEventListeners() {
             const retencionGestion = this.dataset.trdRetencionGestion;
             const retencionCentral = this.dataset.trdRetencionCentral;
             const disposicion = this.dataset.trdDisposicion;
+            const diasRespuesta = this.dataset.trdDiasRespuesta;
             const observaciones = this.dataset.trdObservaciones;
             const activo = this.dataset.trdActivo === 'true';
 
-            openEditModal(trdId, codigo, serie, subserie, asunto, retencionGestion, retencionCentral, disposicion, observaciones, activo);
+            openEditModal(trdId, codigo, serie, subserie, asunto, retencionGestion, retencionCentral, disposicion, diasRespuesta, observaciones, activo);
         });
     });
 
@@ -81,16 +82,16 @@ function handleToggleStatus(event) {
     const trdCodigo = button.dataset.trdName;
     const isActive = button.dataset.trdActive === 'true';
     const formId = button.dataset.formId;
-    
+
     console.log(`Toggle status clicked for TRD: ${trdCodigo}, currently active: ${isActive}`);
-    
+
     // Configurar modal de confirmación
     const modal = document.getElementById('confirmStatusModal');
     const title = document.getElementById('confirmModalTitle');
     const message = document.getElementById('confirmModalMessage');
     const icon = document.getElementById('confirmModalIcon');
     const actionButton = document.getElementById('confirmModalAction');
-    
+
     if (isActive) {
         title.textContent = 'Desactivar TRD';
         message.textContent = `¿Estás seguro de que deseas desactivar el TRD "${trdCodigo}"?`;
@@ -116,13 +117,13 @@ function handleToggleStatus(event) {
         actionButton.style.borderColor = '#16a34a';
         actionButton.style.color = '#ffffff';
     }
-    
+
     // Configurar acción del botón
     actionButton.onclick = function() {
         toggleTrdStatus(formId);
         closeConfirmModal();
     };
-    
+
     // Mostrar modal
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -269,14 +270,14 @@ function setupModalEventListeners() {
     document.querySelectorAll('[data-action="close-edit-modal"]').forEach(button => {
         button.addEventListener('click', closeEditModal);
     });
-    
+
     // Envío del formulario de edición
     editForm?.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
         const url = this.action;
-        
+
         fetch(url, {
             method: 'POST',
             body: formData,
@@ -309,13 +310,13 @@ function setupCreateModalEventListeners() {
     document.querySelectorAll('[data-action="close-create-modal"]').forEach(button => {
         button.addEventListener('click', closeCreateModal);
     });
-    
+
     // Envío del formulario de creación
     createForm?.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
-        
+
         fetch(this.action, {
             method: 'POST',
             body: formData,
@@ -347,7 +348,7 @@ function setupConfirmModalEventListeners() {
     document.querySelectorAll('[data-action="close-confirm-modal"]').forEach(button => {
         button.addEventListener('click', closeConfirmModal);
     });
-    
+
     // Cerrar modal al hacer clic fuera
     confirmModal?.addEventListener('click', function(e) {
         if (e.target === this) {
@@ -399,7 +400,7 @@ function closeCreateModal() {
     }, 200);
 }
 
-function openEditModal(trdId, codigo, serie, subserie, asunto, retencionGestion, retencionCentral, disposicion, observaciones, activo) {
+function openEditModal(trdId, codigo, serie, subserie, asunto, retencionGestion, retencionCentral, disposicion, diasRespuesta, observaciones, activo) {
     const modal = document.getElementById('editTrdModal');
 
     // Llenar formulario con datos
@@ -411,6 +412,7 @@ function openEditModal(trdId, codigo, serie, subserie, asunto, retencionGestion,
     document.getElementById('edit_retencion_gestion').value = retencionGestion || '';
     document.getElementById('edit_retencion_central').value = retencionCentral || '';
     document.getElementById('edit_disposicion_final').value = disposicion || '';
+    document.getElementById('edit_dias_respuesta').value = diasRespuesta || '';
     document.getElementById('edit_observaciones').value = observaciones || '';
     document.getElementById('edit_activo').checked = activo;
 
@@ -452,10 +454,10 @@ function closeEditModal() {
 function showModalErrors(modalErrorsId, errorsListId, errors) {
     const modalErrors = document.getElementById(modalErrorsId);
     const errorsList = document.getElementById(errorsListId);
-    
+
     if (modalErrors && errorsList) {
         errorsList.innerHTML = '';
-        
+
         if (Array.isArray(errors)) {
             errors.forEach(error => {
                 const li = document.createElement('li');
@@ -469,7 +471,7 @@ function showModalErrors(modalErrorsId, errorsListId, errors) {
                 errorsList.appendChild(li);
             });
         }
-        
+
         modalErrors.classList.remove('hidden');
     }
 }
@@ -487,14 +489,14 @@ let searchTimeout;
 function initializeRealTimeSearch() {
     const searchInput = document.getElementById('buscar-trds');
     const filterSelect = document.getElementById('filtro-estado');
-    
+
     if (!searchInput || !filterSelect) {
         console.log('Elementos de búsqueda no encontrados');
         return;
     }
-    
+
     console.log('Inicializando búsqueda en tiempo real para TRDs...');
-    
+
     // Event listener para el campo de búsqueda
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
@@ -520,7 +522,7 @@ function initializeRealTimeSearch() {
     filterSelect.addEventListener('change', function() {
         const termino = searchInput.value.trim();
         const filtroEstado = this.value;
-        
+
         if (termino.length === 0 && filtroEstado === '') {
             location.reload();
         } else {
@@ -631,6 +633,7 @@ function createTrdRow(trd) {
                         data-trd-retencion-gestion="${trd.retencion_archivo_gestion}"
                         data-trd-retencion-central="${trd.retencion_archivo_central}"
                         data-trd-disposicion="${trd.disposicion_final}"
+                        data-trd-dias-respuesta="${trd.dias_respuesta || ''}"
                         data-trd-observaciones="${trd.observaciones || ''}"
                         data-trd-activo="${trd.activo ? 'true' : 'false'}"
                         class="text-blue-600 hover:text-blue-900 font-medium text-xs sm:text-sm">

@@ -82,10 +82,67 @@
                 </div>
             </div>
 
+            <!-- Gestión TRD Jerárquico -->
+            <div class="mb-8">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-800">Gestión TRD Jerárquico</h3>
+                    </div>
+                    <p class="text-gray-600 mb-6">
+                        Sistema completo de Tablas de Retención Documental con estructura jerárquica:
+                        Unidades Administrativas → Series → Subseries
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="{{ route('admin.unidades-administrativas.index') }}"
+                           class="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                    <span class="text-blue-600 font-bold text-sm">1</span>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800 group-hover:text-blue-600 mb-1">Unidades Administrativas</h4>
+                            <p class="text-sm text-gray-600">Crear códigos de unidades administrativas</p>
+                        </a>
+
+                        <a href="{{ route('admin.series.index') }}"
+                           class="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                                    <span class="text-green-600 font-bold text-sm">2</span>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800 group-hover:text-green-600 mb-1">Series</h4>
+                            <p class="text-sm text-gray-600">Agregar series a las unidades</p>
+                        </a>
+
+                        <a href="{{ route('admin.subseries.index') }}"
+                           class="group bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all duration-200 hover:border-blue-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                                    <span class="text-purple-600 font-bold text-sm">3</span>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                            <h4 class="font-medium text-gray-800 group-hover:text-purple-600 mb-1">Subseries</h4>
+                            <p class="text-sm text-gray-600">Crear subseries para las series</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Acciones Principales -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <!-- Reportes -->
-                <a href="{{ route('admin.reportes') }}" 
+                <a href="{{ route('admin.reportes') }}"
                    class="group bg-white border border-gray-200 rounded-lg p-8 shadow-sm hover:shadow-md transition-all duration-200 hover:border-blue-300">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-medium text-gray-800 group-hover:text-blue-600">Reportes</h3>
@@ -125,7 +182,7 @@
                 </a>
 
                 <!-- Administración -->
-                <a href="{{ route('admin.index') }}" 
+                <a href="{{ route('admin.index') }}"
                    class="group bg-white border border-gray-200 rounded-lg p-8 shadow-sm hover:shadow-md transition-all duration-200 hover:border-green-300">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-medium text-gray-800 group-hover:text-green-600">Administración</h3>

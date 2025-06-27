@@ -93,7 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarDependencia'])->name('dependencias.actualizar');
         Route::patch('/dependencias/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleDependenciaStatus'])->name('dependencias.toggle-status');
         Route::delete('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarDependencia'])->name('dependencias.eliminar');
-        Route::get('/trds', [App\Http\Controllers\Admin\AdminController::class, 'trds'])->name('trds');
+        Route::get('/trds', [App\Http\Controllers\Admin\AdminController::class, 'trds'])->name('trds.index');
         Route::get('/trds/buscar', [App\Http\Controllers\Admin\AdminController::class, 'buscarTrds'])->name('trds.buscar');
         Route::post('/trds', [App\Http\Controllers\Admin\AdminController::class, 'guardarTrd'])->name('trds.guardar');
         Route::put('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarTrd'])->name('trds.actualizar');
@@ -123,6 +123,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/tipos-solicitud/{tipoSolicitud}', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'destroy'])->name('tipos-solicitud.destroy');
         Route::patch('/tipos-solicitud/{tipoSolicitud}/toggle-status', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'toggleStatus'])->name('tipos-solicitud.toggle-status');
         Route::get('/tipos-solicitud/buscar', [App\Http\Controllers\Admin\TipoSolicitudController::class, 'buscar'])->name('tipos-solicitud.buscar');
+
+        // Gestión de Unidades Administrativas
+        Route::get('/unidades-administrativas', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'index'])->name('unidades-administrativas.index');
+        Route::post('/unidades-administrativas', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'store'])->name('unidades-administrativas.store');
+        Route::put('/unidades-administrativas/{unidad}', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'update'])->name('unidades-administrativas.update');
+        Route::delete('/unidades-administrativas/{unidad}', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'destroy'])->name('unidades-administrativas.destroy');
+        Route::patch('/unidades-administrativas/{unidad}/toggle-status', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'toggleStatus'])->name('unidades-administrativas.toggle-status');
+        Route::get('/unidades-administrativas/buscar', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'buscar'])->name('unidades-administrativas.buscar');
+        Route::get('/unidades-administrativas/para-select', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'paraSelect'])->name('unidades-administrativas.para-select');
+
+        // Gestión de Series
+        Route::get('/series', [App\Http\Controllers\Admin\SerieController::class, 'index'])->name('series.index');
+        Route::post('/series', [App\Http\Controllers\Admin\SerieController::class, 'store'])->name('series.store');
+        Route::put('/series/{serie}', [App\Http\Controllers\Admin\SerieController::class, 'update'])->name('series.update');
+        Route::delete('/series/{serie}', [App\Http\Controllers\Admin\SerieController::class, 'destroy'])->name('series.destroy');
+        Route::patch('/series/{serie}/toggle-status', [App\Http\Controllers\Admin\SerieController::class, 'toggleStatus'])->name('series.toggle-status');
+        Route::get('/series/buscar', [App\Http\Controllers\Admin\SerieController::class, 'buscar'])->name('series.buscar');
+        Route::get('/series/por-unidad/{unidad}', [App\Http\Controllers\Admin\SerieController::class, 'porUnidad'])->name('series.por-unidad');
+
+        // Gestión de Subseries
+        Route::get('/subseries', [App\Http\Controllers\Admin\SubserieController::class, 'index'])->name('subseries.index');
+        Route::post('/subseries', [App\Http\Controllers\Admin\SubserieController::class, 'store'])->name('subseries.store');
+        Route::put('/subseries/{subserie}', [App\Http\Controllers\Admin\SubserieController::class, 'update'])->name('subseries.update');
+        Route::delete('/subseries/{subserie}', [App\Http\Controllers\Admin\SubserieController::class, 'destroy'])->name('subseries.destroy');
+        Route::patch('/subseries/{subserie}/toggle-status', [App\Http\Controllers\Admin\SubserieController::class, 'toggleStatus'])->name('subseries.toggle-status');
+        Route::get('/subseries/buscar', [App\Http\Controllers\Admin\SubserieController::class, 'buscar'])->name('subseries.buscar');
+        Route::get('/subseries/por-serie/{serie}', [App\Http\Controllers\Admin\SubserieController::class, 'porSerie'])->name('subseries.por-serie');
 
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');
