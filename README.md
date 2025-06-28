@@ -364,7 +364,6 @@ Este proyecto está licenciado bajo la Licencia MIT. Ver el archivo [LICENSE](LI
 ### Contacto
 
 - **Desarrollador**: Kevin David Ch E
-- **Institución**: E.S.E Hospital San Agustín Puerto Merizalde
 - **Email**: Keviindavid00@gmail.com
 
 ---
