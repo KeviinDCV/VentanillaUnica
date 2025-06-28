@@ -1472,15 +1472,13 @@
                                            autocomplete="username"
                                            class="input-modern"
                                            placeholder="correo@hospital.com"
-                                           aria-describedby="email-error"
-                                           data-validate="email">
+                                           aria-describedby="email-error">
                                 </div>
                                 @error('email')
                                     <div class="error-message" id="email-error" role="alert">
                                         {{ $message }}
                                     </div>
                                 @enderror
-                                <div class="error-message" id="email-validation-error" style="display: none;" role="alert"></div>
                             </div>
 
                             <!-- Password -->
@@ -1499,9 +1497,7 @@
                                            autocomplete="current-password"
                                            class="input-modern"
                                            placeholder="Contraseña"
-                                           aria-describedby="password-error"
-                                           data-validate="password"
-                                           minlength="6">
+                                           aria-describedby="password-error">
                                     <button type="button"
                                             class="password-toggle"
                                             id="password-toggle"
@@ -1522,7 +1518,6 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-                                <div class="error-message" id="password-validation-error" style="display: none;" role="alert"></div>
                             </div>
 
                             <!-- Remember Me -->

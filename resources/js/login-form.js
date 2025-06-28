@@ -60,23 +60,8 @@ class LoginFormHandler {
         // Los elementos ya fueron verificados en init()
         if (!this.elementsInitialized) return;
 
-        // Validación en tiempo real para email
-        this.emailInput.addEventListener('input', () => {
-            this.validateEmail(this.emailInput);
-        });
-
-        this.emailInput.addEventListener('blur', () => {
-            this.validateEmail(this.emailInput);
-        });
-
-        // Validación en tiempo real para contraseña
-        this.passwordInput.addEventListener('input', () => {
-            this.validatePassword(this.passwordInput);
-        });
-
-        this.passwordInput.addEventListener('blur', () => {
-            this.validatePassword(this.passwordInput);
-        });
+        // Eliminar validaciones en tiempo real para login
+        // Solo mantener funcionalidades básicas
 
         // Funcionalidad de mostrar/ocultar contraseña
         if (this.passwordToggle) {
@@ -140,91 +125,10 @@ class LoginFormHandler {
         }, 0);
     }
 
-    // Función de validación de email
-    validateEmail(input) {
-        if (!input) return;
+    // Funciones de validación eliminadas para login
+    // El login no debe tener validaciones en tiempo real
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const errorElement = document.getElementById('email-validation-error');
-
-        if (input.value.trim() === '') {
-            this.hideError(input, errorElement);
-            return;
-        }
-
-        if (!emailRegex.test(input.value)) {
-            this.showError(input, errorElement, 'Por favor, ingresa un correo electrónico válido');
-        } else {
-            this.clearStates(input, errorElement);
-        }
-    }
-
-    // Función de validación de contraseña
-    validatePassword(input) {
-        if (!input) return;
-
-        const errorElement = document.getElementById('password-validation-error');
-
-        if (input.value.trim() === '') {
-            this.hideError(input, errorElement);
-            return;
-        }
-
-        if (input.value.length < 6) {
-            this.showError(input, errorElement, 'La contraseña debe tener al menos 6 caracteres');
-        } else {
-            this.clearStates(input, errorElement);
-        }
-    }
-
-    // Función para mostrar errores
-    showError(input, errorElement, message) {
-        if (!input || !errorElement) return;
-
-        const container = input.closest('.input-container');
-
-        input.classList.add('error');
-        if (container) container.classList.add('error');
-
-        errorElement.textContent = message;
-        errorElement.style.display = 'flex';
-        errorElement.setAttribute('aria-live', 'polite');
-
-        // Enfocar el campo con error
-        setTimeout(() => {
-            if (input && typeof input.focus === 'function') {
-                input.focus();
-            }
-        }, 100);
-    }
-
-    // Función para limpiar estados
-    clearStates(input, errorElement) {
-        if (!input) return;
-
-        const container = input.closest('.input-container');
-
-        input.classList.remove('error');
-        if (container) container.classList.remove('error');
-
-        if (errorElement) {
-            errorElement.style.display = 'none';
-        }
-    }
-
-    // Función para ocultar errores
-    hideError(input, errorElement) {
-        if (!input) return;
-
-        const container = input.closest('.input-container');
-
-        input.classList.remove('error');
-        if (container) container.classList.remove('error');
-
-        if (errorElement) {
-            errorElement.style.display = 'none';
-        }
-    }
+    // Funciones de manejo de errores eliminadas para login
 
     // Efecto ripple para el botón
     createRipple(event, button) {
@@ -256,33 +160,11 @@ class LoginFormHandler {
 
     // Manejo del envío del formulario
     handleFormSubmit(e) {
-        e.preventDefault();
+        // No prevenir el envío, solo mostrar estado de carga
+        this.showLoadingState();
 
-        // Validar todos los campos antes del envío
-        const isEmailValid = this.validateFormField(this.emailInput, 'email');
-        const isPasswordValid = this.validateFormField(this.passwordInput, 'password');
-
-        if (isEmailValid && isPasswordValid) {
-            // Mostrar estado de carga
-            this.showLoadingState();
-
-            // Asegurar que el campo remember esté incluido correctamente
-            this.ensureRememberFieldIncluded();
-
-            // Enviar formulario
-            setTimeout(() => {
-                this.form.submit();
-            }, 500);
-        } else {
-            // Enfocar el primer campo con error
-            const firstError = this.form.querySelector('.input-modern.error');
-            if (firstError) {
-                firstError.focus();
-                if (this.formStatus) {
-                    this.formStatus.textContent = 'Por favor, corrige los errores en el formulario';
-                }
-            }
-        }
+        // Asegurar que el campo remember esté incluido correctamente
+        this.ensureRememberFieldIncluded();
     }
 
     // Asegurar que el campo remember esté incluido en el envío
@@ -301,16 +183,7 @@ class LoginFormHandler {
         }
     }
 
-    // Validación completa de campo
-    validateFormField(input, type) {
-        if (type === 'email') {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return input.value.trim() !== '' && emailRegex.test(input.value);
-        } else if (type === 'password') {
-            return input.value.trim() !== '' && input.value.length >= 6;
-        }
-        return false;
-    }
+    // Función de validación eliminada para login
 
     // Estado de carga
     showLoadingState() {

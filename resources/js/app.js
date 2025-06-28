@@ -12,7 +12,6 @@ import './admin-logs';
 import './admin-usuarios';
 import './admin-trds';
 import './admin-dependencias';
-import './admin-unidades-administrativas';
 import './admin-series';
 import './admin-subseries';
 import './radicacion';
