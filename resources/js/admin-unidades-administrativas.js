@@ -1,5 +1,109 @@
 // Gestión de Unidades Administrativas - Admin
 
+// Función para manejar los menús desplegables (disponible globalmente)
+function toggleDropdown(dropdownId) {
+    console.log('toggleDropdown called with ID:', dropdownId);
+
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) {
+        console.error('No se encontró el dropdown con ID:', dropdownId);
+        return;
+    }
+
+    console.log('Dropdown found:', dropdown);
+    const isHidden = dropdown.classList.contains('hidden');
+    console.log('Is hidden:', isHidden);
+
+    // Cerrar todos los dropdowns abiertos
+    document.querySelectorAll('[id^="dropdown-unidad-"]').forEach(d => {
+        if (d.id !== dropdownId) {
+            d.classList.add('hidden');
+            // Resetear estilos completamente
+            d.style.position = '';
+            d.style.top = '';
+            d.style.bottom = '';
+            d.style.left = '';
+            d.style.right = '';
+            d.style.transform = '';
+            d.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+        }
+    });
+
+    if (isHidden) {
+        console.log('Showing dropdown');
+        // Mostrar dropdown
+        dropdown.classList.remove('hidden');
+
+        // Posicionar el dropdown
+        const button = dropdown.previousElementSibling;
+        if (button) {
+            const buttonRect = button.getBoundingClientRect();
+            dropdown.style.position = 'fixed';
+            dropdown.style.top = (buttonRect.bottom + 5) + 'px';
+            dropdown.style.left = (buttonRect.left) + 'px';
+            dropdown.style.zIndex = '9999';
+        }
+
+        console.log('Dropdown should be visible now');
+    } else {
+        console.log('Hiding dropdown');
+        // Ocultar dropdown
+        dropdown.classList.add('hidden');
+    }
+}
+
+function adjustDropdownPosition(dropdown) {
+    const rect = dropdown.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Si no hay suficiente espacio abajo pero sí arriba, mostrar hacia arriba
+    if (spaceBelow < 0 && spaceAbove > Math.abs(spaceBelow)) {
+        dropdown.classList.remove('origin-top-right', 'mt-2');
+        dropdown.classList.add('origin-bottom-right', 'mb-2');
+        dropdown.style.bottom = '100%';
+        dropdown.style.top = 'auto';
+    } else {
+        dropdown.classList.remove('origin-bottom-right', 'mb-2');
+        dropdown.classList.add('origin-top-right', 'mt-2');
+        dropdown.style.top = '100%';
+        dropdown.style.bottom = 'auto';
+    }
+
+    // Ajustar posición horizontal si se sale del viewport
+    const dropdownRect = dropdown.getBoundingClientRect();
+    if (dropdownRect.right > window.innerWidth) {
+        dropdown.style.right = '0';
+        dropdown.style.left = 'auto';
+    }
+}
+
+// Función para cerrar modal (disponible globalmente)
+function closeCreateModal() {
+    const modal = document.getElementById('createUnidadModal');
+    if (modal) {
+        const modalContent = modal.querySelector('.relative');
+
+        // Animación de salida
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            // Resetear modal para crear si la función existe
+            if (typeof resetModalToCreate === 'function') {
+                resetModalToCreate();
+            }
+        }, 200);
+    }
+}
+
+// Hacer funciones disponibles globalmente inmediatamente
+window.toggleDropdown = toggleDropdown;
+window.closeCreateModal = closeCreateModal;
+
 // Inicialización cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     // Solo ejecutar en la página de unidades administrativas
@@ -11,6 +115,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Configurar event listeners
     setupEventListeners();
+
+    // Configurar event listeners para modal de confirmación
     setupConfirmModalEventListeners();
 
     // Inicializar búsqueda en tiempo real
@@ -22,6 +128,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     // Botón crear unidad administrativa
     document.querySelector('[data-action="create-unidad"]')?.addEventListener('click', openCreateModal);
+
+    // Event listeners para el modal
+    setupModalEventListeners();
 
     // Usar delegación de eventos para botones dinámicos
     document.addEventListener('click', function(e) {
@@ -55,35 +164,89 @@ function setupEventListeners() {
     });
 }
 
+
+
 function openCreateModal() {
-    const modal = createUnidadModal('create');
-    document.body.appendChild(modal);
+    const modal = document.getElementById('createUnidadModal');
+    const form = document.getElementById('createUnidadForm');
+
+    // Limpiar formulario
+    form.reset();
+    document.getElementById('activa').checked = true;
+
+    // Resetear modal a modo crear
+    resetModalToCreate();
+
+    // Ocultar errores
+    document.getElementById('createModalErrors').classList.add('hidden');
 
     // Mostrar modal con animación
     showModalWithAnimation(modal);
 }
 
 function openEditModal(unidadId, codigo, nombre, descripcion, activa) {
-    const modal = createUnidadModal('edit', {
-        id: unidadId,
-        codigo: codigo,
-        nombre: nombre,
-        descripcion: descripcion,
-        activa: activa
-    });
-    document.body.appendChild(modal);
+    const modal = document.getElementById('createUnidadModal');
+
+    // Cambiar título del modal
+    document.getElementById('createModalTitle').textContent = 'Editar Unidad Administrativa';
+
+    // Llenar formulario con datos existentes
+    document.getElementById('codigo').value = codigo;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('descripcion').value = descripcion || '';
+    document.getElementById('activa').checked = activa;
+
+    // Cambiar action del formulario para editar
+    const form = document.getElementById('createUnidadForm');
+    form.action = `/admin/unidades-administrativas/${unidadId}`;
+
+    // Agregar método PUT
+    let methodInput = form.querySelector('input[name="_method"]');
+    if (!methodInput) {
+        methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        form.appendChild(methodInput);
+    }
+    methodInput.value = 'PUT';
+
+    // Cambiar texto del botón
+    const submitButton = form.parentElement.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.textContent = 'Actualizar Unidad Administrativa';
+    }
+
+    // Ocultar errores
+    document.getElementById('createModalErrors').classList.add('hidden');
 
     // Mostrar modal con animación
     showModalWithAnimation(modal);
 }
 
-function createUnidadModal(mode, data = null) {
-    const isEdit = mode === 'edit';
-    const title = isEdit ? 'Editar Unidad Administrativa' : 'Nueva Unidad Administrativa';
+function resetModalToCreate() {
+    // Cambiar título
+    document.getElementById('createModalTitle').textContent = 'Nueva Unidad Administrativa';
 
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50';
-    modal.id = 'unidad-modal';
+    // Resetear formulario
+    const form = document.getElementById('createUnidadForm');
+    form.action = '/admin/unidades-administrativas';
+
+    // Remover método PUT si existe
+    const methodInput = form.querySelector('input[name="_method"]');
+    if (methodInput) {
+        methodInput.remove();
+    }
+
+    // Cambiar texto del botón
+    const submitButton = form.parentElement.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.textContent = 'Crear Unidad Administrativa';
+    }
+}
+
+function createUnidadModal(mode, data = null) {
+    // Esta función ya no se usa, pero la mantengo por compatibilidad
+    return null;
 
     modal.innerHTML = `
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white" style="transition: opacity 0.3s ease-out, transform 0.3s ease-out;">
@@ -143,14 +306,14 @@ function createUnidadModal(mode, data = null) {
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button"
                             id="cancel-modal-btn"
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200">
+                            class="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors min-w-[100px]">
                         Cancelar
                     </button>
                     <button type="button"
                             id="save-modal-btn"
                             data-mode="${mode}"
                             data-unidad-id="${data?.id || ''}"
-                            class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-uniradical-blue hover:bg-opacity-90 transition-colors min-w-[100px]">
                         ${isEdit ? 'Actualizar' : 'Crear'}
                     </button>
                 </div>
@@ -166,31 +329,32 @@ function createUnidadModal(mode, data = null) {
     return modal;
 }
 
-function setupModalEventListeners(mode, unidadId) {
-    // Botón cerrar (X)
-    const closeBtn = document.getElementById('close-modal-btn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeUnidadModal);
-    }
+function setupModalEventListeners() {
+    // Manejar envío del formulario
+    const form = document.getElementById('createUnidadForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    // Botón cancelar
-    const cancelBtn = document.getElementById('cancel-modal-btn');
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', closeUnidadModal);
-    }
+            // Determinar si es edición o creación basado en el action del formulario
+            const isEdit = form.action.includes('/admin/unidades-administrativas/') &&
+                          form.action !== '/admin/unidades-administrativas';
 
-    // Botón guardar
-    const saveBtn = document.getElementById('save-modal-btn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            const mode = this.dataset.mode;
-            const unidadId = this.dataset.unidadId || null;
+            const mode = isEdit ? 'edit' : 'create';
+
+            // Extraer ID de la URL si es edición
+            let unidadId = null;
+            if (isEdit) {
+                const matches = form.action.match(/\/admin\/unidades-administrativas\/(\d+)/);
+                unidadId = matches ? matches[1] : null;
+            }
+
             saveUnidad(mode, unidadId);
         });
     }
 
     // Cerrar modal al hacer clic fuera
-    const modal = document.getElementById('unidad-modal');
+    const modal = document.getElementById('createUnidadModal');
     if (modal) {
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
@@ -200,16 +364,20 @@ function setupModalEventListeners(mode, unidadId) {
     }
 
     // Cerrar modal con tecla Escape
-    const escapeHandler = function(e) {
-        if (e.key === 'Escape' && document.getElementById('unidad-modal')) {
-            closeUnidadModal();
-            document.removeEventListener('keydown', escapeHandler);
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('createUnidadModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeUnidadModal();
+            }
         }
-    };
-    document.addEventListener('keydown', escapeHandler);
+    });
 }
 
 function showModalWithAnimation(modal) {
+    // Mostrar modal
+    modal.classList.remove('hidden');
+
     // Prevenir scroll del body
     document.body.style.overflow = 'hidden';
 
@@ -234,7 +402,7 @@ function showModalWithAnimation(modal) {
 }
 
 function closeUnidadModal() {
-    const modal = document.getElementById('unidad-modal');
+    const modal = document.getElementById('createUnidadModal');
     if (modal) {
         const modalContent = modal.querySelector('.relative');
 
@@ -243,14 +411,18 @@ function closeUnidadModal() {
         modalContent.style.transform = 'scale(0.95) translateY(-20px)';
 
         setTimeout(() => {
-            modal.remove();
+            modal.classList.add('hidden');
             document.body.style.overflow = 'auto';
+            // Resetear modal para crear
+            resetModalToCreate();
         }, 200);
     }
 }
 
+
+
 function saveUnidad(mode, unidadId) {
-    const form = document.getElementById('unidad-form');
+    const form = document.getElementById('createUnidadForm');
     const formData = new FormData(form);
 
     const data = {
@@ -293,14 +465,23 @@ function saveUnidad(mode, unidadId) {
 }
 
 function toggleUnidadStatus(unidadId, nombre) {
-    // Usar modal personalizado
+    // Obtener el estado actual de la unidad para determinar la acción
+    const unidadRow = document.querySelector(`[data-action="toggle-status"][data-unidad-id="${unidadId}"]`);
+    const isActive = unidadRow.textContent.trim().includes('Desactivar');
+
+    const accion = isActive ? 'desactivar' : 'activar';
+    const accionCapital = isActive ? 'Desactivar' : 'Activar';
+    const mensaje = `¿Está seguro que desea ${accion} la unidad administrativa "${nombre}"?`;
+
     showConfirmModal({
-        title: 'Cambiar Estado',
-        message: `¿Estás seguro de que deseas cambiar el estado de la unidad administrativa "${nombre}"?`,
-        actionText: 'Cambiar Estado',
-        actionClass: 'bg-yellow-600 hover:bg-yellow-700',
-        iconClass: 'bg-yellow-100',
-        iconColor: 'text-yellow-600',
+        title: `${accionCapital} Unidad Administrativa`,
+        message: mensaje,
+        actionText: accionCapital,
+        // Si está activa (true) y queremos desactivar → naranja
+        // Si está inactiva (false) y queremos activar → verde
+        actionClass: isActive ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700',
+        iconClass: isActive ? 'bg-orange-100' : 'bg-green-100',
+        iconColor: isActive ? 'text-orange-600' : 'text-green-600',
         onConfirm: function() {
             executeToggleUnidadStatus(unidadId);
         }
@@ -381,11 +562,8 @@ function initializeRealTimeSearch() {
         const termino = this.value.trim();
 
         searchTimeout = setTimeout(() => {
-            if (termino.length === 0) {
-                // Si no hay término de búsqueda, recargar todas las unidades
-                location.reload();
-            } else if (termino.length >= 2) {
-                // Buscar solo si hay al menos 2 caracteres
+            if (termino.length >= 2 || termino.length === 0) {
+                // Buscar si hay al menos 2 caracteres o mostrar todas si está vacío
                 searchUnidades(termino);
             }
         }, 300);
@@ -404,8 +582,8 @@ function searchUnidades(termino) {
 }
 
 function showAllUnidades() {
-    // Recargar la página para mostrar todas las unidades
-    location.reload();
+    // Buscar con término vacío para mostrar todas las unidades
+    searchUnidades('');
 }
 
 function updateUnidadesTable(unidades) {
@@ -570,8 +748,25 @@ function showConfirmModal(options) {
     message.textContent = options.message;
     actionButton.textContent = options.actionText;
 
-    // Aplicar clases CSS completas
+    // Limpiar clases existentes y aplicar nuevas clases CSS para el botón
+    actionButton.className = '';
     actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
+
+    // Forzar la aplicación de estilos
+    actionButton.style.cssText = '';
+    if (options.actionClass.includes('bg-orange-600')) {
+        actionButton.style.backgroundColor = '#ea580c';
+        actionButton.style.borderColor = '#ea580c';
+    } else if (options.actionClass.includes('bg-green-600')) {
+        actionButton.style.backgroundColor = '#16a34a';
+        actionButton.style.borderColor = '#16a34a';
+    } else if (options.actionClass.includes('bg-red-600')) {
+        actionButton.style.backgroundColor = '#dc2626';
+        actionButton.style.borderColor = '#dc2626';
+    } else if (options.actionClass.includes('bg-yellow-600')) {
+        actionButton.style.backgroundColor = '#ca8a04';
+        actionButton.style.borderColor = '#ca8a04';
+    }
 
     // Configurar icono
     iconContainer.className = `flex-shrink-0 w-10 h-10 mx-auto rounded-full flex items-center justify-center ${options.iconClass}`;
@@ -659,76 +854,37 @@ function showErrorMessage(message) {
 }
 
 function showErrors(errors) {
-    let errorMessage = 'Errores encontrados:\n';
-    for (const field in errors) {
-        errorMessage += `- ${errors[field].join(', ')}\n`;
-    }
-    showErrorMessage(errorMessage);
-}
+    const errorsContainer = document.getElementById('createModalErrors');
+    const errorsList = document.getElementById('createErrorsList');
 
-// Función para manejar los menús desplegables
-function toggleDropdown(dropdownId) {
-    const dropdown = document.getElementById(dropdownId);
-    if (!dropdown) {
-        console.error('No se encontró el dropdown con ID:', dropdownId);
-        return;
-    }
-    const isHidden = dropdown.classList.contains('hidden');
+    if (errorsContainer && errorsList) {
+        // Limpiar errores anteriores
+        errorsList.innerHTML = '';
 
-    // Cerrar todos los dropdowns abiertos
-    document.querySelectorAll('[id^="dropdown-unidad-"]').forEach(d => {
-        if (d.id !== dropdownId) {
-            d.classList.add('hidden');
-            // Resetear estilos completamente
-            d.style.position = '';
-            d.style.top = '';
-            d.style.bottom = '';
-            d.style.left = '';
-            d.style.right = '';
-            d.style.transform = '';
-            d.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+        // Agregar nuevos errores
+        for (const field in errors) {
+            errors[field].forEach(error => {
+                const li = document.createElement('li');
+                li.textContent = error;
+                errorsList.appendChild(li);
+            });
         }
-    });
 
-    if (isHidden) {
-        // Mostrar dropdown
-        dropdown.classList.remove('hidden');
-        adjustDropdownPosition(dropdown);
+        // Mostrar contenedor de errores
+        errorsContainer.classList.remove('hidden');
     } else {
-        // Ocultar dropdown
-        dropdown.classList.add('hidden');
+        // Fallback si no se encuentran los elementos
+        let errorMessage = 'Errores encontrados:\n';
+        for (const field in errors) {
+            errorMessage += `- ${errors[field].join(', ')}\n`;
+        }
+        showErrorMessage(errorMessage);
     }
 }
 
-function adjustDropdownPosition(dropdown) {
-    const rect = dropdown.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const spaceBelow = viewportHeight - rect.bottom;
-    const spaceAbove = rect.top;
 
-    // Si no hay suficiente espacio abajo pero sí arriba, mostrar hacia arriba
-    if (spaceBelow < 0 && spaceAbove > Math.abs(spaceBelow)) {
-        dropdown.classList.remove('origin-top-right', 'mt-2');
-        dropdown.classList.add('origin-bottom-right', 'mb-2');
-        dropdown.style.bottom = '100%';
-        dropdown.style.top = 'auto';
-    } else {
-        dropdown.classList.remove('origin-bottom-right', 'mb-2');
-        dropdown.classList.add('origin-top-right', 'mt-2');
-        dropdown.style.top = '100%';
-        dropdown.style.bottom = 'auto';
-    }
 
-    // Ajustar posición horizontal si se sale del viewport
-    const dropdownRect = dropdown.getBoundingClientRect();
-    if (dropdownRect.right > window.innerWidth) {
-        dropdown.style.right = '0';
-        dropdown.style.left = 'auto';
-    }
-}
 
-// Hacer la función disponible globalmente
-window.toggleDropdown = toggleDropdown;
 
 // Configurar event listeners para cerrar dropdowns
 document.addEventListener('click', function(event) {
@@ -794,11 +950,14 @@ window.UniRadicUnidadesAdministrativas = {
     openCreateModal,
     openEditModal,
     closeUnidadModal,
+    closeCreateModal,
     toggleUnidadStatus,
     showDeleteConfirmModal,
     toggleDropdown,
     showSuccessMessage,
     showErrorMessage
 };
+
+
 
 

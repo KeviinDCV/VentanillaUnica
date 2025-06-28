@@ -505,15 +505,9 @@ function initializeRealTimeSearch() {
 
         // Debounce para evitar demasiadas peticiones
         searchTimeout = setTimeout(() => {
-            if (termino.length === 0 && filtroEstado === '') {
-                // Si no hay término de búsqueda ni filtro, recargar todas los TRDs
-                location.reload();
-            } else if (termino.length >= 2 || filtroEstado !== '') {
-                // Buscar si hay al menos 2 caracteres o hay filtro seleccionado
+            if (termino.length >= 2 || termino.length === 0 || filtroEstado !== '') {
+                // Buscar si hay al menos 2 caracteres, está vacío, o hay filtro seleccionado
                 searchTrds(termino, filtroEstado);
-            } else if (termino.length === 0 && filtroEstado !== '') {
-                // Solo filtro sin búsqueda
-                searchTrds('', filtroEstado);
             }
         }, 300);
     });
@@ -523,11 +517,7 @@ function initializeRealTimeSearch() {
         const termino = searchInput.value.trim();
         const filtroEstado = this.value;
 
-        if (termino.length === 0 && filtroEstado === '') {
-            location.reload();
-        } else {
-            searchTrds(termino, filtroEstado);
-        }
+        searchTrds(termino, filtroEstado);
     });
 }
 

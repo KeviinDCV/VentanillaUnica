@@ -127,34 +127,34 @@ function attachToggleStatusEventListeners() {
 
 function openEditModal(userId, name, email, role, active) {
     currentUserId = userId;
-    
+
     // Llenar el formulario con los datos del usuario
     document.getElementById('edit_name').value = name;
     document.getElementById('edit_email').value = email;
     document.getElementById('edit_role').value = role;
     document.getElementById('edit_active').checked = active;
-    
+
     // Limpiar contraseñas
     document.getElementById('edit_password').value = '';
     document.getElementById('edit_password_confirmation').value = '';
-    
+
     // Configurar la acción del formulario
     document.getElementById('editUserForm').action = `/admin/usuarios/${userId}`;
-    
+
     // Ocultar errores
     document.getElementById('modalErrors').classList.add('hidden');
-    
+
     // Mostrar el modal con animación
     const modal = document.getElementById('editUserModal');
     const modalContent = modal.querySelector('.relative');
-    
+
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden'; // Prevenir scroll del fondo
-    
+
     // Animación de entrada
     modalContent.style.opacity = '0';
     modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-    
+
     setTimeout(() => {
         modalContent.style.opacity = '1';
         modalContent.style.transform = 'scale(1) translateY(0)';
@@ -164,11 +164,11 @@ function openEditModal(userId, name, email, role, active) {
 function closeEditModal() {
     const modal = document.getElementById('editUserModal');
     const modalContent = modal.querySelector('.relative');
-    
+
     // Animación de salida
     modalContent.style.opacity = '0';
     modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-    
+
     setTimeout(() => {
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto'; // Restaurar scroll
@@ -199,9 +199,9 @@ function setupModalEventListeners() {
     // Manejar envío del formulario
     document.getElementById('editUserForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
-        
+
         fetch(this.action, {
             method: 'POST',
             body: formData,
@@ -223,10 +223,10 @@ function setupModalEventListeners() {
             if (data.success) {
                 // Mostrar mensaje de éxito y cerrar modal
                 closeEditModal();
-                
+
                 // Mostrar notificación de éxito
                 showSuccessMessage('Usuario actualizado exitosamente');
-                
+
                 // Recargar página después de un breve delay
                 setTimeout(() => {
                     location.reload();
@@ -490,20 +490,20 @@ function closeConfirmModal() {
 function showModalErrors(errors) {
     const errorsList = document.getElementById('errorsList');
     const errorsContainer = document.getElementById('modalErrors');
-    
+
     // Limpiar errores anteriores
     errorsList.innerHTML = '';
-    
+
     // Agregar nuevos errores
     Object.values(errors).flat().forEach(error => {
         const li = document.createElement('li');
         li.textContent = error;
         errorsList.appendChild(li);
     });
-    
+
     // Mostrar contenedor de errores
     errorsContainer.classList.remove('hidden');
-    
+
     // Scroll al top del modal para ver los errores
     document.querySelector('#editUserModal .relative').scrollTop = 0;
 }
@@ -524,15 +524,15 @@ function showSuccessMessage(message) {
             </div>
         </div>
     `;
-    
+
     // Agregar al DOM
     document.body.appendChild(notification);
-    
+
     // Animación de entrada
     setTimeout(() => {
         notification.style.transform = 'translateX(0)';
     }, 10);
-    
+
     // Remover después de 3 segundos
     setTimeout(() => {
         notification.style.transform = 'translateX(100%)';
@@ -570,11 +570,8 @@ function initializeRealTimeSearch() {
 
         // Debounce para evitar demasiadas peticiones
         searchTimeout = setTimeout(() => {
-            if (termino.length === 0) {
-                // Si no hay término de búsqueda, recargar todos los usuarios
-                location.reload();
-            } else if (termino.length >= 2) {
-                // Buscar solo si hay al menos 2 caracteres
+            if (termino.length >= 2 || termino.length === 0) {
+                // Buscar si hay al menos 2 caracteres o mostrar todos si está vacío
                 searchUsers(termino);
             }
         }, 300);

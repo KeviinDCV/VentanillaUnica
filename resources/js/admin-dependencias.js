@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     // Botón crear dependencia
     document.querySelector('[data-action="create-dependencia"]')?.addEventListener('click', openCreateModal);
-    
+
     // Botones editar dependencia
     document.querySelectorAll('[data-action="edit-dependencia"]').forEach(button => {
         button.addEventListener('click', function() {
@@ -39,14 +39,11 @@ function setupEventListeners() {
     // Botones eliminar dependencia
     document.querySelectorAll('[data-action="delete-dependencia"]').forEach(button => {
         button.addEventListener('click', function() {
-            console.log('Delete button clicked for dependencia:', this.dataset.dependenciaName);
-
             const dependenciaId = this.dataset.dependenciaId;
             const dependenciaName = this.dataset.dependenciaName;
             const radicadosCount = parseInt(this.dataset.radicadosCount);
 
             if (radicadosCount > 0) {
-                console.log('Cannot delete - has radicados:', radicadosCount);
                 showConfirmModal({
                     title: 'No se puede eliminar',
                     message: `La dependencia "${dependenciaName}" tiene ${radicadosCount} radicado(s) asociado(s). No se puede eliminar. Puede desactivarla en su lugar.`,
@@ -210,10 +207,10 @@ function showConfirmModal(options) {
     actionButton.textContent = options.actionText;
 
     console.log('Modal content set - Title:', options.title, 'Message:', options.message, 'Action:', options.actionText);
-    
+
     // Aplicar clases CSS completas
     actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
-    
+
     // Como respaldo, aplicar estilos inline también
     if (options.actionClass.includes('bg-orange-600')) {
         actionButton.style.backgroundColor = '#ea580c';
@@ -299,23 +296,23 @@ function toggleDependenciaStatus(formId) {
 function openCreateModal() {
     const modal = document.getElementById('createDependenciaModal');
     const form = document.getElementById('createDependenciaForm');
-    
+
     // Limpiar formulario
     form.reset();
     document.getElementById('create_activa').checked = true;
-    
+
     // Ocultar errores
     document.getElementById('createModalErrors').classList.add('hidden');
-    
+
     // Mostrar modal
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    
+
     // Animación de entrada
     const modalContent = modal.querySelector('.relative');
     modalContent.style.opacity = '0';
     modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-    
+
     setTimeout(() => {
         modalContent.style.opacity = '1';
         modalContent.style.transform = 'scale(1) translateY(0)';
@@ -327,11 +324,11 @@ function openCreateModal() {
 function closeCreateModal() {
     const modal = document.getElementById('createDependenciaModal');
     const modalContent = modal.querySelector('.relative');
-    
+
     // Animación de salida
     modalContent.style.opacity = '0';
     modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-    
+
     setTimeout(() => {
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
@@ -340,7 +337,7 @@ function closeCreateModal() {
 
 function openEditModal(dependenciaId, codigo, nombre, sigla, descripcion, responsable, telefono, email, activa) {
     const modal = document.getElementById('editDependenciaModal');
-    
+
     // Llenar formulario con datos
     document.getElementById('edit_dependencia_id').value = dependenciaId;
     document.getElementById('edit_codigo').value = codigo || '';
@@ -351,19 +348,19 @@ function openEditModal(dependenciaId, codigo, nombre, sigla, descripcion, respon
     document.getElementById('edit_telefono').value = telefono || '';
     document.getElementById('edit_email').value = email || '';
     document.getElementById('edit_activa').checked = activa;
-    
+
     // Ocultar errores
     document.getElementById('editModalErrors').classList.add('hidden');
-    
+
     // Mostrar modal
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    
+
     // Animación de entrada
     const modalContent = modal.querySelector('.relative');
     modalContent.style.opacity = '0';
     modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-    
+
     setTimeout(() => {
         modalContent.style.opacity = '1';
         modalContent.style.transform = 'scale(1) translateY(0)';
@@ -375,11 +372,11 @@ function openEditModal(dependenciaId, codigo, nombre, sigla, descripcion, respon
 function closeEditModal() {
     const modal = document.getElementById('editDependenciaModal');
     const modalContent = modal.querySelector('.relative');
-    
+
     // Animación de salida
     modalContent.style.opacity = '0';
     modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-    
+
     setTimeout(() => {
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
@@ -592,15 +589,9 @@ function initializeRealTimeSearch() {
 
         // Debounce para evitar demasiadas peticiones
         searchTimeout = setTimeout(() => {
-            if (termino.length === 0 && filtroEstado === '') {
-                // Si no hay término de búsqueda ni filtro, recargar todas las dependencias
-                location.reload();
-            } else if (termino.length >= 2 || filtroEstado !== '') {
-                // Buscar si hay al menos 2 caracteres o hay filtro seleccionado
+            if (termino.length >= 2 || termino.length === 0 || filtroEstado !== '') {
+                // Buscar si hay al menos 2 caracteres, está vacío, o hay filtro seleccionado
                 searchDependencias(termino, filtroEstado);
-            } else if (termino.length === 0 && filtroEstado !== '') {
-                // Solo filtro sin búsqueda
-                searchDependencias('', filtroEstado);
             }
         }, 300);
     });
@@ -610,13 +601,8 @@ function initializeRealTimeSearch() {
         const termino = searchInput.value.trim();
         const filtroEstado = this.value;
 
-        if (termino.length === 0 && filtroEstado === '') {
-            // Si no hay término de búsqueda ni filtro, recargar todas las dependencias
-            location.reload();
-        } else {
-            // Aplicar filtro inmediatamente
-            searchDependencias(termino, filtroEstado);
-        }
+        // Aplicar filtro inmediatamente
+        searchDependencias(termino, filtroEstado);
     });
 }
 

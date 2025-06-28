@@ -138,30 +138,69 @@
                                                 {{ $subserie->activa ? 'Activa' : 'Inactiva' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                            <button data-action="edit-subserie"
-                                                    data-subserie-id="{{ $subserie->id }}"
-                                                    data-subserie-serie="{{ $subserie->serie_id }}"
-                                                    data-subserie-numero="{{ $subserie->numero_subserie }}"
-                                                    data-subserie-nombre="{{ $subserie->nombre }}"
-                                                    data-subserie-descripcion="{{ $subserie->descripcion }}"
-                                                    data-subserie-dias="{{ $subserie->dias_respuesta }}"
-                                                    data-subserie-activa="{{ $subserie->activa ? 'true' : 'false' }}"
-                                                    class="text-indigo-600 hover:text-indigo-900">
-                                                Editar
-                                            </button>
-                                            <button data-action="toggle-status"
-                                                    data-subserie-id="{{ $subserie->id }}"
-                                                    data-subserie-nombre="{{ $subserie->nombre }}"
-                                                    class="text-yellow-600 hover:text-yellow-900">
-                                                {{ $subserie->activa ? 'Desactivar' : 'Activar' }}
-                                            </button>
-                                            <button data-action="delete-subserie"
-                                                    data-subserie-id="{{ $subserie->id }}"
-                                                    data-subserie-nombre="{{ $subserie->nombre }}"
-                                                    class="text-red-600 hover:text-red-900">
-                                                Eliminar
-                                            </button>
+                                        <td class="px-3 py-4 text-sm font-medium">
+                                            <div class="relative inline-block text-left">
+                                                <button type="button"
+                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
+                                                        onclick="toggleDropdown('dropdown-subserie-{{ $subserie->id }}')">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                                    </svg>
+                                                </button>
+
+                                                <div id="dropdown-subserie-{{ $subserie->id }}"
+                                                     class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                                     style="z-index: 9999;"
+                                                     data-dropdown-menu>
+                                                    <div class="py-1" role="menu">
+                                                        <!-- Editar -->
+                                                        <button data-action="edit-subserie"
+                                                                data-subserie-id="{{ $subserie->id }}"
+                                                                data-subserie-serie="{{ $subserie->serie_id }}"
+                                                                data-subserie-numero="{{ $subserie->numero_subserie }}"
+                                                                data-subserie-nombre="{{ $subserie->nombre }}"
+                                                                data-subserie-descripcion="{{ $subserie->descripcion }}"
+                                                                data-subserie-dias="{{ $subserie->dias_respuesta }}"
+                                                                data-subserie-activa="{{ $subserie->activa ? 'true' : 'false' }}"
+                                                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                            <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                            </svg>
+                                                            Editar
+                                                        </button>
+
+                                                        <!-- Cambiar Estado -->
+                                                        <button data-action="toggle-status"
+                                                                data-subserie-id="{{ $subserie->id }}"
+                                                                data-subserie-nombre="{{ $subserie->nombre }}"
+                                                                data-subserie-activa="{{ $subserie->activa ? 'true' : 'false' }}"
+                                                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                            @if($subserie->activa)
+                                                                <svg class="w-4 h-4 mr-3 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                                                                </svg>
+                                                                Desactivar
+                                                            @else
+                                                                <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                </svg>
+                                                                Activar
+                                                            @endif
+                                                        </button>
+
+                                                        <!-- Eliminar -->
+                                                        <button data-action="delete-subserie"
+                                                                data-subserie-id="{{ $subserie->id }}"
+                                                                data-subserie-nombre="{{ $subserie->nombre }}"
+                                                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                            <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                            </svg>
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -197,6 +236,49 @@
 
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
+            <!-- Header del Modal -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 id="confirmModalTitle" class="text-lg font-medium text-gray-900">Confirmar Acción</h3>
+                <button data-action="close-confirm-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="mt-4">
+                <div class="flex items-center mb-4">
+                    <div id="confirmModalIcon" class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full">
+                        <!-- El icono se insertará dinámicamente -->
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p id="confirmModalMessage" class="text-sm text-gray-600">
+                            <!-- El mensaje se insertará dinámicamente -->
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button"
+                            data-action="close-confirm-modal"
+                            class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            id="confirmModalAction"
+                            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]">
+                        Confirmar
+                    </button>
                 </div>
             </div>
         </div>

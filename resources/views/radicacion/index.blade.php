@@ -19,10 +19,7 @@
             <!-- Botón Crear Radicado -->
             <div class="mb-8 text-center">
                 <button id="btn-crear-radicado"
-                        class="inline-flex items-center px-8 py-4 text-white font-medium rounded-lg shadow-sm transition-colors duration-200"
-                        style="background-color: #082ca4;"
-                        onmouseover="this.style.backgroundColor='#061f7a'"
-                        onmouseout="this.style.backgroundColor='#082ca4'">
+                        class="inline-flex items-center px-8 py-4 bg-uniradical-blue text-white font-medium rounded-lg shadow-sm hover:bg-opacity-90 transition-colors duration-200">
                     <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
