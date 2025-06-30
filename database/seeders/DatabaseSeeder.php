@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             UnidadAdministrativaSeeder::class,
             SerieSeeder::class,
             SubserieSeeder::class,
-            TrdSeeder::class,
             TipoSolicitudSeeder::class,
         ]);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Gestion;
 
 use App\Http\Controllers\Controller;
 use App\Models\Serie;
@@ -23,7 +23,7 @@ class SerieController extends Controller
 
         $unidades = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
-        return view('admin.series.index', compact('series', 'unidades'));
+        return view('gestion.series.index', compact('series', 'unidades'));
     }
 
     /**
@@ -32,24 +32,20 @@ class SerieController extends Controller
     public function buscar(Request $request)
     {
         $termino = $request->get('termino', '');
-        $unidadId = $request->get('unidad_id');
-        
+        $unidadId = $request->get('unidad_id', '');
+
         $query = Serie::with(['unidadAdministrativa'])
                      ->withCount('subseries');
 
-        if ($termino) {
+        if (!empty($termino)) {
             $query->where(function($q) use ($termino) {
                 $q->where('numero_serie', 'like', "%{$termino}%")
                   ->orWhere('nombre', 'like', "%{$termino}%")
-                  ->orWhere('descripcion', 'like', "%{$termino}%")
-                  ->orWhereHas('unidadAdministrativa', function($subq) use ($termino) {
-                      $subq->where('codigo', 'like', "%{$termino}%")
-                           ->orWhere('nombre', 'like', "%{$termino}%");
-                  });
+                  ->orWhere('descripcion', 'like', "%{$termino}%");
             });
         }
 
-        if ($unidadId) {
+        if (!empty($unidadId)) {
             $query->where('unidad_administrativa_id', $unidadId);
         }
 
@@ -77,21 +73,22 @@ class SerieController extends Controller
             'activa' => 'boolean'
         ]);
 
-        // Validar que no exista la misma serie en la misma unidad administrativa
-        $validator->after(function ($validator) use ($request) {
-            $existe = Serie::where('unidad_administrativa_id', $request->unidad_administrativa_id)
-                          ->where('numero_serie', $request->numero_serie)
-                          ->exists();
-            
-            if ($existe) {
-                $validator->errors()->add('numero_serie', 'Ya existe una serie con este número en la unidad administrativa seleccionada.');
-            }
-        });
-
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Verificar que no exista otra serie con el mismo número en la misma unidad
+        $existeSerie = Serie::where('unidad_administrativa_id', $request->unidad_administrativa_id)
+                           ->where('numero_serie', $request->numero_serie)
+                           ->exists();
+
+        if ($existeSerie) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya existe una serie con este número en la unidad administrativa seleccionada'
             ], 422);
         }
 
@@ -127,22 +124,23 @@ class SerieController extends Controller
             'activa' => 'boolean'
         ]);
 
-        // Validar que no exista la misma serie en la misma unidad administrativa (excluyendo la actual)
-        $validator->after(function ($validator) use ($request, $id) {
-            $existe = Serie::where('unidad_administrativa_id', $request->unidad_administrativa_id)
-                          ->where('numero_serie', $request->numero_serie)
-                          ->where('id', '!=', $id)
-                          ->exists();
-            
-            if ($existe) {
-                $validator->errors()->add('numero_serie', 'Ya existe una serie con este número en la unidad administrativa seleccionada.');
-            }
-        });
-
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Verificar que no exista otra serie con el mismo número en la misma unidad (excluyendo la actual)
+        $existeSerie = Serie::where('unidad_administrativa_id', $request->unidad_administrativa_id)
+                           ->where('numero_serie', $request->numero_serie)
+                           ->where('id', '!=', $id)
+                           ->exists();
+
+        if ($existeSerie) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya existe otra serie con este número en la unidad administrativa seleccionada'
             ], 422);
         }
 

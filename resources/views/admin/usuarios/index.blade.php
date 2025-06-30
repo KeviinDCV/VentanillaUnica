@@ -352,6 +352,13 @@
                     {{ $usuarios->links() }}
                 </div>
             </div>
+
+            <!-- Navegación -->
+            <div class="mt-8 flex justify-center">
+                <a href="{{ route('gestion.index') }}" class="back-button">
+                    ← Volver a Gestión
+                </a>
+            </div>
         </div>
     </div>
 

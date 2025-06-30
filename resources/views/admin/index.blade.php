@@ -135,28 +135,6 @@
                     </a>
                 </div>
 
-                <!-- 3. Serie -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-800">Serie</h3>
-                        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">0</p>
-                    <p class="text-sm text-gray-500 mb-4">Series documentales</p>
-                    <a href="#"
-                       class="inline-flex items-center text-sm font-medium text-purple-600 hover:text-purple-500">
-                        Gestionar series
-                        <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
-                    </a>
-                </div>
-
-
 
                 <!-- 5. Comunicaciones -->
                 <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200">

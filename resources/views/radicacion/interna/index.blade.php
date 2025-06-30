@@ -43,13 +43,13 @@
 
                     <form action="{{ route('radicacion.interna.store') }}" method="POST" enctype="multipart/form-data" id="radicacionInternaForm">
                         @csrf
-                        
+
                         <!-- Sección 1: Información del Remitente Interno -->
                         <div class="mb-8">
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 1. Información del Remitente (Dependencia Origen)
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Dependencia Origen -->
                                 <div class="md:col-span-2">
@@ -72,7 +72,7 @@
                                     <label for="funcionario_remitente" class="block text-sm font-medium text-gray-700 mb-2">
                                         Funcionario Remitente <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="funcionario_remitente" id="funcionario_remitente" 
+                                    <input type="text" name="funcionario_remitente" id="funcionario_remitente"
                                            value="{{ old('funcionario_remitente') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Nombre completo del funcionario" required>
@@ -83,7 +83,7 @@
                                     <label for="cargo_remitente" class="block text-sm font-medium text-gray-700 mb-2">
                                         Cargo
                                     </label>
-                                    <input type="text" name="cargo_remitente" id="cargo_remitente" 
+                                    <input type="text" name="cargo_remitente" id="cargo_remitente"
                                            value="{{ old('cargo_remitente') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Cargo del funcionario">
@@ -94,7 +94,7 @@
                                     <label for="telefono_remitente" class="block text-sm font-medium text-gray-700 mb-2">
                                         Teléfono
                                     </label>
-                                    <input type="text" name="telefono_remitente" id="telefono_remitente" 
+                                    <input type="text" name="telefono_remitente" id="telefono_remitente"
                                            value="{{ old('telefono_remitente') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Número de teléfono">
@@ -105,7 +105,7 @@
                                     <label for="email_remitente" class="block text-sm font-medium text-gray-700 mb-2">
                                         Email
                                     </label>
-                                    <input type="email" name="email_remitente" id="email_remitente" 
+                                    <input type="email" name="email_remitente" id="email_remitente"
                                            value="{{ old('email_remitente') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Correo electrónico">
@@ -118,7 +118,7 @@
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 2. Información del Documento
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Asunto -->
                                 <div class="md:col-span-2">
@@ -168,7 +168,7 @@
                                     <label for="numero_folios" class="block text-sm font-medium text-gray-700 mb-2">
                                         Número de Folios <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="number" name="numero_folios" id="numero_folios" 
+                                    <input type="number" name="numero_folios" id="numero_folios"
                                            value="{{ old('numero_folios', 1) }}" min="1" required
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 </div>
@@ -190,27 +190,12 @@
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 3. Tabla de Retención Documental (TRD)
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 gap-6">
-                                <!-- TRD -->
+                                <!-- TRD Jerárquico -->
                                 <div>
-                                    <label for="trd_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Seleccionar TRD <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="trd_id" id="trd_id" required
-                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                        <option value="">Seleccionar TRD...</option>
-                                        @foreach($trds as $trd)
-                                            <option value="{{ $trd->id }}" 
-                                                    data-codigo="{{ $trd->codigo }}"
-                                                    data-serie="{{ $trd->serie }}"
-                                                    data-subserie="{{ $trd->subserie }}"
-                                                    data-asunto="{{ $trd->asunto }}"
-                                                    {{ old('trd_id') == $trd->id ? 'selected' : '' }}>
-                                                {{ $trd->descripcion_completa }} - {{ $trd->asunto }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Clasificación Documental (TRD)</h4>
+                                    <x-trd-selector :unidadesAdministrativas="$unidadesAdministrativas" />
                                 </div>
 
                                 <!-- Información del TRD seleccionado -->
@@ -243,7 +228,7 @@
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 4. Destino del Documento
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Dependencia Destino -->
                                 <div class="md:col-span-2">
@@ -301,7 +286,7 @@
                                     <label for="fecha_limite_respuesta" class="block text-sm font-medium text-gray-700 mb-2">
                                         Fecha Límite de Respuesta <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="date" name="fecha_limite_respuesta" id="fecha_limite_respuesta" 
+                                    <input type="date" name="fecha_limite_respuesta" id="fecha_limite_respuesta"
                                            value="{{ old('fecha_limite_respuesta') }}"
                                            min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
@@ -315,7 +300,7 @@
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 5. Documento
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 gap-6">
                                 <!-- Archivo -->
                                 <div>

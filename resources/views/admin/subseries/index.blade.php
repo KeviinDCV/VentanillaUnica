@@ -142,14 +142,14 @@
                                             <div class="relative inline-block text-left">
                                                 <button type="button"
                                                         class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
-                                                        onclick="toggleDropdown('dropdown-subserie-{{ $subserie->id }}')">
+                                                        onclick="toggleDropdown('dropdown-subserie-{{ $subserie->id }}', this)">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                                     </svg>
                                                 </button>
 
                                                 <div id="dropdown-subserie-{{ $subserie->id }}"
-                                                     class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                                                     class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                                                      style="z-index: 9999;"
                                                      data-dropdown-menu>
                                                     <div class="py-1" role="menu">
@@ -224,17 +224,13 @@
 
                     <!-- Navegación -->
                     <div class="mt-8 flex justify-between">
-                        <a href="{{ route('admin.series.index') }}"
-                           class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        <a href="{{ route('gestion.series.index') }}" class="back-button">
                             ← Anterior: Series
                         </a>
-                        <div class="flex space-x-4">
-                            <a href="{{ route('admin.trds.index') }}"
-                               class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
-                                Ver TRD Tradicional
-                            </a>
 
-                        </div>
+                        <a href="{{ route('gestion.index') }}" class="btn-institutional">
+                            Volver a Gestión
+                        </a>
                     </div>
                 </div>
             </div>

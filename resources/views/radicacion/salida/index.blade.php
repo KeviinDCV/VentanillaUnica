@@ -312,25 +312,10 @@
                             </h3>
 
                             <div class="grid grid-cols-1 gap-6">
-                                <!-- TRD -->
+                                <!-- TRD Jerárquico -->
                                 <div>
-                                    <label for="trd_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Seleccionar TRD <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="trd_id" id="trd_id" required
-                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                        <option value="">Seleccionar TRD...</option>
-                                        @foreach($trds as $trd)
-                                            <option value="{{ $trd->id }}"
-                                                    data-codigo="{{ $trd->codigo }}"
-                                                    data-serie="{{ $trd->serie }}"
-                                                    data-subserie="{{ $trd->subserie }}"
-                                                    data-asunto="{{ $trd->asunto }}"
-                                                    {{ old('trd_id') == $trd->id ? 'selected' : '' }}>
-                                                {{ $trd->descripcion_completa }} - {{ $trd->asunto }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Clasificación Documental (TRD)</h4>
+                                    <x-trd-selector :unidadesAdministrativas="$unidadesAdministrativas" />
                                 </div>
 
                                 <!-- Información del TRD seleccionado -->

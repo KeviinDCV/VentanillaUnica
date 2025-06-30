@@ -17,7 +17,7 @@ class Radicado extends Model
         'fecha_radicado',
         'hora_radicado',
         'remitente_id',
-        'trd_id',
+
         'dependencia_destino_id',
         'dependencia_origen_id',
         'usuario_radica_id',
@@ -50,13 +50,7 @@ class Radicado extends Model
         return $this->belongsTo(Remitente::class, 'remitente_id');
     }
 
-    /**
-     * Relación con TRD
-     */
-    public function trd(): BelongsTo
-    {
-        return $this->belongsTo(Trd::class, 'trd_id');
-    }
+
 
     /**
      * Relación con dependencia destino

@@ -1,14 +1,23 @@
 <x-app-layout>
-    <div data-page="admin-series"></div>
+    <div data-page="gestion-series"></div>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-light text-xl text-gray-800 leading-tight">
-                    Gestión de Series
-                </h2>
-                <p class="text-sm text-gray-600 font-light mt-1">
-                    Administración de Series para las Unidades Administrativas
-                </p>
+            <div class="flex items-center space-x-4">
+                <a href="{{ route('gestion.index') }}"
+                   class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Volver
+                </a>
+                <div>
+                    <h2 class="font-light text-xl text-gray-800 leading-tight">
+                        Gestión de Series
+                    </h2>
+                    <p class="text-sm text-gray-600 font-light mt-1">
+                        Administración de series para las unidades administrativas
+                    </p>
+                </div>
             </div>
             <div class="flex items-center space-x-4">
                 <x-hospital-brand />
@@ -22,12 +31,12 @@
                 <div class="p-6 text-gray-900">
 
                     <!-- Información del proceso -->
-                    <div class="mb-8 p-6 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+                    <div class="mb-8 p-6 bg-blue-50 border-l-4 border-uniradical-blue rounded-r-lg">
                         <h3 class="text-lg font-medium text-gray-800 mb-3">Proceso de Creación de TRD</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div class="flex items-center space-x-2">
                                 <span class="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">✓</span>
-                                <span class="text-gray-600">Códigos de Unidades Administrativas creados</span>
+                                <span class="font-medium text-green-700">Crear códigos de Unidades Administrativas</span>
                             </div>
                             <div class="flex items-center space-x-2">
                                 <span class="w-6 h-6 bg-uniradical-blue text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
@@ -39,8 +48,8 @@
                             </div>
                         </div>
                         <p class="mt-4 text-sm text-gray-600">
-                            <strong>Paso actual:</strong> Agregar Series a las Unidades Administrativas.
-                            Ejemplo: Código: 100. Número de Serie: 11. Nombre Serie: PQRS.
+                            <strong>Paso actual:</strong> Creación de Series para las Unidades Administrativas.
+                            Una vez creadas las series, podrá agregar Sub-series según lo establezca la TRD.
                         </p>
                     </div>
 
@@ -48,7 +57,7 @@
                     <div class="mb-6 p-4 bg-gray-50 rounded-lg">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label for="filtro-unidad" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Unidad Administrativa</label>
+                                <label for="filtro-unidad" class="block text-sm font-medium text-gray-700 mb-1">Unidad Administrativa</label>
                                 <select id="filtro-unidad" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                     <option value="">Todas las unidades</option>
                                     @foreach($unidades as $unidad)
@@ -74,19 +83,20 @@
                     <!-- Tabla de Series -->
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div class="p-6 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-800">Series por Unidad Administrativa</h3>
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium text-gray-800">Series Documentales</h3>
+                            </div>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidad Admin.</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Número Serie</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Serie</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código Serie</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Días Respuesta</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subseries</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado / Subseries</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
@@ -95,43 +105,33 @@
                                     <tr class="serie-row hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div>
-                                                <span class="text-sm font-medium text-gray-900">{{ $serie->unidadAdministrativa->codigo }}</span>
-                                                <p class="text-xs text-gray-500">{{ Str::limit($serie->unidadAdministrativa->nombre, 30) }}</p>
+                                                <div class="text-sm font-medium text-gray-900">{{ $serie->unidadAdministrativa->codigo }}-{{ $serie->numero_serie }}</div>
+                                                <div class="text-sm text-gray-500">{{ Str::limit($serie->unidadAdministrativa->nombre, 25) }}</div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="text-sm font-medium text-gray-900">{{ $serie->numero_serie }}</span>
+                                        <td class="px-6 py-4">
+                                            <span class="text-sm font-medium text-gray-900">{{ $serie->nombre }}</span>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <span class="text-sm text-gray-900">{{ $serie->nombre }}</span>
-                                            @if($serie->descripcion)
-                                            <p class="text-xs text-gray-500">{{ Str::limit($serie->descripcion, 50) }}</p>
-                                            @endif
+                                            <span class="text-sm text-gray-600">{{ Str::limit($serie->descripcion, 40) ?: 'Sin descripción' }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            @if($serie->dias_respuesta)
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                {{ $serie->dias_respuesta }} días
-                                            </span>
-                                            @else
-                                            <span class="text-xs text-gray-400">No definido</span>
-                                            @endif
+                                            <span class="text-sm text-gray-900">{{ $serie->dias_respuesta ? $serie->dias_respuesta . ' días' : 'No definido' }}</span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {{ $serie->subseries_count }} subseries
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $serie->activa ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                {{ $serie->activa ? 'Activa' : 'Inactiva' }}
-                                            </span>
+                                            <div class="space-y-1">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $serie->activa ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ $serie->activa ? 'Activa' : 'Inactiva' }}
+                                                </span>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ $serie->subseries_count }} subseries
+                                                </div>
+                                            </div>
                                         </td>
                                         <td class="px-3 py-4 text-sm font-medium">
                                             <div class="relative inline-block text-left">
-                                                <button type="button"
-                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
-                                                        onclick="toggleDropdown('dropdown-serie-{{ $serie->id }}')">
+                                                <button data-dropdown-toggle="dropdown-serie-{{ $serie->id }}"
+                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue">
                                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                                     </svg>
@@ -162,6 +162,7 @@
                                                         <button data-action="toggle-status"
                                                                 data-serie-id="{{ $serie->id }}"
                                                                 data-serie-nombre="{{ $serie->nombre }}"
+                                                                data-serie-activa="{{ $serie->activa ? 'true' : 'false' }}"
                                                                 class="w-full text-left px-4 py-2 text-sm {{ $serie->activa ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50' }} flex items-center">
                                                             @if($serie->activa)
                                                                 <svg class="w-4 h-4 mr-3 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,14 +224,12 @@
                         </div>
                     </div>
 
-                    <!-- Navegación -->
+                    <!-- Navegación a siguientes pasos -->
                     <div class="mt-8 flex justify-between">
-                        <a href="{{ route('admin.unidades-administrativas.index') }}"
-                           class="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">
+                        <a href="{{ route('admin.unidades-administrativas.index') }}" class="back-button">
                             ← Anterior: Unidades Administrativas
                         </a>
-                        <a href="{{ route('admin.subseries.index') }}"
-                           class="px-6 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                        <a href="{{ route('admin.subseries.index') }}" class="btn-institutional">
                             Siguiente: Gestionar Subseries →
                         </a>
                     </div>
@@ -239,48 +238,5 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmación -->
-    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
-        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
-            <!-- Header del Modal -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-200">
-                <h3 id="confirmModalTitle" class="text-lg font-medium text-gray-900">Confirmar Acción</h3>
-                <button data-action="close-confirm-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Contenido del Modal -->
-            <div class="mt-4">
-                <div class="flex items-center mb-4">
-                    <div id="confirmModalIcon" class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full">
-                        <!-- Icono se agregará dinámicamente -->
-                    </div>
-                    <div class="ml-4 flex-1">
-                        <p id="confirmModalMessage" class="text-sm text-gray-600">
-                            <!-- Mensaje se agregará dinámicamente -->
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Botones -->
-                <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
-                    <button type="button"
-                            data-action="close-confirm-modal"
-                            class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                        Cancelar
-                    </button>
-                    <button type="button"
-                            id="confirmModalAction"
-                            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]">
-                        Confirmar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Los scripts están incluidos en el bundle principal de Vite -->
+    <!-- Modales se insertan aquí dinámicamente -->
 </x-app-layout>

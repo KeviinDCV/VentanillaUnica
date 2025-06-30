@@ -43,13 +43,13 @@
 
                     <form action="{{ route('radicacion.entrada.store') }}" method="POST" enctype="multipart/form-data" id="radicacionEntradaForm" data-protect="true">
                         @csrf
-                        
+
                         <!-- Sección 1: Información del Remitente -->
                         <div class="mb-8">
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 1. Información del Remitente
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Tipo de Remitente -->
                                 <div class="md:col-span-2">
@@ -78,7 +78,7 @@
                                         <label for="tipo_documento" class="block text-sm font-medium text-gray-700 mb-2">
                                             Tipo de Documento <span class="text-red-500">*</span>
                                         </label>
-                                        <select name="tipo_documento" id="tipo_documento" 
+                                        <select name="tipo_documento" id="tipo_documento"
                                                 class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                             <option value="">Seleccionar...</option>
                                             <option value="CC" {{ old('tipo_documento') === 'CC' ? 'selected' : '' }}>Cédula de Ciudadanía</option>
@@ -94,7 +94,7 @@
                                         <label for="numero_documento" class="block text-sm font-medium text-gray-700 mb-2">
                                             Número de Documento <span class="text-red-500">*</span>
                                         </label>
-                                        <input type="text" name="numero_documento" id="numero_documento" 
+                                        <input type="text" name="numero_documento" id="numero_documento"
                                                value="{{ old('numero_documento') }}"
                                                class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                                placeholder="Número de documento">
@@ -106,7 +106,7 @@
                                     <label for="nombre_completo" class="block text-sm font-medium text-gray-700 mb-2">
                                         Nombre Completo <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="text" name="nombre_completo" id="nombre_completo" 
+                                    <input type="text" name="nombre_completo" id="nombre_completo"
                                            value="{{ old('nombre_completo') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Nombre completo del remitente" required>
@@ -117,7 +117,7 @@
                                     <label for="telefono" class="block text-sm font-medium text-gray-700 mb-2">
                                         Teléfono
                                     </label>
-                                    <input type="text" name="telefono" id="telefono" 
+                                    <input type="text" name="telefono" id="telefono"
                                            value="{{ old('telefono') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Número de teléfono">
@@ -128,7 +128,7 @@
                                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                                         Email
                                     </label>
-                                    <input type="email" name="email" id="email" 
+                                    <input type="email" name="email" id="email"
                                            value="{{ old('email') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Correo electrónico">
@@ -186,7 +186,7 @@
                                     <label for="entidad" class="block text-sm font-medium text-gray-700 mb-2">
                                         Entidad que Representa
                                     </label>
-                                    <input type="text" name="entidad" id="entidad" 
+                                    <input type="text" name="entidad" id="entidad"
                                            value="{{ old('entidad') }}"
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                            placeholder="Entidad o empresa que representa (si aplica)">
@@ -199,7 +199,7 @@
                             <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                                 2. Datos del Radicado
                             </h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Medio de Recepción -->
                                 <div>
@@ -239,7 +239,7 @@
                                     <label for="numero_folios" class="block text-sm font-medium text-gray-700 mb-2">
                                         Número de Folios <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="number" name="numero_folios" id="numero_folios" 
+                                    <input type="number" name="numero_folios" id="numero_folios"
                                            value="{{ old('numero_folios', 1) }}" min="1" required
                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 </div>
@@ -263,25 +263,10 @@
                             </h3>
 
                             <div class="grid grid-cols-1 gap-6">
-                                <!-- TRD -->
+                                <!-- TRD Jerárquico -->
                                 <div>
-                                    <label for="trd_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                        Seleccionar TRD <span class="text-red-500">*</span>
-                                    </label>
-                                    <select name="trd_id" id="trd_id" required
-                                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                        <option value="">Seleccionar TRD...</option>
-                                        @foreach($trds as $trd)
-                                            <option value="{{ $trd->id }}"
-                                                    data-codigo="{{ $trd->codigo }}"
-                                                    data-serie="{{ $trd->serie }}"
-                                                    data-subserie="{{ $trd->subserie }}"
-                                                    data-asunto="{{ $trd->asunto }}"
-                                                    {{ old('trd_id') == $trd->id ? 'selected' : '' }}>
-                                                {{ $trd->descripcion_completa }} - {{ $trd->asunto }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <h4 class="text-sm font-medium text-gray-700 mb-3">Clasificación Documental (TRD)</h4>
+                                    <x-trd-selector :unidadesAdministrativas="$unidadesAdministrativas" />
                                 </div>
 
                                 <!-- Información del TRD seleccionado -->

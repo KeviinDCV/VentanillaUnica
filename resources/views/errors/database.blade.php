@@ -6,7 +6,7 @@
     <title>Sistema No Disponible - UniRadic</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/LogoHospital.jpg') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <style>
         /* ESTILOS ESPECÍFICOS PARA PÁGINA DE ERROR DE BASE DE DATOS */
         body {
@@ -378,19 +378,11 @@
         <div class="action-buttons">
             <a href="{{ url('/') }}" class="btn-primary">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 4V20C4 20.5523 4.44772 21 5 21H19C19.5523 21 20 20.5523 20 20V8H16C14.8954 8 14 7.10457 14 6V2H5C4.44772 2 4 2.44772 4 3V4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M14 2L20 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Intentar Nuevamente
-            </a>
-            
-            <button id="btn-reload" class="btn-secondary">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1 4V10H7M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M20.49 9C19.9828 7.56678 19.1209 6.28392 17.9845 5.27304C16.8482 4.26216 15.4745 3.55682 13.9917 3.21834C12.5089 2.87986 10.9652 2.91902 9.50481 3.33329C8.04437 3.74757 6.71475 4.52306 5.64 5.58L1 10M23 14L18.36 18.42C17.2853 19.477 15.9556 20.2525 14.4952 20.6667C13.0348 21.081 11.4911 21.1201 10.0083 20.7817C8.52547 20.4432 7.1518 19.7378 6.01547 18.727C4.87913 17.7161 4.01717 16.4332 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Recargar Página
-            </button>
+                Reintentar Conexión
+            </a>
         </div>
 
         <!-- Información del Sistema -->
@@ -416,15 +408,7 @@
             }
         }, 1000);
 
-        // Event listener para el botón de recargar
-        document.addEventListener('DOMContentLoaded', function() {
-            const reloadBtn = document.getElementById('btn-reload');
-            if (reloadBtn) {
-                reloadBtn.addEventListener('click', function() {
-                    window.location.reload();
-                });
-            }
-        });
+
     </script>
 </body>
 </html>

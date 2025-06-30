@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Radicado;
 use App\Models\Remitente;
 use App\Models\Dependencia;
-use App\Models\Trd;
+use App\Models\UnidadAdministrativa;
+
 use App\Models\Documento;
 use Carbon\Carbon;
 
@@ -21,16 +22,16 @@ class RadicacionInternaController extends Controller
     public function index(Request $request)
     {
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
-        $trds = Trd::activos()->orderBy('codigo')->get();
+        $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
         // Si viene como respuesta a un documento
         $radicadoRespuesta = null;
         if ($request->has('respuesta_a')) {
-            $radicadoRespuesta = Radicado::with(['remitente', 'trd', 'dependenciaDestino'])
+            $radicadoRespuesta = Radicado::with(['remitente', 'dependenciaDestino'])
                                         ->find($request->respuesta_a);
         }
 
-        return view('radicacion.interna.index', compact('dependencias', 'trds', 'radicadoRespuesta'));
+        return view('radicacion.interna.index', compact('dependencias', 'unidadesAdministrativas', 'radicadoRespuesta'));
     }
 
     /**

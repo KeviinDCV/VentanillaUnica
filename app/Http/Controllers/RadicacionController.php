@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Radicado;
 use App\Models\Dependencia;
-use App\Models\Trd;
+
 use Carbon\Carbon;
 
 class RadicacionController extends Controller
@@ -24,10 +24,9 @@ class RadicacionController extends Controller
 
         // Obtener datos para los filtros de consulta
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
-        $trds = Trd::activos()->orderBy('codigo')->get();
 
         // Inicializar query para consulta
-        $query = Radicado::with(['remitente', 'trd', 'dependenciaDestino', 'usuarioRadica', 'documentos']);
+        $query = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica', 'documentos']);
 
         // Aplicar filtros basados en rol
         $this->aplicarFiltrosPorRol($query, $user);
@@ -60,7 +59,6 @@ class RadicacionController extends Controller
             'radicadosRecientes',
             'radicadosConsulta',
             'dependencias',
-            'trds',
             'filtros',
             'estadisticas'
         ));

@@ -10,10 +10,10 @@ import './notifications';
 import './form-protection';
 import './admin-logs';
 import './admin-usuarios';
-import './admin-trds';
+
 import './admin-dependencias';
-import './admin-series';
 import './admin-subseries';
+import './gestion-series';
 import './radicacion';
 import './reportes';
 import './preview';

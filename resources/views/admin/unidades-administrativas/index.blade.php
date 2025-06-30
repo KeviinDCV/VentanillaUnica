@@ -204,9 +204,11 @@
                     </div>
 
                     <!-- Navegación a siguientes pasos -->
-                    <div class="mt-8 flex justify-end space-x-4">
-                        <a href="{{ route('admin.series.index') }}"
-                           class="px-6 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                    <div class="mt-8 flex justify-between">
+                        <a href="{{ route('gestion.index') }}" class="back-button">
+                            ← Volver a Gestión
+                        </a>
+                        <a href="{{ route('gestion.series.index') }}" class="btn-institutional">
                             Siguiente: Gestionar Series →
                         </a>
                     </div>

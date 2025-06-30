@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Radicado;
 use App\Models\Remitente;
 use App\Models\Dependencia;
-use App\Models\Trd;
+
 use App\Models\Documento;
 use App\Models\Ciudad;
 use App\Models\Departamento;
+use App\Models\UnidadAdministrativa;
 use Carbon\Carbon;
 
 class RadicacionSalidaController extends Controller
@@ -23,13 +24,13 @@ class RadicacionSalidaController extends Controller
     public function index()
     {
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
-        $trds = Trd::activos()->orderBy('codigo')->get();
         $ciudades = Ciudad::with('departamento')->activo()->ordenado()->get();
         $departamentos = Departamento::activo()->ordenado()->get();
+        $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
         $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
 
-        return view('radicacion.salida.index', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
+        return view('radicacion.salida.index', compact('dependencias', 'ciudades', 'departamentos', 'unidadesAdministrativas', 'tiposSolicitud'));
     }
 
     /**

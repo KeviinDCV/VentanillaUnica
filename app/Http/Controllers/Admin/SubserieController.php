@@ -35,7 +35,7 @@ class SubserieController extends Controller
         $termino = $request->get('termino', '');
         $serieId = $request->get('serie_id');
         $unidadId = $request->get('unidad_id');
-        
+
         $query = Subserie::with(['serie.unidadAdministrativa']);
 
         if ($termino) {
@@ -93,7 +93,7 @@ class SubserieController extends Controller
             $existe = Subserie::where('serie_id', $request->serie_id)
                              ->where('numero_subserie', $request->numero_subserie)
                              ->exists();
-            
+
             if ($existe) {
                 $validator->errors()->add('numero_subserie', 'Ya existe una subserie con este número en la serie seleccionada.');
             }
@@ -144,7 +144,7 @@ class SubserieController extends Controller
                              ->where('numero_subserie', $request->numero_subserie)
                              ->where('id', '!=', $id)
                              ->exists();
-            
+
             if ($existe) {
                 $validator->errors()->add('numero_subserie', 'Ya existe una subserie con este número en la serie seleccionada.');
             }
@@ -216,6 +216,55 @@ class SubserieController extends Controller
         return response()->json([
             'success' => true,
             'subseries' => $subseries
+        ]);
+    }
+
+    /**
+     * Obtener series por unidad administrativa
+     */
+    public function seriesPorUnidad($unidadId)
+    {
+        $series = Serie::where('unidad_administrativa_id', $unidadId)
+                      ->activas()
+                      ->orderBy('numero_serie')
+                      ->get(['id', 'numero_serie', 'nombre', 'dias_respuesta']);
+
+        return response()->json([
+            'success' => true,
+            'series' => $series
+        ]);
+    }
+
+    /**
+     * Buscar todas las series
+     */
+    public function buscarSeries(Request $request)
+    {
+        $termino = $request->get('termino', '');
+        $unidadId = $request->get('unidad_id', '');
+
+        $query = Serie::with(['unidadAdministrativa'])
+                     ->activas();
+
+        if (!empty($termino)) {
+            $query->where(function($q) use ($termino) {
+                $q->where('numero_serie', 'like', "%{$termino}%")
+                  ->orWhere('nombre', 'like', "%{$termino}%")
+                  ->orWhere('descripcion', 'like', "%{$termino}%");
+            });
+        }
+
+        if (!empty($unidadId)) {
+            $query->where('unidad_administrativa_id', $unidadId);
+        }
+
+        $series = $query->orderBy('unidad_administrativa_id')
+                       ->orderBy('numero_serie')
+                       ->get();
+
+        return response()->json([
+            'success' => true,
+            'series' => $series
         ]);
     }
 }

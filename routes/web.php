@@ -37,6 +37,18 @@ Route::get('/gestion', [App\Http\Controllers\GestionController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('gestion.index');
 
+// Rutas del módulo de gestión (solo para administradores)
+Route::prefix('gestion')->name('gestion.')->middleware(['auth', 'verified', 'role:administrador'])->group(function () {
+    // Gestión de Series
+    Route::get('/series', [App\Http\Controllers\Gestion\SerieController::class, 'index'])->name('series.index');
+    Route::post('/series', [App\Http\Controllers\Gestion\SerieController::class, 'store'])->name('series.store');
+    Route::put('/series/{serie}', [App\Http\Controllers\Gestion\SerieController::class, 'update'])->name('series.update');
+    Route::delete('/series/{serie}', [App\Http\Controllers\Gestion\SerieController::class, 'destroy'])->name('series.destroy');
+    Route::patch('/series/{serie}/toggle-status', [App\Http\Controllers\Gestion\SerieController::class, 'toggleStatus'])->name('series.toggle-status');
+    Route::get('/series/buscar', [App\Http\Controllers\Gestion\SerieController::class, 'buscar'])->name('series.buscar');
+    Route::get('/series/por-unidad/{unidad}', [App\Http\Controllers\Gestion\SerieController::class, 'porUnidad'])->name('series.por-unidad');
+});
+
 // Sistema - Vista principal
 Route::get('/sistema', [App\Http\Controllers\SistemaController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -93,12 +105,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarDependencia'])->name('dependencias.actualizar');
         Route::patch('/dependencias/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleDependenciaStatus'])->name('dependencias.toggle-status');
         Route::delete('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarDependencia'])->name('dependencias.eliminar');
-        Route::get('/trds', [App\Http\Controllers\Admin\AdminController::class, 'trds'])->name('trds.index');
-        Route::get('/trds/buscar', [App\Http\Controllers\Admin\AdminController::class, 'buscarTrds'])->name('trds.buscar');
-        Route::post('/trds', [App\Http\Controllers\Admin\AdminController::class, 'guardarTrd'])->name('trds.guardar');
-        Route::put('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'actualizarTrd'])->name('trds.actualizar');
-        Route::patch('/trds/{id}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'toggleTrdStatus'])->name('trds.toggle-status');
-        Route::delete('/trds/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarTrd'])->name('trds.eliminar');
+
         Route::get('/reportes', [App\Http\Controllers\Admin\AdminController::class, 'reportes'])->name('reportes');
         Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');
 
@@ -133,14 +140,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/unidades-administrativas/buscar', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'buscar'])->name('unidades-administrativas.buscar');
         Route::get('/unidades-administrativas/para-select', [App\Http\Controllers\Admin\UnidadAdministrativaController::class, 'paraSelect'])->name('unidades-administrativas.para-select');
 
-        // Gestión de Series
-        Route::get('/series', [App\Http\Controllers\Admin\SerieController::class, 'index'])->name('series.index');
-        Route::post('/series', [App\Http\Controllers\Admin\SerieController::class, 'store'])->name('series.store');
-        Route::put('/series/{serie}', [App\Http\Controllers\Admin\SerieController::class, 'update'])->name('series.update');
-        Route::delete('/series/{serie}', [App\Http\Controllers\Admin\SerieController::class, 'destroy'])->name('series.destroy');
-        Route::patch('/series/{serie}/toggle-status', [App\Http\Controllers\Admin\SerieController::class, 'toggleStatus'])->name('series.toggle-status');
-        Route::get('/series/buscar', [App\Http\Controllers\Admin\SerieController::class, 'buscar'])->name('series.buscar');
-        Route::get('/series/por-unidad/{unidad}', [App\Http\Controllers\Admin\SerieController::class, 'porUnidad'])->name('series.por-unidad');
+
+
 
         // Gestión de Subseries
         Route::get('/subseries', [App\Http\Controllers\Admin\SubserieController::class, 'index'])->name('subseries.index');
@@ -150,6 +151,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/subseries/{subserie}/toggle-status', [App\Http\Controllers\Admin\SubserieController::class, 'toggleStatus'])->name('subseries.toggle-status');
         Route::get('/subseries/buscar', [App\Http\Controllers\Admin\SubserieController::class, 'buscar'])->name('subseries.buscar');
         Route::get('/subseries/por-serie/{serie}', [App\Http\Controllers\Admin\SubserieController::class, 'porSerie'])->name('subseries.por-serie');
+        Route::get('/subseries/series-por-unidad/{unidad}', [App\Http\Controllers\Admin\SubserieController::class, 'seriesPorUnidad'])->name('subseries.series-por-unidad');
+        Route::get('/subseries/buscar-series', [App\Http\Controllers\Admin\SubserieController::class, 'buscarSeries'])->name('subseries.buscar-series');
 
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');

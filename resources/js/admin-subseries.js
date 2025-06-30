@@ -4,96 +4,60 @@
 let currentConfirmAction = null;
 
 // Función para manejar los menús desplegables (disponible globalmente)
-function toggleDropdown(dropdownId) {
-    console.log('toggleDropdown called with ID:', dropdownId);
-
-    const dropdown = document.getElementById(dropdownId);
-    if (!dropdown) {
-        console.error('No se encontró el dropdown con ID:', dropdownId);
-        return;
-    }
-
-    console.log('Dropdown found:', dropdown);
-    const isHidden = dropdown.classList.contains('hidden');
-    console.log('Is hidden:', isHidden);
-
-    // Cerrar todos los dropdowns abiertos
-    document.querySelectorAll('[id^="dropdown-subserie-"]').forEach(d => {
-        if (d.id !== dropdownId) {
-            d.classList.add('hidden');
-            // Resetear estilos completamente
-            d.style.position = '';
-            d.style.top = '';
-            d.style.bottom = '';
-            d.style.left = '';
-            d.style.right = '';
-            d.style.transform = '';
-            d.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+function toggleDropdown(dropdownId, buttonElement) {
+    // Cerrar todos los otros dropdowns
+    document.querySelectorAll('[id^="dropdown-subserie-"]').forEach(menu => {
+        if (menu.id !== dropdownId) {
+            menu.classList.add('hidden');
         }
     });
 
-    if (isHidden) {
-        console.log('Showing dropdown');
-        // Mostrar dropdown
-        dropdown.classList.remove('hidden');
+    // Toggle el dropdown actual
+    const dropdown = document.getElementById(dropdownId);
+    if (dropdown) {
+        if (dropdown.classList.contains('hidden')) {
+            // Mostrar dropdown y calcular posición
+            dropdown.classList.remove('hidden');
 
-        // Posicionar el dropdown
-        adjustDropdownPosition(dropdown);
-
-        console.log('Dropdown should be visible now');
-    } else {
-        console.log('Hiding dropdown');
-        // Ocultar dropdown
-        dropdown.classList.add('hidden');
+            // Si se proporciona el elemento del botón, calcular posición
+            if (buttonElement) {
+                positionDropdown(dropdown, buttonElement);
+            }
+        } else {
+            dropdown.classList.add('hidden');
+        }
     }
 }
 
-// Función para ajustar la posición del dropdown
-function adjustDropdownPosition(dropdown) {
-    const button = dropdown.previousElementSibling;
-    if (!button) return;
-
-    const buttonRect = button.getBoundingClientRect();
-    const dropdownRect = dropdown.getBoundingClientRect();
+// Función para posicionar correctamente el dropdown
+function positionDropdown(dropdown, buttonElement) {
+    // Para dropdowns con posicionamiento absoluto, verificar si necesita ajuste
+    const container = buttonElement.closest('.relative');
+    const rect = container.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
+    const spaceBelow = viewportHeight - rect.bottom;
 
-    // Resetear clases y estilos
+    // Resetear clases de posicionamiento
     dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
-    dropdown.style.position = 'fixed';
-    dropdown.style.zIndex = '9999';
+    dropdown.style.position = '';
+    dropdown.style.top = '';
+    dropdown.style.bottom = '';
+    dropdown.style.left = '';
+    dropdown.style.right = '';
 
-    // Determinar si hay espacio suficiente abajo
-    const spaceBelow = viewportHeight - buttonRect.bottom;
-    const spaceAbove = buttonRect.top;
-    const dropdownHeight = 200; // Altura estimada del dropdown
-
-    if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
-        // Mostrar abajo
-        dropdown.style.top = (buttonRect.bottom + 5) + 'px';
-        dropdown.style.bottom = '';
-        dropdown.classList.add('origin-top-right', 'mt-2');
+    // Si hay poco espacio debajo, mostrar arriba
+    if (spaceBelow < 200) {
+        dropdown.classList.remove('mt-2');
+        dropdown.classList.add('mb-2', 'origin-bottom-right');
+        dropdown.style.bottom = '100%';
+        dropdown.style.top = 'auto';
     } else {
-        // Mostrar arriba
-        dropdown.style.bottom = (viewportHeight - buttonRect.top + 5) + 'px';
-        dropdown.style.top = '';
-        dropdown.classList.add('origin-bottom-right', 'mb-2');
-    }
-
-    // Determinar posición horizontal
-    const spaceRight = viewportWidth - buttonRect.right;
-    const dropdownWidth = 192; // w-48 = 12rem = 192px
-
-    if (spaceRight >= dropdownWidth) {
-        // Alinear a la derecha del botón
-        dropdown.style.left = buttonRect.left + 'px';
-        dropdown.style.right = '';
-    } else {
-        // Alinear a la izquierda del botón
-        dropdown.style.right = (viewportWidth - buttonRect.right) + 'px';
-        dropdown.style.left = '';
+        // Posicionamiento normal (debajo)
+        dropdown.classList.add('mt-2', 'origin-top-right');
     }
 }
+
+
 
 // Función para cerrar todos los dropdowns
 function closeAllDropdowns() {
@@ -235,7 +199,7 @@ function loadSeriesByUnidad(unidadId) {
 
     if (!unidadId) return;
 
-    fetch(`/admin/series/por-unidad/${unidadId}`)
+    fetch(`/admin/subseries/series-por-unidad/${unidadId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -491,7 +455,7 @@ function loadUnidadesAdministrativasForEdit(unidadSelectId, serieSelectId, selec
 
 function loadAllSeriesAndSelectUnidad(unidadSelectId, serieSelectId, selectedSerieId) {
     // Cargar todas las series para encontrar la unidad administrativa
-    fetch('/admin/series/buscar')
+    fetch('/admin/subseries/buscar-series')
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -528,7 +492,7 @@ function loadSeriesForModal(mode) {
 }
 
 function loadSeriesForModalWithSelected(serieSelectId, unidadId, selectedSerieId = null) {
-    fetch(`/admin/series/por-unidad/${unidadId}`)
+    fetch(`/admin/subseries/series-por-unidad/${unidadId}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -793,14 +757,14 @@ function createSubserieRow(subserie) {
             <div class="relative inline-block text-left">
                 <button type="button"
                         class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
-                        onclick="toggleDropdown('dropdown-subserie-${subserie.id}')">
+                        onclick="toggleDropdown('dropdown-subserie-${subserie.id}', this)">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                     </svg>
                 </button>
 
                 <div id="dropdown-subserie-${subserie.id}"
-                     class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                     class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                      style="z-index: 9999;"
                      data-dropdown-menu>
                     <div class="py-1" role="menu">
@@ -1017,14 +981,6 @@ document.addEventListener('click', function(event) {
     if (!event.target.closest('.relative')) {
         document.querySelectorAll('[id^="dropdown-subserie-"]').forEach(dropdown => {
             dropdown.classList.add('hidden');
-            // Resetear estilos
-            dropdown.style.position = '';
-            dropdown.style.top = '';
-            dropdown.style.bottom = '';
-            dropdown.style.left = '';
-            dropdown.style.right = '';
-            dropdown.style.transform = '';
-            dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
         });
     }
 });
@@ -1036,39 +992,9 @@ document.addEventListener('click', function(event) {
         setTimeout(() => {
             document.querySelectorAll('[id^="dropdown-subserie-"]').forEach(dropdown => {
                 dropdown.classList.add('hidden');
-                // Resetear estilos
-                dropdown.style.position = '';
-                dropdown.style.top = '';
-                dropdown.style.bottom = '';
-                dropdown.style.left = '';
-                dropdown.style.right = '';
-                dropdown.style.transform = '';
-                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
             });
         }, 100);
     }
-});
-
-// Reposicionar dropdowns al redimensionar la ventana
-window.addEventListener('resize', function() {
-    document.querySelectorAll('[id^="dropdown-subserie-"]:not(.hidden)').forEach(dropdown => {
-        adjustDropdownPosition(dropdown);
-    });
-});
-
-// Cerrar dropdowns al hacer scroll
-window.addEventListener('scroll', function() {
-    document.querySelectorAll('[id^="dropdown-subserie-"]:not(.hidden)').forEach(dropdown => {
-        dropdown.classList.add('hidden');
-        // Resetear estilos
-        dropdown.style.position = '';
-        dropdown.style.top = '';
-        dropdown.style.bottom = '';
-        dropdown.style.left = '';
-        dropdown.style.right = '';
-        dropdown.style.transform = '';
-        dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
-    });
 });
 
 // Hacer funciones disponibles globalmente después de que estén definidas

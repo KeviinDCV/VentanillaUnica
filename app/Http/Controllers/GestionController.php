@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Dependencia;
-use App\Models\Trd;
+
 use App\Models\Radicado;
 use App\Models\UnidadAdministrativa;
 use App\Models\Serie;
@@ -33,7 +33,6 @@ class GestionController extends Controller
         $estadisticas = [
             'usuarios' => User::count(),
             'dependencias' => Dependencia::count(),
-            'trds' => Trd::count(),
             'radicados' => Radicado::count(),
             'usuarios_activos' => User::where('active', true)->count(),
             'radicados_hoy' => Radicado::whereDate('fecha_radicado', Carbon::today())->count(),

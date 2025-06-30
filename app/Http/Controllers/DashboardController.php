@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Radicado;
 use App\Models\User;
 use App\Models\Dependencia;
-use App\Models\Trd;
+
 use App\Models\Documento;
 use Carbon\Carbon;
 
