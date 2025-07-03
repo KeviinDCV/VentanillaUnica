@@ -52,10 +52,10 @@ window.RadicacionEntrada = {
             });
         }
 
-        // Formulario
+        // Formulario - Sin validaciones para debugging
         const form = document.getElementById('radicacionEntradaForm');
         if (form) {
-            form.addEventListener('submit', (e) => RadicacionEntrada.validateForm(e));
+            console.log('Event listener agregado al formulario de entrada');
         }
     },
 
@@ -63,6 +63,12 @@ window.RadicacionEntrada = {
         const tipoRemitenteChecked = document.querySelector('input[name="tipo_remitente"]:checked');
         const tipoRemitente = tipoRemitenteChecked ? tipoRemitenteChecked.value : '';
         const camposRegistrado = document.getElementById('campos-registrado');
+
+        // Verificar si el elemento existe (puede no existir en formularios de modal)
+        if (!camposRegistrado) {
+            console.log('Elemento campos-registrado no encontrado, saltando toggleTipoRemitente');
+            return;
+        }
 
         if (tipoRemitente === 'registrado') {
             // Mostrar campos específicos para remitente registrado (tipo y número de documento)
@@ -281,7 +287,7 @@ window.RadicacionEntrada = {
         const trdSelect = document.getElementById('trd_id');
         const trdInfo = document.getElementById('trd-info');
         const selectedOption = trdSelect.options[trdSelect.selectedIndex];
-        
+
         if (selectedOption.value) {
             document.getElementById('trd-codigo').textContent = selectedOption.dataset.codigo || '';
             document.getElementById('trd-serie').textContent = selectedOption.dataset.serie || '';
@@ -298,7 +304,7 @@ window.RadicacionEntrada = {
         const filePreview = document.getElementById('file-preview');
         const fileName = document.getElementById('file-name');
         const fileSize = document.getElementById('file-size');
-        
+
         if (fileInput.files.length > 0) {
             const file = fileInput.files[0];
             fileName.textContent = file.name;
@@ -318,9 +324,13 @@ window.RadicacionEntrada = {
     },
 
     validateForm(e) {
+        console.log('RadicacionEntrada.validateForm - Iniciando validación');
+
         const tipoRemitenteChecked = document.querySelector('input[name="tipo_remitente"]:checked');
+        console.log('Tipo remitente seleccionado:', tipoRemitenteChecked ? tipoRemitenteChecked.value : 'ninguno');
 
         if (!tipoRemitenteChecked) {
+            console.log('RadicacionEntrada.validateForm - Validación fallida: no hay tipo de remitente');
             e.preventDefault();
             window.UniRadicNotifications.warning(
                 'Campo Requerido',
@@ -329,10 +339,14 @@ window.RadicacionEntrada = {
             return false;
         }
 
+        console.log('RadicacionEntrada.validateForm - Validación exitosa, permitiendo envío');
+
         // Mostrar indicador de carga
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Procesando...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Procesando...';
+        }
 
         return true;
     },
@@ -408,7 +422,7 @@ window.RadicacionInterna = {
         const requiereRespuesta = document.querySelector('input[name="requiere_respuesta"]:checked');
         const fechaLimiteContainer = document.getElementById('fecha-limite-container');
         const fechaLimiteInput = document.getElementById('fecha_limite_respuesta');
-        
+
         if (requiereRespuesta && requiereRespuesta.value === '1') {
             fechaLimiteContainer.style.display = 'block';
             fechaLimiteInput.required = true;
@@ -420,15 +434,23 @@ window.RadicacionInterna = {
     },
 
     validateDependencias() {
-        const origen = document.getElementById('dependencia_origen_id').value;
-        const destino = document.getElementById('dependencia_destino_id').value;
+        const origenElement = document.getElementById('dependencia_origen_id');
+        const destinoElement = document.getElementById('dependencia_destino_id');
+
+        if (!origenElement || !destinoElement) {
+            console.warn('Elementos de dependencia no encontrados');
+            return true; // No validar si los elementos no existen
+        }
+
+        const origen = origenElement.value;
+        const destino = destinoElement.value;
 
         if (origen && destino && origen === destino) {
             window.UniRadicNotifications.warning(
                 'Dependencias Inválidas',
                 'La dependencia de origen y destino deben ser diferentes'
             );
-            document.getElementById('dependencia_destino_id').value = '';
+            destinoElement.value = '';
             return false;
         }
         return true;
@@ -439,7 +461,7 @@ window.RadicacionInterna = {
             e.preventDefault();
             return false;
         }
-        
+
         const requiereRespuesta = document.querySelector('input[name="requiere_respuesta"]:checked');
 
         if (!requiereRespuesta) {
@@ -462,12 +484,12 @@ window.RadicacionInterna = {
                 return false;
             }
         }
-        
+
         // Mostrar indicador de carga
         const submitBtn = e.target.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         submitBtn.innerHTML = 'Procesando...';
-        
+
         return true;
     },
 
@@ -591,6 +613,16 @@ window.RadicacionSalida = {
             documentoInput.addEventListener('change', () => RadicacionSalida.showFilePreview());
         }
 
+        // Botón de previsualización
+        const btnPreview = document.getElementById('btn-preview');
+        if (btnPreview) {
+            btnPreview.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                RadicacionSalida.mostrarPreview();
+            });
+        }
+
         // Formulario
         const form = document.getElementById('radicacionSalidaForm');
         if (form) {
@@ -599,9 +631,17 @@ window.RadicacionSalida = {
     },
 
     toggleTipoDestinatario() {
-        const tipoDestinatario = document.getElementById('tipo_destinatario').value;
+        const tipoDestinatarioElement = document.getElementById('tipo_destinatario');
         const camposPersonaNatural = document.getElementById('campos-persona-natural');
         const camposJuridica = document.getElementById('campos-juridica');
+
+        // Verificar si los elementos existen (pueden no existir en formularios de modal)
+        if (!tipoDestinatarioElement || !camposPersonaNatural || !camposJuridica) {
+            console.log('Elementos de tipo destinatario no encontrados, saltando toggleTipoDestinatario');
+            return;
+        }
+
+        const tipoDestinatario = tipoDestinatarioElement.value;
 
         // Ocultar todos los campos primero
         camposPersonaNatural.style.display = 'none';
@@ -658,6 +698,98 @@ window.RadicacionSalida = {
         submitBtn.innerHTML = 'Procesando...';
 
         return true;
+    },
+
+    mostrarPreview() {
+        try {
+            const form = document.getElementById('radicacionSalidaForm');
+
+            if (!form) {
+                window.UniRadicNotifications.error(
+                    'Error del Sistema',
+                    'No se pudo encontrar el formulario. Recargue la página e intente nuevamente.'
+                );
+                return;
+            }
+
+            const formData = new FormData(form);
+
+            // Validar campos requeridos para preview
+            const camposRequeridos = [
+                'tipo_destinatario',
+                'nombre_destinatario',
+                'dependencia_origen_id',
+                'funcionario_remitente',
+                'trd_id',
+                'asunto_salida',
+                'tipo_comunicacion_salida',
+                'prioridad'
+            ];
+            let camposFaltantes = [];
+
+            camposRequeridos.forEach(campo => {
+                const valor = formData.get(campo);
+                console.log(`Campo ${campo}: "${valor}"`); // Debug
+                if (!valor || valor.trim() === '') {
+                    camposFaltantes.push(campo);
+                }
+            });
+
+            if (camposFaltantes.length > 0) {
+                console.log('Campos faltantes:', camposFaltantes); // Debug
+                window.UniRadicNotifications.warning(
+                    'Campos Requeridos',
+                    `Complete los campos obligatorios faltantes: ${camposFaltantes.join(', ')}`
+                );
+                return;
+            }
+
+            // Crear formulario temporal para envío
+            const tempForm = document.createElement('form');
+            tempForm.method = 'POST';
+            tempForm.action = '/radicacion/salida/preview';
+            tempForm.target = '_blank';
+            tempForm.style.display = 'none';
+
+            // Agregar token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            if (!csrfToken) {
+                window.UniRadicNotifications.error(
+                    'Error de Seguridad',
+                    'No se pudo obtener el token de seguridad. Recargue la página e intente nuevamente.'
+                );
+                return;
+            }
+
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = csrfToken;
+            tempForm.appendChild(csrfInput);
+
+            // Copiar datos del formulario
+            for (let [key, value] of formData.entries()) {
+                if (key !== 'documento') { // Excluir archivo para preview
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    tempForm.appendChild(input);
+                }
+            }
+
+            // Enviar formulario
+            document.body.appendChild(tempForm);
+            tempForm.submit();
+            document.body.removeChild(tempForm);
+
+        } catch (error) {
+            window.UniRadicNotifications.error(
+                'Error Inesperado',
+                'Ocurrió un error al generar la previsualización. Intente nuevamente.'
+            );
+        }
     },
 
     initValidations() {
@@ -747,6 +879,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (document.getElementById('radicacionSalidaForm')) {
         RadicacionSalida.init();
+
+        // Verificación adicional para el botón previsualizar salida
+        setTimeout(() => {
+            const btnPreview = document.getElementById('btn-preview');
+            if (btnPreview && !btnPreview.hasAttribute('data-initialized')) {
+                btnPreview.setAttribute('data-initialized', 'true');
+                btnPreview.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Botón previsualizar clickeado - RadicacionSalida'); // Debug
+                    RadicacionSalida.mostrarPreview();
+                });
+            }
+        }, 100);
     }
 
     if (document.getElementById('filtros-form')) {

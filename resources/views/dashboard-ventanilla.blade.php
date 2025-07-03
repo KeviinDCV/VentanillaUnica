@@ -27,7 +27,7 @@
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Mis Radicados</p>
+                            <p class="text-sm font-medium text-gray-500">Total Radicados</p>
                             <p class="text-2xl font-semibold text-gray-900">{{ $estadisticasPersonales['mis_radicados'] }}</p>
                         </div>
                     </div>
@@ -82,36 +82,14 @@
                 </div>
             </div>
 
-            <!-- Accesos Rápidos -->
-            <div class="mb-8">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">Accesos Rápidos</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($accesosRapidos as $acceso)
-                    <a href="{{ $acceso['url'] }}" class="group">
-                        <div class="quick-access-card group-hover:border-{{ $acceso['color'] }}-300">
-                            <div class="card-content">
-                                <div class="card-icon bg-{{ $acceso['color'] }}-100 group-hover:bg-{{ $acceso['color'] }}-200">
-                                    <svg class="w-6 h-6 text-{{ $acceso['color'] }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $acceso['icono'] }}"/>
-                                    </svg>
-                                </div>
-                                <div class="card-text">
-                                    <h4 class="card-title group-hover:text-{{ $acceso['color'] }}-700">{{ $acceso['titulo'] }}</h4>
-                                    <p class="card-description">{{ $acceso['descripcion'] }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    @endforeach
-                </div>
-            </div>
+
 
             <!-- Mis Radicados Recientes -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-800">Mis Radicados Recientes</h3>
-                        <p class="text-sm text-gray-600 mt-1">Últimos radicados que has creado</p>
+                        <h3 class="text-lg font-medium text-gray-800">Radicados Recientes</h3>
+                        <p class="text-sm text-gray-600 mt-1">Últimos radicados del sistema</p>
                     </div>
                     <div class="p-6">
                         @if($misRadicadosRecientes->count() > 0)

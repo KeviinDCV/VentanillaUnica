@@ -19,10 +19,12 @@ class Documento extends Model
         'hash_archivo',
         'descripcion',
         'es_principal',
+        'es_digitalizado',
     ];
 
     protected $casts = [
         'es_principal' => 'boolean',
+        'es_digitalizado' => 'boolean',
         'tamaño_archivo' => 'integer',
     ];
 
@@ -40,6 +42,14 @@ class Documento extends Model
     public function scopePrincipales($query)
     {
         return $query->where('es_principal', true);
+    }
+
+    /**
+     * Scope para documentos digitalizados
+     */
+    public function scopeDigitalizados($query)
+    {
+        return $query->where('es_digitalizado', true);
     }
 
     /**
@@ -62,7 +72,7 @@ class Documento extends Model
      */
     public function archivoExiste(): bool
     {
-        return Storage::exists($this->ruta_archivo);
+        return Storage::disk('public')->exists($this->ruta_archivo);
     }
 
     /**
@@ -70,7 +80,7 @@ class Documento extends Model
      */
     public function getUrlArchivoAttribute(): string
     {
-        return Storage::url($this->ruta_archivo);
+        return Storage::disk('public')->url($this->ruta_archivo);
     }
 
     /**

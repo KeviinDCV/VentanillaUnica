@@ -10,7 +10,7 @@ use App\Models\Radicado;
 use App\Models\Remitente;
 use App\Models\Dependencia;
 use App\Models\UnidadAdministrativa;
-
+use App\Models\Subserie;
 use App\Models\Documento;
 use Carbon\Carbon;
 
@@ -45,7 +45,7 @@ class RadicacionInternaController extends Controller
             return response()->json([]);
         }
 
-        $radicados = Radicado::with(['remitente', 'dependenciaDestino'])
+        $radicados = Radicado::with(['remitente', 'dependenciaDestino', 'subserie.serie'])
                             ->where(function($query) use ($termino) {
                                 $query->where('numero_radicado', 'like', "%{$termino}%")
                                       ->orWhereHas('remitente', function($q) use ($termino) {
@@ -62,7 +62,7 @@ class RadicacionInternaController extends Controller
                                     'remitente' => $radicado->remitente->nombre_completo,
                                     'dependencia' => $radicado->dependenciaDestino->nombre,
                                     'fecha' => $radicado->fecha_radicado,
-                                    'asunto' => $radicado->trd->asunto ?? 'Sin asunto'
+                                    'asunto' => $radicado->subserie->serie->nombre ?? 'Sin asunto'
                                 ];
                             });
 
@@ -89,8 +89,8 @@ class RadicacionInternaController extends Controller
             'observaciones' => 'nullable|string',
             'prioridad' => 'required|in:baja,normal,alta,urgente',
 
-            // TRD
-            'trd_id' => 'required|exists:trd,id',
+            // TRD (Subserie)
+            'trd_id' => 'required|exists:subseries,id',
 
             // Respuesta a documento (opcional)
             'es_respuesta' => 'nullable|boolean',
@@ -162,7 +162,7 @@ class RadicacionInternaController extends Controller
                 'fecha_radicado' => Carbon::now()->toDateString(),
                 'hora_radicado' => Carbon::now()->toTimeString(),
                 'remitente_id' => $remitente->id,
-                'trd_id' => $request->trd_id,
+                'subserie_id' => $request->trd_id, // trd_id viene del formulario pero se guarda como subserie_id
                 'dependencia_destino_id' => $request->dependencia_destino_id,
                 'usuario_radica_id' => auth()->id(),
                 'medio_recepcion' => 'interno',
@@ -255,7 +255,7 @@ class RadicacionInternaController extends Controller
         $validator = Validator::make($request->all(), [
             'funcionario_remitente' => 'required|string|max:255',
             'dependencia_origen_id' => 'required|exists:dependencias,id',
-            'trd_id' => 'required|exists:trd,id',
+            'trd_id' => 'required|exists:subseries,id',
             'dependencia_destino_id' => 'required|exists:dependencias,id',
             'asunto' => 'required|string|max:500',
             'tipo_comunicacion' => 'required|in:memorando,circular,oficio,informe,acta,otro',
@@ -284,7 +284,7 @@ class RadicacionInternaController extends Controller
         // Obtener datos relacionados
         $dependenciaOrigen = Dependencia::findOrFail($request->dependencia_origen_id);
         $dependenciaDestino = Dependencia::findOrFail($request->dependencia_destino_id);
-        $trd = Trd::findOrFail($request->trd_id);
+        $subserie = Subserie::with(['serie.unidadAdministrativa'])->findOrFail($request->trd_id);
 
         // Preparar datos para la vista
         $datosPreview = [
@@ -298,7 +298,12 @@ class RadicacionInternaController extends Controller
             'telefono_remitente' => $request->telefono_remitente,
             'email_remitente' => $request->email_remitente,
             'dependencia_destino' => $dependenciaDestino,
-            'trd' => $trd,
+            'trd' => [
+                'codigo' => $subserie->serie->unidadAdministrativa->codigo . '.' . $subserie->serie->numero_serie . '.' . $subserie->numero_subserie,
+                'serie' => $subserie->serie->nombre,
+                'subserie' => $subserie->nombre,
+                'asunto' => $subserie->descripcion,
+            ],
             'asunto' => $request->asunto,
             'tipo_comunicacion' => $request->tipo_comunicacion,
             'prioridad' => $request->prioridad,
@@ -318,7 +323,7 @@ class RadicacionInternaController extends Controller
      */
     public function show($id)
     {
-        $radicado = Radicado::with(['remitente', 'trd', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
+        $radicado = Radicado::with(['remitente', 'subserie.serie.unidadAdministrativa', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
                            ->where('tipo', 'interno')
                            ->findOrFail($id);
 

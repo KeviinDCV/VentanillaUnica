@@ -34,7 +34,7 @@ class TipoSolicitud extends Model
     /**
      * Scope para tipos de solicitud activos
      */
-    public function scopeActivo($query)
+    public function scopeActivos($query)
     {
         return $query->where('activo', true);
     }

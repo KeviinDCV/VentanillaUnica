@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Radicado;
 use App\Models\Remitente;
 use App\Models\Dependencia;
-
+use App\Models\Subserie;
 use App\Models\Documento;
 use App\Models\Ciudad;
 use App\Models\Departamento;
@@ -40,7 +40,7 @@ class RadicacionEntradaController extends Controller
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
         $ciudades = Ciudad::with('departamento')->activo()->ordenado()->get();
         $departamentos = Departamento::activo()->ordenado()->get();
-        $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
+        $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
         $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
         return view('radicacion.entrada.index', compact('dependencias', 'ciudades', 'departamentos', 'tiposSolicitud', 'unidadesAdministrativas'));
@@ -51,11 +51,18 @@ class RadicacionEntradaController extends Controller
      */
     public function store(Request $request)
     {
+        // Log para debugging
+        \Log::info('RadicacionEntrada::store - Iniciando proceso', [
+            'request_data' => $request->all(),
+            'files' => $request->allFiles(),
+            'has_file_documento' => $request->hasFile('documento')
+        ]);
+
         $validator = Validator::make($request->all(), [
             // Datos del remitente
             'tipo_remitente' => 'required|in:anonimo,registrado',
-            'tipo_documento' => 'required_if:tipo_remitente,registrado|in:CC,CE,TI,PP,NIT,OTRO',
-            'numero_documento' => 'required_if:tipo_remitente,registrado|string|max:20',
+            'tipo_documento' => 'required_if:tipo_remitente,registrado|nullable|in:CC,CE,TI,PP,NIT,OTRO',
+            'numero_documento' => 'required_if:tipo_remitente,registrado|nullable|string|max:20',
             'nombre_completo' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -70,8 +77,8 @@ class RadicacionEntradaController extends Controller
             'numero_folios' => 'required|integer|min:1',
             'observaciones' => 'nullable|string',
 
-            // TRD
-            'trd_id' => 'required|exists:trd,id',
+            // TRD (Subserie)
+            'trd_id' => 'required|exists:subseries,id',
 
             // Destino
             'dependencia_destino_id' => 'required|exists:dependencias,id',
@@ -103,11 +110,15 @@ class RadicacionEntradaController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Log::error('RadicacionEntrada::store - Validación fallida', [
+                'errors' => $validator->errors()->toArray()
+            ]);
             return back()->withErrors($validator)->withInput();
         }
 
         try {
             DB::beginTransaction();
+            \Log::info('RadicacionEntrada::store - Transacción iniciada');
 
             // Obtener nombres de ciudad y departamento si se seleccionaron
             $ciudadNombre = null;
@@ -136,6 +147,8 @@ class RadicacionEntradaController extends Controller
                 'observaciones' => $request->observaciones_remitente,
             ];
 
+            \Log::info('RadicacionEntrada::store - Datos del remitente preparados', $remitenteData);
+
             if ($request->tipo_remitente === 'registrado') {
                 $remitenteData['tipo_documento'] = $request->tipo_documento;
                 $remitenteData['numero_documento'] = $request->numero_documento;
@@ -148,26 +161,30 @@ class RadicacionEntradaController extends Controller
                 if ($remitente) {
                     // Actualizar datos del remitente existente
                     $remitente->update($remitenteData);
+                    \Log::info('RadicacionEntrada::store - Remitente existente actualizado', ['id' => $remitente->id]);
                 } else {
                     // Crear nuevo remitente
                     $remitente = Remitente::create($remitenteData);
+                    \Log::info('RadicacionEntrada::store - Nuevo remitente creado', ['id' => $remitente->id]);
                 }
             } else {
                 // Crear remitente anónimo
                 $remitente = Remitente::create($remitenteData);
+                \Log::info('RadicacionEntrada::store - Remitente anónimo creado', ['id' => $remitente->id]);
             }
 
             // Generar número de radicado
             $numeroRadicado = Radicado::generarNumeroRadicado('entrada');
+            \Log::info('RadicacionEntrada::store - Número de radicado generado', ['numero' => $numeroRadicado]);
 
             // Crear radicado
-            $radicado = Radicado::create([
+            $radicadoData = [
                 'numero_radicado' => $numeroRadicado,
                 'tipo' => 'entrada',
                 'fecha_radicado' => Carbon::now()->toDateString(),
                 'hora_radicado' => Carbon::now()->toTimeString(),
                 'remitente_id' => $remitente->id,
-                'trd_id' => $request->trd_id,
+                'subserie_id' => $request->trd_id, // trd_id viene del formulario pero se guarda como subserie_id
                 'dependencia_destino_id' => $request->dependencia_destino_id,
                 'usuario_radica_id' => auth()->id(),
                 'medio_recepcion' => $request->medio_recepcion,
@@ -178,10 +195,16 @@ class RadicacionEntradaController extends Controller
                 'tipo_anexo' => $request->tipo_anexo,
                 'fecha_limite_respuesta' => $request->fecha_limite_respuesta,
                 'estado' => 'pendiente',
-            ]);
+            ];
+
+            \Log::info('RadicacionEntrada::store - Datos del radicado preparados', $radicadoData);
+
+            $radicado = Radicado::create($radicadoData);
+            \Log::info('RadicacionEntrada::store - Radicado creado exitosamente', ['id' => $radicado->id]);
 
             // Procesar documento adjunto
             if ($request->hasFile('documento')) {
+                \Log::info('RadicacionEntrada::store - Procesando documento adjunto');
                 $archivo = $request->file('documento');
                 $nombreOriginal = $archivo->getClientOriginalName();
                 $extension = $archivo->getClientOriginalExtension();
@@ -205,15 +228,23 @@ class RadicacionEntradaController extends Controller
                     'descripcion' => 'Documento principal del radicado',
                     'es_principal' => true,
                 ]);
+                \Log::info('RadicacionEntrada::store - Documento guardado exitosamente');
+            } else {
+                \Log::info('RadicacionEntrada::store - No se adjuntó documento');
             }
 
             DB::commit();
+            \Log::info('RadicacionEntrada::store - Transacción confirmada exitosamente');
 
             return redirect()->route('radicacion.entrada.show', $radicado->id)
                            ->with('success', "Radicado {$numeroRadicado} creado exitosamente");
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('RadicacionEntrada::store - Error en el proceso', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return back()->withErrors(['error' => 'Error al crear el radicado: ' . $e->getMessage()])
                         ->withInput();
@@ -279,7 +310,7 @@ class RadicacionEntradaController extends Controller
         // Validar datos básicos para la previsualización
         $validator = Validator::make($request->all(), [
             'nombre_completo' => 'required|string|max:255',
-            'trd_id' => 'required|exists:trd,id',
+            'trd_id' => 'required|exists:subseries,id',
             'dependencia_destino_id' => 'required|exists:dependencias,id',
         ]);
 
@@ -288,7 +319,7 @@ class RadicacionEntradaController extends Controller
         }
 
         // Obtener datos relacionados
-        $trd = Trd::find($request->trd_id);
+        $subserie = Subserie::with(['serie.unidadAdministrativa'])->find($request->trd_id);
         $dependencia = Dependencia::find($request->dependencia_destino_id);
 
         // Generar número de radicado temporal para previsualización
@@ -307,10 +338,10 @@ class RadicacionEntradaController extends Controller
                 'email' => $request->email,
             ],
             'trd' => [
-                'codigo' => $trd->codigo,
-                'serie' => $trd->serie,
-                'subserie' => $trd->subserie,
-                'asunto' => $trd->asunto,
+                'codigo' => $subserie->serie->unidadAdministrativa->codigo . '.' . $subserie->serie->numero_serie . '.' . $subserie->numero_subserie,
+                'serie' => $subserie->serie->nombre,
+                'subserie' => $subserie->nombre,
+                'asunto' => $subserie->descripcion,
             ],
             'dependencia_destino' => $dependencia->nombre,
             'medio_recepcion' => $request->medio_recepcion,
@@ -327,7 +358,7 @@ class RadicacionEntradaController extends Controller
      */
     public function show($id)
     {
-        $radicado = Radicado::with(['remitente', 'trd', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
+        $radicado = Radicado::with(['remitente', 'subserie.serie.unidadAdministrativa', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
                            ->findOrFail($id);
 
         return view('radicacion.entrada.show', compact('radicado'));

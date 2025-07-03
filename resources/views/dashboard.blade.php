@@ -91,21 +91,21 @@
                 <!-- Mis Estadísticas -->
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-800">Mi Actividad</h3>
-                        <p class="text-sm text-gray-600 mt-1">Estadísticas de tu actividad en el sistema</p>
+                        <h3 class="text-lg font-medium text-gray-800">Estadísticas del Sistema</h3>
+                        <p class="text-sm text-gray-600 mt-1">Resumen general de radicados en el sistema</p>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600">Mis radicados totales</span>
+                                <span class="text-sm text-gray-600">Total radicados</span>
                                 <span class="text-lg font-semibold text-gray-900">{{ number_format($estadisticasPersonales['mis_radicados']) }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600">Mis radicados este mes</span>
+                                <span class="text-sm text-gray-600">Radicados este mes</span>
                                 <span class="text-lg font-semibold text-uniradical-blue">{{ number_format($estadisticasPersonales['mis_radicados_mes']) }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600">Mis pendientes</span>
+                                <span class="text-sm text-gray-600">Pendientes</span>
                                 <span class="text-lg font-semibold text-yellow-600">{{ number_format($estadisticasPersonales['mis_pendientes']) }}</span>
                             </div>
                         </div>
@@ -146,40 +146,15 @@
                 </div>
             </div>
 
-            <!-- Accesos Rápidos -->
-            <div class="mb-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-medium text-gray-800">Accesos Rápidos</h3>
-                    <span class="text-sm text-gray-500">Funciones principales del sistema</span>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($accesosRapidos as $acceso)
-                    <a href="{{ $acceso['url'] }}" class="group">
-                        <div class="quick-access-card group-hover:border-{{ $acceso['color'] }}-300">
-                            <div class="card-content">
-                                <div class="card-icon bg-{{ $acceso['color'] }}-100 group-hover:bg-{{ $acceso['color'] }}-200">
-                                    <svg class="w-6 h-6 text-{{ $acceso['color'] }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $acceso['icono'] }}"/>
-                                    </svg>
-                                </div>
-                                <div class="card-text">
-                                    <h4 class="card-title group-hover:text-{{ $acceso['color'] }}-700">{{ $acceso['titulo'] }}</h4>
-                                    <p class="card-description">{{ $acceso['descripcion'] }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    @endforeach
-                </div>
-            </div>
+
 
             <!-- Actividad Reciente -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                 <!-- Mis Radicados Recientes -->
                 <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                     <div class="p-6 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-800">Mis Radicados Recientes</h3>
-                        <p class="text-sm text-gray-600 mt-1">Últimos documentos que has radicado</p>
+                        <h3 class="text-lg font-medium text-gray-800">Radicados Recientes</h3>
+                        <p class="text-sm text-gray-600 mt-1">Últimos documentos radicados en el sistema</p>
                     </div>
                     <div class="p-6">
                         @if($misRadicadosRecientes->count() > 0)
@@ -215,7 +190,7 @@
                                 @endforeach
                             </div>
                             <div class="mt-4 text-center">
-                                <a href="{{ route('consultar.index') }}" class="text-sm text-uniradical-blue hover:text-opacity-80">
+                                <a href="{{ route('radicacion.index') }}" class="text-sm text-uniradical-blue hover:text-opacity-80">
                                     Ver todos mis radicados →
                                 </a>
                             </div>
@@ -225,7 +200,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                                 <p class="text-sm text-gray-500">No has radicado documentos aún</p>
-                                <a href="{{ route('radicacion.entrada.index') }}" class="text-sm text-uniradical-blue hover:text-opacity-80 mt-2 inline-block">
+                                <a href="{{ route('radicacion.index') }}" class="text-sm text-uniradical-blue hover:text-opacity-80 mt-2 inline-block">
                                     Crear tu primer radicado →
                                 </a>
                             </div>

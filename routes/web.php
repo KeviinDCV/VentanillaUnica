@@ -14,31 +14,31 @@ Route::get('/csrf-token', function () {
 })->middleware('web');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('dashboard');
 
 // Radicación - Vista principal con consulta integrada
 Route::get('/radicacion', [App\Http\Controllers\RadicacionController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('radicacion.index');
 
 // Radicación - Exportar consulta
 Route::get('/radicacion/exportar', [App\Http\Controllers\RadicacionController::class, 'exportar'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('radicacion.exportar');
 
 // Radicación - Cargar formularios para modal
 Route::get('/radicacion/form/{tipo}', [App\Http\Controllers\RadicacionController::class, 'cargarFormulario'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('radicacion.form');
 
 // Gestión - Vista principal (solo administradores)
 Route::get('/gestion', [App\Http\Controllers\GestionController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('gestion.index');
 
 // Rutas del módulo de gestión (solo para administradores)
-Route::prefix('gestion')->name('gestion.')->middleware(['auth', 'verified', 'role:administrador'])->group(function () {
+Route::prefix('gestion')->name('gestion.')->middleware(['auth', 'role:administrador'])->group(function () {
     // Gestión de Series
     Route::get('/series', [App\Http\Controllers\Gestion\SerieController::class, 'index'])->name('series.index');
     Route::post('/series', [App\Http\Controllers\Gestion\SerieController::class, 'store'])->name('series.store');
@@ -51,10 +51,10 @@ Route::prefix('gestion')->name('gestion.')->middleware(['auth', 'verified', 'rol
 
 // Sistema - Vista principal
 Route::get('/sistema', [App\Http\Controllers\SistemaController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('sistema.index');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -82,8 +82,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('salida')->name('salida.')->group(function () {
             Route::get('/', [App\Http\Controllers\RadicacionSalidaController::class, 'index'])->name('index');
             Route::post('/', [App\Http\Controllers\RadicacionSalidaController::class, 'store'])->name('store');
+            Route::post('/preview', [App\Http\Controllers\RadicacionSalidaController::class, 'preview'])->name('preview');
             Route::get('/{id}', [App\Http\Controllers\RadicacionSalidaController::class, 'show'])->name('show');
         });
+
+        // Rutas para finalización de radicados
+        Route::post('/finalizar', [App\Http\Controllers\RadicacionController::class, 'finalizar'])->name('finalizar');
+        Route::post('/upload-digitalized', [App\Http\Controllers\RadicacionController::class, 'uploadDigitalized'])->name('upload-digitalized');
+
+        // Ruta para obtener detalles del radicado (AJAX)
+        Route::get('/{id}/detalles', [App\Http\Controllers\RadicacionController::class, 'detalles'])->name('detalles');
+
+        // Rutas para edición de radicados
+        Route::get('/{id}/editar', [App\Http\Controllers\RadicacionController::class, 'editar'])->name('editar');
+        Route::put('/{id}', [App\Http\Controllers\RadicacionController::class, 'actualizar'])->name('actualizar');
+
+        // Ruta para eliminar radicados (solo administradores)
+        Route::delete('/{id}', [App\Http\Controllers\RadicacionController::class, 'destroy'])->name('destroy')->middleware('role:administrador');
     });
 
 

@@ -1,26 +1,49 @@
 <!-- Formulario de Radicación de Entrada para Modal -->
-<form action="{{ route('radicacion.entrada.store') }}" method="POST" enctype="multipart/form-data" id="radicacionEntradaForm" data-protect="true">
+<form action="{{ route('radicacion.entrada.store') }}" method="POST" enctype="multipart/form-data" id="radicacionEntradaForm">
     @csrf
-    
+
     <!-- Sección 1: Información del Remitente -->
     <div class="mb-6">
         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
             1. Información del Remitente
         </h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+        <!-- Tipo de Remitente -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de Remitente <span class="text-red-500">*</span>
+            </label>
+            <div class="flex space-x-4">
+                <label class="flex items-center">
+                    <input type="radio" name="tipo_remitente" value="anonimo"
+                           class="form-radio text-uniradical-blue"
+                           {{ old('tipo_remitente', 'anonimo') === 'anonimo' ? 'checked' : '' }}>
+                    <span class="ml-2 text-sm text-gray-700">Anónimo</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="tipo_remitente" value="registrado"
+                           class="form-radio text-uniradical-blue"
+                           {{ old('tipo_remitente') === 'registrado' ? 'checked' : '' }}>
+                    <span class="ml-2 text-sm text-gray-700">Registrado</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Campos para remitente registrado -->
+        <div id="campos-registrado" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" style="display: none;">
             <!-- Tipo de Documento -->
             <div>
                 <label for="tipo_documento" class="block text-sm font-medium text-gray-700 mb-2">
                     Tipo de Documento <span class="text-red-500">*</span>
                 </label>
-                <select name="tipo_documento" id="tipo_documento" required
+                <select name="tipo_documento" id="tipo_documento"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
                     <option value="CC" {{ old('tipo_documento') == 'CC' ? 'selected' : '' }}>Cédula de Ciudadanía</option>
                     <option value="CE" {{ old('tipo_documento') == 'CE' ? 'selected' : '' }}>Cédula de Extranjería</option>
+                    <option value="TI" {{ old('tipo_documento') == 'TI' ? 'selected' : '' }}>Tarjeta de Identidad</option>
+                    <option value="PP" {{ old('tipo_documento') == 'PP' ? 'selected' : '' }}>Pasaporte</option>
                     <option value="NIT" {{ old('tipo_documento') == 'NIT' ? 'selected' : '' }}>NIT</option>
-                    <option value="PASAPORTE" {{ old('tipo_documento') == 'PASAPORTE' ? 'selected' : '' }}>Pasaporte</option>
                     <option value="OTRO" {{ old('tipo_documento') == 'OTRO' ? 'selected' : '' }}>Otro</option>
                 </select>
             </div>
@@ -30,11 +53,11 @@
                 <label for="numero_documento" class="block text-sm font-medium text-gray-700 mb-2">
                     Número de Documento <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="numero_documento" id="numero_documento" required
+                <input type="text" name="numero_documento" id="numero_documento"
                        value="{{ old('numero_documento') }}"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Ingrese el número de documento">
-                <button type="button" id="btn-buscar-remitente" 
+                <button type="button" id="btn-buscar-remitente"
                         class="mt-2 text-sm text-uniradical-blue hover:text-opacity-80">
                     Buscar remitente existente
                 </button>
@@ -42,27 +65,19 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Nombres -->
+            <!-- Nombre Completo -->
             <div>
-                <label for="nombres" class="block text-sm font-medium text-gray-700 mb-2">
-                    Nombres <span class="text-red-500">*</span>
+                <label for="nombre_completo" class="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre Completo <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="nombres" id="nombres" required
-                       value="{{ old('nombres') }}"
+                <input type="text" name="nombre_completo" id="nombre_completo" required
+                       value="{{ old('nombre_completo') }}"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                       placeholder="Nombres del remitente">
+                       placeholder="Nombre completo del remitente">
             </div>
 
-            <!-- Apellidos -->
-            <div>
-                <label for="apellidos" class="block text-sm font-medium text-gray-700 mb-2">
-                    Apellidos <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="apellidos" id="apellidos" required
-                       value="{{ old('apellidos') }}"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                       placeholder="Apellidos del remitente">
-            </div>
+            <!-- Espacio vacío para mantener el grid -->
+            <div></div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -103,15 +118,15 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <!-- Departamento -->
             <div>
-                <label for="departamento_remitente" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="departamento" class="block text-sm font-medium text-gray-700 mb-2">
                     Departamento
                 </label>
-                <select name="departamento_remitente" id="departamento_remitente"
+                <select name="departamento" id="departamento"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar departamento...</option>
                     @foreach($departamentos as $departamento)
-                        <option value="{{ $departamento->nombre }}" 
-                                {{ old('departamento_remitente') == $departamento->nombre ? 'selected' : '' }}>
+                        <option value="{{ $departamento->nombre }}"
+                                {{ old('departamento') == $departamento->nombre ? 'selected' : '' }}>
                             {{ $departamento->nombre }}
                         </option>
                     @endforeach
@@ -120,16 +135,16 @@
 
             <!-- Ciudad -->
             <div>
-                <label for="ciudad_remitente" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="ciudad" class="block text-sm font-medium text-gray-700 mb-2">
                     Ciudad
                 </label>
-                <select name="ciudad_remitente" id="ciudad_remitente"
+                <select name="ciudad" id="ciudad"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar ciudad...</option>
                     @foreach($ciudades as $ciudad)
-                        <option value="{{ $ciudad->nombre }}" 
+                        <option value="{{ $ciudad->nombre }}"
                                 data-departamento="{{ $ciudad->departamento->nombre }}"
-                                {{ old('ciudad_remitente') == $ciudad->nombre ? 'selected' : '' }}>
+                                {{ old('ciudad') == $ciudad->nombre ? 'selected' : '' }}>
                             {{ $ciudad->nombre }}
                         </option>
                     @endforeach
@@ -182,7 +197,7 @@
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
                     @foreach($tiposSolicitud as $tipo)
-                        <option value="{{ $tipo->codigo }}" 
+                        <option value="{{ $tipo->codigo }}"
                                 {{ old('tipo_comunicacion') == $tipo->codigo ? 'selected' : '' }}>
                             {{ $tipo->nombre }}
                         </option>
@@ -219,24 +234,62 @@
             3. Clasificación Documental (TRD)
         </h3>
 
+        <x-trd-selector :unidadesAdministrativas="$unidadesAdministrativas" />
+    </div>
+
+    <!-- Sección 4: Documento -->
+    <div class="mb-6">
+        <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
+            4. Adjuntar Documento
+        </h3>
+
         <div>
-            <label for="trd_id" class="block text-sm font-medium text-gray-700 mb-2">
-                Seleccionar TRD <span class="text-red-500">*</span>
+            <label for="documento_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                Documento <span class="text-red-500">*</span>
             </label>
-            <select name="trd_id" id="trd_id" required
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                <option value="">Seleccionar TRD...</option>
-                @foreach($trds as $trd)
-                    <option value="{{ $trd->id }}"
-                            data-codigo="{{ $trd->codigo }}"
-                            data-serie="{{ $trd->serie }}"
-                            data-subserie="{{ $trd->subserie }}"
-                            data-asunto="{{ $trd->asunto }}"
-                            {{ old('trd_id') == $trd->id ? 'selected' : '' }}>
-                        {{ $trd->descripcion_completa }} - {{ $trd->asunto }}
-                    </option>
-                @endforeach
-            </select>
+
+            <!-- Zona de arrastrar y soltar -->
+            <div id="drop-zone-modal" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-uniradical-blue transition-colors duration-200">
+                <div id="drop-zone-content-modal">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <div class="mt-4">
+                        <label for="documento_modal" class="cursor-pointer">
+                            <span class="mt-2 block text-sm font-medium text-gray-900">
+                                Arrastra y suelta tu archivo aquí, o
+                                <span class="text-uniradical-blue hover:text-uniradical-blue-dark">haz clic para seleccionar</span>
+                            </span>
+                        </label>
+                        <input type="file" name="documento" id="documento_modal" required
+                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                               class="sr-only">
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        PDF, Word, JPG, PNG hasta 10MB
+                    </p>
+                </div>
+
+                <!-- Vista previa del archivo -->
+                <div id="file-preview-modal" class="hidden">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                        <div class="flex items-center">
+                            <svg class="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="ml-3">
+                                <p id="file-name-modal" class="text-sm font-medium text-gray-900"></p>
+                                <p id="file-size-modal" class="text-xs text-gray-500"></p>
+                            </div>
+                        </div>
+                        <button type="button" id="remove-file-modal" class="text-red-600 hover:text-red-800">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -256,7 +309,7 @@
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar dependencia...</option>
                     @foreach($dependencias as $dependencia)
-                        <option value="{{ $dependencia->id }}" 
+                        <option value="{{ $dependencia->id }}"
                                 {{ old('dependencia_destino_id') == $dependencia->id ? 'selected' : '' }}>
                             {{ $dependencia->nombre_completo }}
                         </option>

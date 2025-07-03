@@ -17,6 +17,8 @@ import './gestion-series';
 import './radicacion';
 import './reportes';
 import './preview';
+import './modal-file-upload';
+import './trd-selector';
 
 // Deshabilitar todos los logs en producción por seguridad
 if (import.meta.env.PROD) {

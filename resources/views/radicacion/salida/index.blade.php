@@ -41,7 +41,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('radicacion.salida.store') }}" method="POST" enctype="multipart/form-data" id="radicacionSalidaForm">
+                    <form action="{{ route('radicacion.salida.store') }}" method="POST" enctype="multipart/form-data" id="radicacion-salida-form">
                         @csrf
 
                         <!-- Sección 1: Información del Destinatario Externo -->
@@ -456,10 +456,16 @@
                                class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
                                 Cancelar
                             </a>
-                            <button type="submit"
-                                    class="px-6 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
-                                Crear Radicado de Salida
-                            </button>
+                            <div class="flex space-x-3">
+                                <button type="button" id="btn-previsualizar"
+                                        class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200">
+                                    Previsualizar
+                                </button>
+                                <button type="submit"
+                                        class="px-6 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                                    Crear Radicado de Salida
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -469,6 +475,47 @@
 
     @push('scripts')
     @vite('resources/js/ciudad-departamento.js')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Manejar previsualización
+            const btnPrevisualizar = document.getElementById('btn-previsualizar');
+            const form = document.getElementById('radicacion-salida-form');
+
+            if (btnPrevisualizar && form) {
+                btnPrevisualizar.addEventListener('click', function() {
+                    // Validar campos requeridos antes de previsualizar
+                    const requiredFields = form.querySelectorAll('[required]');
+                    let isValid = true;
+
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('border-red-500');
+                            field.focus();
+                        } else {
+                            field.classList.remove('border-red-500');
+                        }
+                    });
+
+                    if (!isValid) {
+                        alert('Por favor complete todos los campos requeridos antes de previsualizar.');
+                        return;
+                    }
+
+                    // Cambiar la acción del formulario para previsualización
+                    const originalAction = form.action;
+                    form.action = '{{ route('radicacion.salida.preview') }}';
+
+                    // Enviar formulario
+                    form.submit();
+
+                    // Restaurar acción original
+                    form.action = originalAction;
+                });
+            }
+        });
+    </script>
     @endpush
 
 </x-app-layout>

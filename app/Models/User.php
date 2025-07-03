@@ -116,6 +116,18 @@ class User extends Authenticatable
     }
 
     /**
+     * Verificar si el usuario tiene un rol específico
+     */
+    public function hasRole(string $role): bool
+    {
+        return match($role) {
+            'admin', 'administrador' => $this->isAdmin(),
+            'ventanilla' => $this->isVentanilla(),
+            default => false
+        };
+    }
+
+    /**
      * Obtener el nombre del rol en formato legible
      */
     public function getRoleDisplayName(): string

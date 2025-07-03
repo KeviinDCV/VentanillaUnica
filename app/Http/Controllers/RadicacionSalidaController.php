@@ -14,6 +14,8 @@ use App\Models\Documento;
 use App\Models\Ciudad;
 use App\Models\Departamento;
 use App\Models\UnidadAdministrativa;
+use App\Models\Subserie;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class RadicacionSalidaController extends Controller
@@ -28,7 +30,7 @@ class RadicacionSalidaController extends Controller
         $departamentos = Departamento::activo()->ordenado()->get();
         $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
-        $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
+        $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
 
         return view('radicacion.salida.index', compact('dependencias', 'ciudades', 'departamentos', 'unidadesAdministrativas', 'tiposSolicitud'));
     }
@@ -63,8 +65,8 @@ class RadicacionSalidaController extends Controller
             'observaciones' => 'nullable|string',
             'prioridad' => 'required|in:baja,normal,alta,urgente',
 
-            // TRD
-            'trd_id' => 'required|exists:trd,id',
+            // TRD (Subserie)
+            'trd_id' => 'required|exists:subseries,id',
 
             // Información de envío
             'medio_envio' => 'required|in:correo_fisico,correo_electronico,mensajeria,entrega_personal',
@@ -158,7 +160,7 @@ class RadicacionSalidaController extends Controller
                 'fecha_radicado' => Carbon::now()->toDateString(),
                 'hora_radicado' => Carbon::now()->toTimeString(),
                 'remitente_id' => $destinatario->id, // En salida, el "remitente" es el destinatario externo
-                'trd_id' => $request->trd_id,
+                'subserie_id' => $request->trd_id, // trd_id viene del formulario pero se guarda como subserie_id
                 'dependencia_destino_id' => $request->dependencia_origen_id, // La dependencia origen es quien envía
                 'usuario_radica_id' => auth()->id(),
                 'medio_recepcion' => 'salida',
@@ -238,6 +240,66 @@ class RadicacionSalidaController extends Controller
             return back()->withErrors(['error' => 'Error al crear el radicado de salida: ' . $e->getMessage()])
                         ->withInput();
         }
+    }
+
+    /**
+     * Mostrar previsualización del radicado de salida
+     */
+    public function preview(Request $request)
+    {
+        // Validar datos básicos
+        $validator = Validator::make($request->all(), [
+            'dependencia_origen_id' => 'required|exists:dependencias,id',
+            'funcionario_remitente' => 'required|string|max:255',
+            'trd_id' => 'required|exists:subseries,id',
+            'asunto_salida' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Obtener datos para la previsualización
+        $dependenciaOrigen = Dependencia::findOrFail($request->dependencia_origen_id);
+        $subserie = Subserie::with(['serie.unidadAdministrativa'])->findOrFail($request->trd_id);
+
+        // Generar número de radicado temporal
+        $numeroRadicado = Radicado::generarNumeroRadicado('salida');
+
+        // Preparar datos para la vista
+        $datosPreview = [
+            'numero_radicado' => $numeroRadicado,
+            'tipo' => 'salida',
+            'fecha_radicado' => now()->format('d/m/Y'),
+            'hora_radicado' => now()->format('H:i:s'),
+            'dependencia_origen' => $dependenciaOrigen,
+            'funcionario_remitente' => $request->funcionario_remitente,
+            'cargo_remitente' => $request->cargo_remitente,
+            'telefono_remitente' => $request->telefono_remitente,
+            'email_remitente' => $request->email_remitente,
+            'nombre_destinatario' => $request->nombre_destinatario,
+            'telefono_destinatario' => $request->telefono_destinatario,
+            'email_destinatario' => $request->email_destinatario,
+            'direccion_destinatario' => $request->direccion_destinatario,
+            'ciudad_destinatario' => $request->ciudad_destinatario,
+            'departamento_destinatario' => $request->departamento_destinatario,
+            'trd' => [
+                'codigo' => $subserie->serie->unidadAdministrativa->codigo . '.' . $subserie->serie->numero_serie . '.' . $subserie->numero_subserie,
+                'serie' => $subserie->serie->nombre,
+                'subserie' => $subserie->nombre,
+                'asunto' => $subserie->descripcion,
+            ],
+            'asunto' => $request->asunto_salida,
+            'tipo_comunicacion' => $request->tipo_comunicacion,
+            'numero_folios' => $request->numero_folios ?: 1,
+            'observaciones' => $request->observaciones,
+            'medio_envio' => $request->medio_envio,
+            'requiere_acuse_recibo' => $request->requiere_acuse_recibo,
+            'tipo_anexo' => $request->tipo_anexo,
+            'usuario_radica' => auth()->user()->name,
+        ];
+
+        return view('radicacion.salida.preview', compact('datosPreview'));
     }
 
     /**

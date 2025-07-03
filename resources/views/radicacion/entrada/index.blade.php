@@ -373,12 +373,66 @@
                                     <label for="documento" class="block text-sm font-medium text-gray-700 mb-2">
                                         Adjuntar Documento <span class="text-red-500">*</span>
                                     </label>
-                                    <input type="file" name="documento" id="documento" required
-                                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        Formatos permitidos: PDF, Word, JPG, PNG. Tamaño máximo: 10MB
-                                    </p>
+
+                                    <!-- Zona de arrastrar y soltar -->
+                                    <div id="drop-zone" class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-uniradical-blue transition-colors duration-200">
+                                        <div id="drop-zone-content">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="mt-4">
+                                                <label for="documento" class="cursor-pointer">
+                                                    <span class="mt-2 block text-sm font-medium text-gray-900">
+                                                        Arrastra y suelta tu archivo aquí, o
+                                                        <span class="text-uniradical-blue hover:text-uniradical-blue-dark">haz clic para seleccionar</span>
+                                                    </span>
+                                                </label>
+                                                <input type="file" name="documento" id="documento" required
+                                                       accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                                       class="sr-only">
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500">
+                                                PDF, Word, JPG, PNG hasta 10MB
+                                            </p>
+                                        </div>
+
+                                        <!-- Indicador de carga -->
+                                        <div id="upload-progress" class="hidden">
+                                            <div class="flex items-center justify-center">
+                                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-uniradical-blue"></div>
+                                                <span class="ml-2 text-sm text-gray-600">Procesando archivo...</span>
+                                            </div>
+                                            <div class="mt-2 bg-gray-200 rounded-full h-2">
+                                                <div id="progress-bar" class="bg-uniradical-blue h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Vista previa del archivo -->
+                                    <div id="file-preview" class="hidden mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <div id="file-icon" class="flex-shrink-0">
+                                                    <!-- Icono se insertará dinámicamente -->
+                                                </div>
+                                                <div>
+                                                    <p id="file-name" class="text-sm font-medium text-gray-900"></p>
+                                                    <p id="file-size" class="text-xs text-gray-500"></p>
+                                                    <p id="file-type" class="text-xs text-gray-500"></p>
+                                                </div>
+                                            </div>
+                                            <button type="button" id="remove-file" class="text-red-600 hover:text-red-800 transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <!-- Vista previa de imagen -->
+                                        <div id="image-preview" class="hidden mt-3">
+                                            <img id="preview-image" src="" alt="Vista previa" class="max-w-full h-48 object-contain border border-gray-200 rounded">
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Vista previa del archivo -->

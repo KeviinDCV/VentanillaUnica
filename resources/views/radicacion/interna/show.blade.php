@@ -55,22 +55,22 @@
                                 {{ ucfirst(str_replace('_', ' ', $radicado->estado)) }}
                             </span>
                         </div>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="p-4 bg-blue-50 border border-blue-200 rounded-md">
                                 <h4 class="font-medium text-blue-800 mb-2">Número de Radicado</h4>
                                 <p class="text-2xl font-bold text-blue-900">{{ $radicado->numero_radicado }}</p>
                                 <p class="text-sm text-blue-600 mt-1">Documento Interno</p>
                             </div>
-                            
+
                             <div class="p-4 bg-gray-50 border border-gray-200 rounded-md">
                                 <h4 class="font-medium text-gray-800 mb-2">Fecha y Hora</h4>
                                 <p class="text-sm text-gray-600">
-                                    {{ $radicado->fecha_radicado->format('d/m/Y') }} - 
+                                    {{ $radicado->fecha_radicado->format('d/m/Y') }} -
                                     {{ \Carbon\Carbon::parse($radicado->hora_radicado)->format('H:i:s') }}
                                 </p>
                             </div>
-                            
+
                             <div class="p-4 bg-gray-50 border border-gray-200 rounded-md">
                                 <h4 class="font-medium text-gray-800 mb-2">Radicado por</h4>
                                 <p class="text-sm text-gray-600">{{ $radicado->usuarioRadica->name }}</p>
@@ -83,7 +83,7 @@
                         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                             Origen y Destino
                         </h3>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <!-- Dependencia Origen -->
                             <div class="p-4 bg-green-50 border border-green-200 rounded-md">
@@ -146,7 +146,7 @@
                         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                             Información del Documento
                         </h3>
-                        
+
                         <!-- Extraer información de observaciones -->
                         @php
                             $observaciones = explode(' | ', $radicado->observaciones);
@@ -155,7 +155,7 @@
                             $prioridad = '';
                             $cargo = '';
                             $observacionesAdicionales = '';
-                            
+
                             foreach ($observaciones as $obs) {
                                 if (str_starts_with($obs, 'Asunto:')) {
                                     $asunto = trim(str_replace('Asunto:', '', $obs));
@@ -170,7 +170,7 @@
                                 }
                             }
                         @endphp
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             @if($asunto)
                             <div class="md:col-span-2">
@@ -178,14 +178,14 @@
                                 <p class="text-sm text-gray-900 p-3 bg-gray-50 rounded-md">{{ $asunto }}</p>
                             </div>
                             @endif
-                            
+
                             @if($tipo)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Comunicación</label>
                                 <p class="text-sm text-gray-900">{{ $tipo }}</p>
                             </div>
                             @endif
-                            
+
                             @if($prioridad)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Prioridad</label>
@@ -197,24 +197,24 @@
                                     {{ $prioridad }}
                                 </span>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Número de Folios</label>
                                 <p class="text-sm text-gray-900">{{ $radicado->numero_folios }}</p>
                             </div>
-                            
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Anexo</label>
                                 <p class="text-sm text-gray-900">{{ ucfirst($radicado->tipo_anexo) }}</p>
                             </div>
-                            
+
                             @if($cargo)
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Cargo del Funcionario</label>
                                 <p class="text-sm text-gray-900">{{ $cargo }}</p>
                             </div>
                             @endif
-                            
+
                             @if($observacionesAdicionales)
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Observaciones Adicionales</label>
@@ -229,25 +229,25 @@
                         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                             Tabla de Retención Documental (TRD)
                         </h3>
-                        
+
                         <div class="p-4 bg-blue-50 border border-blue-200 rounded-md">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-blue-700 mb-1">Código</label>
-                                    <p class="text-sm text-blue-900">{{ $radicado->trd->codigo }}</p>
+                                    <p class="text-sm text-blue-900">{{ $radicado->subserie->serie->unidadAdministrativa->codigo ?? 'N/A' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-blue-700 mb-1">Serie</label>
-                                    <p class="text-sm text-blue-900">{{ $radicado->trd->serie }}</p>
+                                    <p class="text-sm text-blue-900">{{ $radicado->subserie->serie->nombre ?? 'N/A' }}</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-blue-700 mb-1">Subserie</label>
-                                    <p class="text-sm text-blue-900">{{ $radicado->trd->subserie ?: 'N/A' }}</p>
+                                    <p class="text-sm text-blue-900">{{ $radicado->subserie->nombre ?? 'N/A' }}</p>
                                 </div>
                             </div>
                             <div class="mt-3">
-                                <label class="block text-sm font-medium text-blue-700 mb-1">Asunto TRD</label>
-                                <p class="text-sm text-blue-900">{{ $radicado->trd->asunto }}</p>
+                                <label class="block text-sm font-medium text-blue-700 mb-1">Descripción</label>
+                                <p class="text-sm text-blue-900">{{ $radicado->subserie->descripcion ?? 'Sin descripción' }}</p>
                             </div>
                         </div>
                     </div>
@@ -257,7 +257,7 @@
                         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                             Información de Respuesta
                         </h3>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Requiere Respuesta</label>
@@ -265,11 +265,11 @@
                                     {{ $radicado->medio_respuesta === 'no_requiere' ? 'No' : 'Sí' }}
                                 </p>
                             </div>
-                            
+
                             @if($radicado->fecha_limite_respuesta)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Límite de Respuesta</label>
-                                <p class="text-sm text-gray-900 
+                                <p class="text-sm text-gray-900
                                     {{ $radicado->estaVencido() ? 'text-red-600 font-medium' : '' }}">
                                     {{ $radicado->fecha_limite_respuesta->format('d/m/Y') }}
                                     @if($radicado->estaVencido())
@@ -289,7 +289,7 @@
                         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
                             Documentos Adjuntos
                         </h3>
-                        
+
                         <div class="space-y-3">
                             @foreach($radicado->documentos as $documento)
                             <div class="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-md">
@@ -334,12 +334,12 @@
 
                     <!-- Acciones -->
                     <div class="flex justify-between pt-6 border-t border-gray-200">
-                        <a href="{{ route('dashboard') }}" 
+                        <a href="{{ route('dashboard') }}"
                            class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
                             Volver al Dashboard
                         </a>
                         <div class="flex space-x-3">
-                            <a href="{{ route('radicacion.interna.index') }}" 
+                            <a href="{{ route('radicacion.interna.index') }}"
                                class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200">
                                 Nuevo Radicado Interno
                             </a>

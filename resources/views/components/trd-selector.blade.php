@@ -9,11 +9,15 @@
                 class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                 onchange="loadSeriesForRadicacion(this.value)">
             <option value="">Seleccionar unidad...</option>
-            @foreach($unidadesAdministrativas as $unidad)
-                <option value="{{ $unidad->id }}" {{ old('unidad_administrativa_id') == $unidad->id ? 'selected' : '' }}>
-                    {{ $unidad->codigo }} - {{ $unidad->nombre }}
-                </option>
-            @endforeach
+            @if(isset($unidadesAdministrativas) && count($unidadesAdministrativas) > 0)
+                @foreach($unidadesAdministrativas as $unidad)
+                    <option value="{{ $unidad->id ?? '' }}" {{ old('unidad_administrativa_id') == ($unidad->id ?? '') ? 'selected' : '' }}>
+                        {{ ($unidad->codigo ?? 'Sin código') }} - {{ ($unidad->nombre ?? 'Sin nombre') }}
+                    </option>
+                @endforeach
+            @else
+                <option value="">No hay unidades disponibles</option>
+            @endif
         </select>
     </div>
 
@@ -35,63 +39,13 @@
             Subserie <span class="text-red-500">*</span>
         </label>
         <select name="subserie_id" id="subserie_id" required
-                class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                onchange="updateTrdId(this.value)">
             <option value="">Seleccionar subserie...</option>
         </select>
+        <!-- Campo oculto para compatibilidad con controladores que esperan trd_id -->
+        <input type="hidden" name="trd_id" id="trd_id" value="{{ old('trd_id') }}">
     </div>
 </div>
 
-<script>
-// Funciones para cargar series y subseries en formularios de radicación
-function loadSeriesForRadicacion(unidadId) {
-    const serieSelect = document.getElementById('serie_id');
-    const subserieSelect = document.getElementById('subserie_id');
-    
-    // Limpiar selects
-    serieSelect.innerHTML = '<option value="">Seleccionar serie...</option>';
-    subserieSelect.innerHTML = '<option value="">Seleccionar subserie...</option>';
-    
-    if (!unidadId) return;
-    
-    fetch(`/admin/subseries/series-por-unidad/${unidadId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                data.series.forEach(serie => {
-                    const option = document.createElement('option');
-                    option.value = serie.id;
-                    option.textContent = `${serie.numero_serie} - ${serie.nombre}`;
-                    serieSelect.appendChild(option);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error loading series:', error);
-        });
-}
-
-function loadSubseriesForRadicacion(serieId) {
-    const subserieSelect = document.getElementById('subserie_id');
-    
-    // Limpiar select
-    subserieSelect.innerHTML = '<option value="">Seleccionar subserie...</option>';
-    
-    if (!serieId) return;
-    
-    fetch(`/admin/subseries/por-serie/${serieId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                data.subseries.forEach(subserie => {
-                    const option = document.createElement('option');
-                    option.value = subserie.id;
-                    option.textContent = `${subserie.numero_subserie} - ${subserie.nombre}`;
-                    subserieSelect.appendChild(option);
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error loading subseries:', error);
-        });
-}
-</script>
+{{-- Las funciones JavaScript están en resources/js/trd-selector.js --}}

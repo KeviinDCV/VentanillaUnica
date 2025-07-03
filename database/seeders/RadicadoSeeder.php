@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Radicado;
 use App\Models\Remitente;
 use App\Models\Dependencia;
-use App\Models\Trd;
+use App\Models\Subserie;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -20,11 +20,11 @@ class RadicadoSeeder extends Seeder
     {
         // Obtener datos necesarios
         $dependencias = Dependencia::all();
-        $trds = Trd::all();
+        $subseries = Subserie::all();
         $usuarios = User::all();
 
-        if ($dependencias->isEmpty() || $trds->isEmpty() || $usuarios->isEmpty()) {
-            $this->command->error('Asegúrate de que existan dependencias, TRDs y usuarios antes de ejecutar este seeder.');
+        if ($dependencias->isEmpty() || $subseries->isEmpty() || $usuarios->isEmpty()) {
+            $this->command->error('Asegúrate de que existan dependencias, subseries y usuarios antes de ejecutar este seeder.');
             return;
         }
 
@@ -125,7 +125,7 @@ class RadicadoSeeder extends Seeder
                 $numeroRadicado = 'E-' . $fecha->format('Y') . '-' . str_pad($contador, 6, '0', STR_PAD_LEFT);
                 $remitente = $remitenteModels[array_rand($remitenteModels)];
                 $dependencia = $dependencias->random();
-                $trd = $trds->random();
+                $subserie = $subseries->random();
                 $usuario = $usuarios->random();
                 $estado = $estados[array_rand($estados)];
 
@@ -143,7 +143,7 @@ class RadicadoSeeder extends Seeder
                     'fecha_radicado' => $fecha->toDateString(),
                     'hora_radicado' => $fecha->setTime(rand(8, 17), rand(0, 59), rand(0, 59))->toTimeString(),
                     'remitente_id' => $remitente->id,
-                    'trd_id' => $trd->id,
+                    'subserie_id' => $subserie->id,
                     'dependencia_destino_id' => $dependencia->id,
                     'usuario_radica_id' => $usuario->id,
                     'medio_recepcion' => $mediosRecepcion[array_rand($mediosRecepcion)],

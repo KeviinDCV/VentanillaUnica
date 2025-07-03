@@ -53,25 +53,22 @@ class DashboardController extends Controller
             'salida' => Radicado::where('tipo', 'salida')->count(),
         ];
 
-        // Estadísticas personales del usuario
+        // Estadísticas de radicados (todos los radicados del sistema)
         $estadisticasPersonales = [
-            'mis_radicados' => Radicado::where('usuario_radica_id', $user->id)->count(),
-            'mis_radicados_mes' => Radicado::where('usuario_radica_id', $user->id)
-                                          ->whereMonth('fecha_radicado', Carbon::now()->month)
+            'mis_radicados' => Radicado::count(),
+            'mis_radicados_mes' => Radicado::whereMonth('fecha_radicado', Carbon::now()->month)
                                           ->whereYear('fecha_radicado', Carbon::now()->year)->count(),
-            'mis_pendientes' => Radicado::where('usuario_radica_id', $user->id)
-                                       ->where('estado', 'pendiente')->count(),
+            'mis_pendientes' => Radicado::where('estado', 'pendiente')->count(),
         ];
 
-        // Radicados recientes del usuario
-        $misRadicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'trd'])
-                                        ->where('usuario_radica_id', $user->id)
+        // Radicados recientes del sistema
+        $misRadicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'subserie.serie.unidadAdministrativa'])
                                         ->orderBy('created_at', 'desc')
                                         ->limit(5)
                                         ->get();
 
         // Radicados recientes del sistema (últimos 10) - solo para admin
-        $radicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica'])
+        $radicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica', 'subserie.serie.unidadAdministrativa'])
                                     ->orderBy('created_at', 'desc')
                                     ->limit(10)
                                     ->get();
@@ -83,9 +80,6 @@ class DashboardController extends Controller
             'usuarios_activos' => User::whereDate('updated_at', Carbon::today())->count(),
         ];
 
-        // Accesos rápidos para administradores
-        $accesosRapidos = $this->getAccesosRapidos($user);
-
         $view = view('dashboard', compact(
             'user',
             'estadisticasGenerales',
@@ -93,8 +87,7 @@ class DashboardController extends Controller
             'estadisticasPersonales',
             'misRadicadosRecientes',
             'radicadosRecientes',
-            'actividadHoy',
-            'accesosRapidos'
+            'actividadHoy'
         ));
 
         // Si es una petición AJAX/SPA, devolver solo el contenido
@@ -110,19 +103,16 @@ class DashboardController extends Controller
      */
     private function ventanillaDashboard($user, $request)
     {
-        // Estadísticas personales del usuario (solo sus propios datos)
+        // Estadísticas de radicados (todos los radicados del sistema)
         $estadisticasPersonales = [
-            'mis_radicados' => Radicado::where('usuario_radica_id', $user->id)->count(),
-            'mis_radicados_mes' => Radicado::where('usuario_radica_id', $user->id)
-                                          ->whereMonth('fecha_radicado', Carbon::now()->month)
+            'mis_radicados' => Radicado::count(),
+            'mis_radicados_mes' => Radicado::whereMonth('fecha_radicado', Carbon::now()->month)
                                           ->whereYear('fecha_radicado', Carbon::now()->year)->count(),
-            'mis_pendientes' => Radicado::where('usuario_radica_id', $user->id)
-                                       ->where('estado', 'pendiente')->count(),
+            'mis_pendientes' => Radicado::where('estado', 'pendiente')->count(),
         ];
 
-        // Solo radicados del usuario actual
-        $misRadicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'trd'])
-                                        ->where('usuario_radica_id', $user->id)
+        // Radicados recientes del sistema
+        $misRadicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'subserie.serie.unidadAdministrativa'])
                                         ->orderBy('created_at', 'desc')
                                         ->limit(5)
                                         ->get();
@@ -134,15 +124,11 @@ class DashboardController extends Controller
             'usuarios_activos' => User::whereDate('updated_at', Carbon::today())->count(),
         ];
 
-        // Accesos rápidos limitados para ventanilla
-        $accesosRapidos = $this->getAccesosRapidos($user);
-
         $view = view('dashboard-ventanilla', compact(
             'user',
             'estadisticasPersonales',
             'misRadicadosRecientes',
-            'actividadHoy',
-            'accesosRapidos'
+            'actividadHoy'
         ));
 
         // Si es una petición AJAX/SPA, devolver solo el contenido
@@ -154,58 +140,33 @@ class DashboardController extends Controller
     }
 
     /**
-     * Get quick access links based on user role
+     * Contar radicados aplicando la misma lógica de filtros por rol que RadicacionController
      */
-    private function getAccesosRapidos($user)
+    private function contarRadicadosPorRol($user, $tipo = 'total')
     {
-        // Accesos básicos para todos los usuarios
-        $accesos = [
-            [
-                'titulo' => 'Radicación de Entrada',
-                'descripcion' => 'Radicar documentos externos',
-                'url' => route('radicacion.entrada.index'),
-                'icono' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-                'color' => 'blue'
-            ],
-            [
-                'titulo' => 'Radicación Interna',
-                'descripcion' => 'Comunicación entre dependencias',
-                'url' => route('radicacion.interna.index'),
-                'icono' => 'M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8m-8 0V9a2 2 0 012-2h4a2 2 0 012 2v2',
-                'color' => 'green'
-            ],
-            [
-                'titulo' => 'Consultar Radicados',
-                'descripcion' => 'Buscar y consultar documentos',
-                'url' => route('radicacion.index'),
-                'icono' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
-                'color' => 'yellow'
-            ]
-        ];
+        $query = Radicado::query();
 
-        // Accesos específicos según el rol
-        if ($user->isAdmin()) {
-            // Administradores tienen acceso completo
-            $accesos[] = [
-                'titulo' => 'Radicación de Salida',
-                'descripcion' => 'Documentos hacia entidades externas',
-                'url' => route('radicacion.salida.index'),
-                'icono' => 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8',
-                'color' => 'purple'
-            ];
+        // Aplicar filtros por rol (misma lógica que RadicacionController)
+        if ($user->isVentanilla()) {
+            $query->where('usuario_radica_id', $user->id);
+        }
+        // Los administradores ven todos los radicados (sin filtro adicional)
 
-            $accesos[] = [
-                'titulo' => 'Panel de Administración',
-                'descripcion' => 'Gestión completa del sistema',
-                'url' => route('admin.index'),
-                'icono' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
-                'color' => 'red'
-            ];
-        } else {
-            // Usuarios de ventanilla tienen acceso limitado
-            // Solo accesos básicos de radicación
+        // Aplicar filtros adicionales según el tipo
+        switch ($tipo) {
+            case 'mes':
+                $query->whereMonth('fecha_radicado', Carbon::now()->month)
+                      ->whereYear('fecha_radicado', Carbon::now()->year);
+                break;
+            case 'pendientes':
+                $query->where('estado', 'pendiente');
+                break;
+            case 'total':
+            default:
+                // Sin filtros adicionales
+                break;
         }
 
-        return $accesos;
+        return $query->count();
     }
 }

@@ -17,7 +17,7 @@ class Radicado extends Model
         'fecha_radicado',
         'hora_radicado',
         'remitente_id',
-
+        'subserie_id',
         'dependencia_destino_id',
         'dependencia_origen_id',
         'usuario_radica_id',
@@ -32,6 +32,9 @@ class Radicado extends Model
         'respuesta',
         'fecha_respuesta',
         'usuario_responde_id',
+        'fecha_finalizacion',
+        'usuario_finaliza_id',
+        'posicion_sello',
     ];
 
     protected $casts = [
@@ -39,7 +42,9 @@ class Radicado extends Model
         'hora_radicado' => 'datetime:H:i:s',
         'fecha_limite_respuesta' => 'date',
         'fecha_respuesta' => 'date',
+        'fecha_finalizacion' => 'datetime',
         'numero_folios' => 'integer',
+        'posicion_sello' => 'array',
     ];
 
     /**
@@ -48,6 +53,14 @@ class Radicado extends Model
     public function remitente(): BelongsTo
     {
         return $this->belongsTo(Remitente::class, 'remitente_id');
+    }
+
+    /**
+     * Relación con subserie (TRD jerárquico)
+     */
+    public function subserie(): BelongsTo
+    {
+        return $this->belongsTo(Subserie::class, 'subserie_id');
     }
 
 
@@ -82,6 +95,14 @@ class Radicado extends Model
     public function usuarioResponde(): BelongsTo
     {
         return $this->belongsTo(User::class, 'usuario_responde_id');
+    }
+
+    /**
+     * Relación con usuario que finaliza
+     */
+    public function usuarioFinaliza(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'usuario_finaliza_id');
     }
 
     /**

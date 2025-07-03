@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Radicado;
 use App\Models\Dependencia;
-
+use App\Models\Documento;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class RadicacionController extends Controller
@@ -26,7 +30,7 @@ class RadicacionController extends Controller
         $dependencias = Dependencia::activas()->orderBy('nombre')->get();
 
         // Inicializar query para consulta
-        $query = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica', 'documentos']);
+        $query = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica', 'documentos', 'subserie.serie.unidadAdministrativa']);
 
         // Aplicar filtros basados en rol
         $this->aplicarFiltrosPorRol($query, $user);
@@ -49,11 +53,14 @@ class RadicacionController extends Controller
             $estadisticas = $this->obtenerEstadisticas($request, $user);
         }
 
-        // Radicados recientes (últimos 10) - query separada
-        $radicadosRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica'])
-                                    ->orderBy('created_at', 'desc')
-                                    ->limit(10)
-                                    ->get();
+        // Radicados recientes con paginación
+        $queryRecientes = Radicado::with(['remitente', 'dependenciaDestino', 'usuarioRadica', 'subserie.serie.unidadAdministrativa']);
+
+        // Aplicar filtros por rol también a los radicados recientes
+        $this->aplicarFiltrosPorRol($queryRecientes, $user);
+
+        $radicadosRecientes = $queryRecientes->orderBy('created_at', 'desc')
+                                           ->paginate(10);
 
         $view = view('radicacion.index', compact(
             'radicadosRecientes',
@@ -76,13 +83,9 @@ class RadicacionController extends Controller
      */
     private function aplicarFiltrosPorRol($query, $user)
     {
-        // Los usuarios de ventanilla solo pueden ver sus propios radicados
-        if ($user->isVentanilla()) {
-            $query->where('usuario_radica_id', $user->id);
-        }
-
-        // Los administradores pueden ver todos los radicados
-        // No se aplica ningún filtro adicional para administradores
+        // Tanto administradores como usuarios pueden ver todos los radicados
+        // Los permisos se manejan a nivel de acciones (editar, eliminar, etc.)
+        // No se aplica ningún filtro por rol para la visualización
     }
 
     /**
@@ -124,9 +127,9 @@ class RadicacionController extends Controller
             $filtros['dependencia_destino_id'] = $request->dependencia_destino_id;
         }
 
-        // Filtro por TRD
+        // Filtro por TRD (Subserie)
         if ($request->filled('trd_id')) {
-            $query->where('trd_id', $request->trd_id);
+            $query->where('subserie_id', $request->trd_id);
             $filtros['trd_id'] = $request->trd_id;
         }
 
@@ -292,11 +295,184 @@ class RadicacionController extends Controller
     }
 
     /**
+     * Subir documento digitalizado
+     */
+    public function uploadDigitalized(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'documento_digitalizado' => 'required|file|mimes:pdf|max:10240', // 10MB máximo
+            'numero_radicado' => 'required|string',
+            'tipo_radicado' => 'required|in:entrada,interno,salida'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            // Buscar el radicado
+            $radicado = Radicado::where('numero_radicado', $request->numero_radicado)
+                              ->where('tipo', $request->tipo_radicado)
+                              ->first();
+
+            if (!$radicado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Radicado no encontrado'
+                ], 404);
+            }
+
+            // Procesar archivo digitalizado
+            $archivo = $request->file('documento_digitalizado');
+            $nombreOriginal = $archivo->getClientOriginalName();
+            $nombreArchivo = $request->numero_radicado . '_digitalizado_' . time() . '.pdf';
+
+            // Guardar archivo
+            $rutaArchivo = $archivo->storeAs('documentos/digitalizados', $nombreArchivo, 'public');
+
+            // Calcular hash para integridad
+            $contenido = file_get_contents($archivo->getPathname());
+            $hashArchivo = hash('sha256', $contenido);
+
+            // Crear registro de documento digitalizado
+            Documento::create([
+                'radicado_id' => $radicado->id,
+                'nombre_archivo' => $nombreOriginal,
+                'ruta_archivo' => $rutaArchivo,
+                'tipo_mime' => $archivo->getMimeType(),
+                'tamaño_archivo' => $archivo->getSize(),
+                'hash_archivo' => $hashArchivo,
+                'descripcion' => 'Documento digitalizado con sello de radicado',
+                'es_principal' => false,
+                'es_digitalizado' => true,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento digitalizado cargado exitosamente',
+                'archivo' => [
+                    'nombre' => $nombreOriginal,
+                    'tamaño' => $archivo->getSize(),
+                    'ruta' => $rutaArchivo
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al cargar documento digitalizado', [
+                'error' => $e->getMessage(),
+                'numero_radicado' => $request->numero_radicado,
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar el documento digitalizado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Finalizar proceso de radicación
+     */
+    public function finalizar(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'numero_radicado' => 'required|string',
+            'tipo_radicado' => 'required|in:entrada,interno,salida',
+            'posicion_sello' => 'nullable|json'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Buscar el radicado
+            $radicado = Radicado::where('numero_radicado', $request->numero_radicado)
+                              ->where('tipo', $request->tipo_radicado)
+                              ->first();
+
+            if (!$radicado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Radicado no encontrado'
+                ], 404);
+            }
+
+            // Verificar que tenga documento digitalizado
+            $tieneDocumentoDigitalizado = $radicado->documentos()
+                                                  ->where('es_digitalizado', true)
+                                                  ->exists();
+
+            if (!$tieneDocumentoDigitalizado) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Debe cargar el documento digitalizado antes de finalizar'
+                ], 400);
+            }
+
+            // Actualizar estado del radicado
+            $radicado->update([
+                'estado' => 'en_proceso',
+                'fecha_finalizacion' => now(),
+                'usuario_finaliza_id' => auth()->id(),
+                'posicion_sello' => $request->posicion_sello
+            ]);
+
+            // Registrar en log de actividad
+            Log::info('Radicado finalizado exitosamente', [
+                'numero_radicado' => $radicado->numero_radicado,
+                'tipo' => $radicado->tipo,
+                'user_id' => auth()->id(),
+                'radicado_id' => $radicado->id
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Radicado {$radicado->numero_radicado} finalizado exitosamente",
+                'radicado' => [
+                    'id' => $radicado->id,
+                    'numero_radicado' => $radicado->numero_radicado,
+                    'tipo' => $radicado->tipo,
+                    'estado' => $radicado->estado,
+                    'fecha_finalizacion' => $radicado->fecha_finalizacion
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Error al finalizar radicado', [
+                'error' => $e->getMessage(),
+                'numero_radicado' => $request->numero_radicado,
+                'user_id' => auth()->id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al finalizar el radicado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Cargar formulario específico para el modal
      */
     public function cargarFormulario($tipo)
     {
-        // Verificación manual de autenticación
+
+
+        // Verificación de autenticación
         if (!auth()->check()) {
             return response()->json(['error' => 'No autorizado'], 401);
         }
@@ -310,23 +486,371 @@ class RadicacionController extends Controller
 
         // Obtener datos necesarios para los formularios
         $dependencias = \App\Models\Dependencia::activas()->orderBy('nombre')->get();
-        $trds = \App\Models\Trd::activos()->orderBy('codigo')->get();
+        $unidadesAdministrativas = \App\Models\UnidadAdministrativa::activas()->orderBy('codigo')->get();
         $ciudades = \App\Models\Ciudad::with('departamento')->activo()->ordenado()->get();
         $departamentos = \App\Models\Departamento::activo()->ordenado()->get();
-        $tiposSolicitud = \App\Models\TipoSolicitud::activo()->ordenado()->get();
+        $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
 
         switch ($tipo) {
             case 'entrada':
-                return view('radicacion.forms.entrada', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
+                return view('radicacion.forms.entrada', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));
 
             case 'interno':
-                return view('radicacion.forms.interno', compact('dependencias', 'trds'));
+                return view('radicacion.forms.interno', compact('dependencias', 'unidadesAdministrativas'));
 
             case 'salida':
-                return view('radicacion.forms.salida', compact('dependencias', 'trds', 'ciudades', 'departamentos', 'tiposSolicitud'));
+                return view('radicacion.forms.salida', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));
 
             default:
                 return response()->json(['error' => 'Tipo de formulario no válido'], 400);
+        }
+    }
+
+    /**
+     * Obtener detalles del radicado para modal (AJAX)
+     */
+    public function detalles($id)
+    {
+        try {
+            $radicado = Radicado::with([
+                'remitente',
+                'dependenciaDestino',
+                'dependenciaOrigen',
+                'usuarioRadica',
+                'usuarioResponde',
+                'usuarioFinaliza',
+                'documentos',
+                'subserie.serie.unidadAdministrativa'
+            ])->findOrFail($id);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $radicado->usuario_radica_id !== $user->id) {
+                return response()->json([
+                    'error' => 'No tiene permisos para ver este radicado'
+                ], 403);
+            }
+
+            // Formatear datos para el modal
+            $data = [
+                'id' => $radicado->id,
+                'numero_radicado' => $radicado->numero_radicado,
+                'estado' => $radicado->estado,
+                'fecha_radicado' => $radicado->fecha_radicado->format('d/m/Y'),
+                'hora_radicado' => \Carbon\Carbon::parse($radicado->hora_radicado)->format('H:i:s'),
+                'usuario_radica' => $radicado->usuarioRadica->name,
+                'medio_recepcion' => $radicado->medio_recepcion,
+                'tipo_comunicacion' => $radicado->tipo_comunicacion,
+                'numero_folios' => $radicado->numero_folios,
+                'tipo_anexo' => $radicado->tipo_anexo,
+                'observaciones' => $radicado->observaciones,
+                'medio_respuesta' => $radicado->medio_respuesta,
+                'fecha_limite_respuesta' => $radicado->fecha_limite_respuesta ? $radicado->fecha_limite_respuesta->format('d/m/Y') : null,
+                'esta_vencido' => $radicado->estaVencido(),
+                'dias_restantes' => $radicado->dias_restantes,
+                'dependencia_destino' => $radicado->dependenciaDestino->nombre_completo,
+                'remitente' => [
+                    'tipo' => $radicado->remitente->tipo,
+                    'nombre_completo' => $radicado->remitente->nombre_completo,
+                    'identificacion_completa' => $radicado->remitente->identificacion_completa,
+                    'contacto_completo' => $radicado->remitente->contacto_completo,
+                    'direccion' => $radicado->remitente->direccion,
+                    'entidad' => $radicado->remitente->entidad,
+                ],
+                'trd' => [
+                    'codigo' => $radicado->subserie->serie->unidadAdministrativa->codigo ?? 'N/A',
+                    'serie' => $radicado->subserie->serie->nombre ?? 'N/A',
+                    'subserie' => $radicado->subserie->nombre ?? 'N/A',
+                    'descripcion' => $radicado->subserie->descripcion ?? 'Sin descripción',
+                ],
+                'documentos' => $radicado->documentos->map(function ($documento) {
+                    return [
+                        'nombre_archivo' => $documento->nombre_archivo,
+                        'tipo_archivo' => $documento->tipo_archivo,
+                        'tamaño_legible' => $documento->tamaño_legible,
+                        'es_principal' => $documento->es_principal,
+                        'url_descarga' => $documento->url_archivo,
+                    ];
+                })->toArray(),
+            ];
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al cargar los detalles del radicado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener datos del radicado para edición (AJAX)
+     */
+    public function editar($id)
+    {
+        try {
+            $radicado = Radicado::with([
+                'remitente',
+                'dependenciaDestino',
+                'dependenciaOrigen',
+                'subserie.serie.unidadAdministrativa'
+            ])->findOrFail($id);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $radicado->usuario_radica_id !== $user->id) {
+                return response()->json([
+                    'error' => 'No tiene permisos para editar este radicado'
+                ], 403);
+            }
+
+            // Verificar si el radicado se puede editar según el rol del usuario
+            if ($user->isVentanilla()) {
+                // Los usuarios ventanilla solo pueden editar radicados pendientes y en proceso
+                if (!in_array($radicado->estado, ['pendiente', 'en_proceso'])) {
+                    $estadoTexto = match($radicado->estado) {
+                        'respondido' => 'respondido',
+                        'archivado' => 'archivado',
+                        default => $radicado->estado
+                    };
+
+                    return response()->json([
+                        'error' => "No se puede editar este radicado porque ya ha sido {$estadoTexto}. Solo los administradores pueden editar radicados finalizados."
+                    ], 422);
+                }
+            }
+            // Los administradores pueden editar cualquier radicado sin restricciones
+
+            // Cargar datos necesarios para el formulario
+            $dependencias = \App\Models\Dependencia::activas()->orderBy('nombre')->get();
+            $unidadesAdministrativas = \App\Models\UnidadAdministrativa::with(['series.subseries'])
+                ->activas()
+                ->orderBy('codigo')
+                ->get();
+            $tiposSolicitud = \App\Models\TipoSolicitud::activos()->orderBy('nombre')->get();
+
+            // Formatear datos del radicado para el formulario
+            $data = [
+                'radicado' => [
+                    'id' => $radicado->id,
+                    'numero_radicado' => $radicado->numero_radicado,
+                    'tipo' => $radicado->tipo,
+                    'medio_recepcion' => $radicado->medio_recepcion,
+                    'tipo_comunicacion' => $radicado->tipo_comunicacion,
+                    'numero_folios' => $radicado->numero_folios,
+                    'observaciones' => $radicado->observaciones,
+                    'medio_respuesta' => $radicado->medio_respuesta,
+                    'tipo_anexo' => $radicado->tipo_anexo,
+                    'fecha_limite_respuesta' => $radicado->fecha_limite_respuesta ? $radicado->fecha_limite_respuesta->format('Y-m-d') : null,
+                    'dependencia_destino_id' => $radicado->dependencia_destino_id,
+                    'dependencia_origen_id' => $radicado->dependencia_origen_id,
+                    'subserie_id' => $radicado->subserie_id,
+                    'unidad_administrativa_id' => $radicado->subserie->serie->unidad_administrativa_id ?? null,
+                    'serie_id' => $radicado->subserie->serie_id ?? null,
+                ],
+                'remitente' => [
+                    'tipo' => $radicado->remitente->tipo,
+                    'tipo_documento' => $radicado->remitente->tipo_documento,
+                    'numero_documento' => $radicado->remitente->numero_documento,
+                    'nombre_completo' => $radicado->remitente->nombre_completo,
+                    'telefono' => $radicado->remitente->telefono,
+                    'email' => $radicado->remitente->email,
+                    'direccion' => $radicado->remitente->direccion,
+                    'ciudad' => $radicado->remitente->ciudad,
+                    'departamento' => $radicado->remitente->departamento,
+                    'entidad' => $radicado->remitente->entidad,
+                ],
+                'dependencias' => $dependencias,
+                'unidades_administrativas' => $unidadesAdministrativas,
+                'tipos_solicitud' => $tiposSolicitud,
+            ];
+
+            return response()->json($data);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al cargar los datos del radicado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Actualizar un radicado
+     */
+    public function actualizar(Request $request, $id)
+    {
+        try {
+            $radicado = Radicado::with('remitente')->findOrFail($id);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $radicado->usuario_radica_id !== $user->id) {
+                return response()->json([
+                    'error' => 'No tiene permisos para editar este radicado'
+                ], 403);
+            }
+
+            // Verificar si el radicado se puede editar según el rol del usuario
+            if ($user->isVentanilla()) {
+                // Los usuarios ventanilla solo pueden editar radicados pendientes y en proceso
+                if (!in_array($radicado->estado, ['pendiente', 'en_proceso'])) {
+                    $estadoTexto = match($radicado->estado) {
+                        'respondido' => 'respondido',
+                        'archivado' => 'archivado',
+                        default => $radicado->estado
+                    };
+
+                    return response()->json([
+                        'error' => "No se puede editar este radicado porque ya ha sido {$estadoTexto}. Solo los administradores pueden editar radicados finalizados."
+                    ], 422);
+                }
+            }
+            // Los administradores pueden editar cualquier radicado sin restricciones
+
+            // Validar datos según el tipo de radicado
+            $rules = $this->getValidationRules($radicado->tipo);
+            $validator = \Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            \DB::beginTransaction();
+
+            // Actualizar datos del remitente
+            $radicado->remitente->update([
+                'tipo' => $request->tipo_remitente,
+                'tipo_documento' => $request->tipo_documento,
+                'numero_documento' => $request->numero_documento,
+                'nombre_completo' => $request->nombre_completo,
+                'telefono' => $request->telefono,
+                'email' => $request->email,
+                'direccion' => $request->direccion,
+                'ciudad' => $request->ciudad,
+                'departamento' => $request->departamento,
+                'entidad' => $request->entidad,
+            ]);
+
+            // Actualizar datos del radicado
+            $updateData = [
+                'medio_recepcion' => $request->medio_recepcion,
+                'tipo_comunicacion' => $request->tipo_comunicacion,
+                'numero_folios' => $request->numero_folios,
+                'observaciones' => $request->observaciones,
+                'medio_respuesta' => $request->medio_respuesta,
+                'tipo_anexo' => $request->tipo_anexo,
+                'subserie_id' => $request->trd_id,
+                'dependencia_destino_id' => $request->dependencia_destino_id,
+            ];
+
+            // Solo actualizar dependencia origen para radicados internos y de salida
+            if (in_array($radicado->tipo, ['interno', 'salida'])) {
+                $updateData['dependencia_origen_id'] = $request->dependencia_origen_id;
+            }
+
+            // Actualizar fecha límite si se proporciona
+            if ($request->fecha_limite_respuesta) {
+                $updateData['fecha_limite_respuesta'] = $request->fecha_limite_respuesta;
+            }
+
+            $radicado->update($updateData);
+
+            \DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Radicado actualizado exitosamente',
+                'radicado' => $radicado->fresh(['remitente', 'dependenciaDestino', 'subserie.serie.unidadAdministrativa'])
+            ]);
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+
+            return response()->json([
+                'error' => 'Error al actualizar el radicado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener reglas de validación según el tipo de radicado
+     */
+    private function getValidationRules($tipo)
+    {
+        $baseRules = [
+            // Datos del remitente
+            'tipo_remitente' => 'required|in:anonimo,registrado',
+            'tipo_documento' => 'required_if:tipo_remitente,registrado|in:CC,CE,TI,PP,NIT,OTRO',
+            'numero_documento' => 'required_if:tipo_remitente,registrado|string|max:20',
+            'nombre_completo' => 'required|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'direccion' => 'nullable|string',
+            'ciudad' => 'nullable|string|max:100',
+            'departamento' => 'nullable|string|max:100',
+            'entidad' => 'nullable|string|max:255',
+
+            // Datos del radicado
+            'medio_recepcion' => 'required|in:fisico,email,web,telefono,fax,otro',
+            'tipo_comunicacion' => 'required|exists:tipos_solicitud,codigo',
+            'numero_folios' => 'required|integer|min:1',
+            'observaciones' => 'nullable|string',
+            'trd_id' => 'required|exists:subseries,id',
+            'dependencia_destino_id' => 'required|exists:dependencias,id',
+            'medio_respuesta' => 'required|in:fisico,email,telefono,presencial,no_requiere',
+            'tipo_anexo' => 'required|in:original,copia,ninguno',
+            'fecha_limite_respuesta' => 'nullable|date|after:today',
+        ];
+
+        // Agregar validaciones específicas según el tipo
+        if (in_array($tipo, ['interno', 'salida'])) {
+            $baseRules['dependencia_origen_id'] = 'required|exists:dependencias,id';
+        }
+
+        return $baseRules;
+    }
+
+    /**
+     * Eliminar un radicado (solo administradores)
+     */
+    public function destroy($id)
+    {
+        try {
+            $radicado = Radicado::findOrFail($id);
+
+            // Verificar que el usuario sea administrador
+            if (!auth()->user()->hasRole('admin')) {
+                return response()->json([
+                    'error' => 'No tiene permisos para eliminar radicados'
+                ], 403);
+            }
+
+            // Eliminar documentos asociados si existen
+            if ($radicado->documentos()->exists()) {
+                foreach ($radicado->documentos as $documento) {
+                    // Eliminar archivo físico si existe
+                    if (Storage::exists($documento->ruta_archivo)) {
+                        Storage::delete($documento->ruta_archivo);
+                    }
+                    $documento->delete();
+                }
+            }
+
+            // Eliminar el radicado
+            $numeroRadicado = $radicado->numero_radicado;
+            $radicado->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Radicado {$numeroRadicado} eliminado exitosamente"
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al eliminar el radicado: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
