@@ -244,14 +244,15 @@
             </div>
 
             <!-- Fecha Límite de Respuesta -->
-            <div id="fecha-limite-container" class="hidden">
+            <div id="fecha-limite-container" style="display: none;">
                 <label for="fecha_limite_respuesta" class="block text-sm font-medium text-gray-700 mb-2">
-                    Fecha Límite de Respuesta
+                    Fecha Límite de Respuesta <span class="text-red-500">*</span>
                 </label>
                 <input type="date" name="fecha_limite_respuesta" id="fecha_limite_respuesta"
                        value="<?php echo e(old('fecha_limite_respuesta')); ?>"
                        min="<?php echo e(date('Y-m-d', strtotime('+1 day'))); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                <p class="text-sm text-gray-500 mt-1">Solo requerido si se selecciona "Requiere respuesta: Sí"</p>
             </div>
         </div>
 
@@ -263,6 +264,20 @@
             <textarea name="instrucciones" id="instrucciones" rows="3"
                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                       placeholder="Instrucciones especiales para el destinatario"><?php echo e(old('instrucciones')); ?></textarea>
+        </div>
+
+        <!-- Tipo de Anexo -->
+        <div class="mb-4">
+            <label for="tipo_anexo" class="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de Anexo <span class="text-red-500">*</span>
+            </label>
+            <select name="tipo_anexo" id="tipo_anexo" required
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                <option value="">Seleccionar...</option>
+                <option value="original" <?php echo e(old('tipo_anexo') == 'original' ? 'selected' : ''); ?>>Original</option>
+                <option value="copia" <?php echo e(old('tipo_anexo') == 'copia' ? 'selected' : ''); ?>>Copia</option>
+                <option value="ninguno" <?php echo e(old('tipo_anexo') == 'ninguno' ? 'selected' : ''); ?>>Ninguno</option>
+            </select>
         </div>
     </div>
 
@@ -290,7 +305,7 @@
                                 <span class="text-uniradical-blue hover:text-uniradical-blue-dark">haz clic para seleccionar</span>
                             </span>
                         </label>
-                        <input type="file" name="documento" id="documento_modal_interno" required
+                        <input type="file" name="documento" id="documento_modal_interno"
                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                                class="sr-only">
                     </div>
@@ -338,46 +353,5 @@
     </div>
 </form>
 
-<script>
-// Funcionalidad específica del formulario interno
-document.addEventListener('DOMContentLoaded', function() {
-    // Mostrar/ocultar fecha límite según requiere respuesta
-    const requiereRespuesta = document.getElementById('requiere_respuesta');
-    const fechaLimiteContainer = document.getElementById('fecha-limite-container');
-
-    if (requiereRespuesta && fechaLimiteContainer) {
-        requiereRespuesta.addEventListener('change', function() {
-            if (this.value === 'si') {
-                fechaLimiteContainer.classList.remove('hidden');
-                document.getElementById('fecha_limite_respuesta').required = true;
-            } else {
-                fechaLimiteContainer.classList.add('hidden');
-                document.getElementById('fecha_limite_respuesta').required = false;
-                document.getElementById('fecha_limite_respuesta').value = '';
-            }
-        });
-
-        // Verificar estado inicial
-        if (requiereRespuesta.value === 'si') {
-            fechaLimiteContainer.classList.remove('hidden');
-            document.getElementById('fecha_limite_respuesta').required = true;
-        }
-    }
-
-    // Validar antes del envío del formulario para evitar errores con campos ocultos
-    const form = document.querySelector('#modal-interno form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            // Remover required de campos ocultos
-            const hiddenRequiredFields = form.querySelectorAll('input[required], select[required]');
-            hiddenRequiredFields.forEach(field => {
-                const container = field.closest('.hidden');
-                if (container) {
-                    field.removeAttribute('required');
-                }
-            });
-        });
-    }
-});
-</script>
+<!-- JavaScript movido a radicacion.js para funcionar correctamente en modales -->
 <?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/radicacion/forms/interno.blade.php ENDPATH**/ ?>

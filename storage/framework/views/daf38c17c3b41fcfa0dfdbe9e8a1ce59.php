@@ -21,7 +21,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js', 'resources/js/file-upload.js']); ?>
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js', 'resources/js/radicacion.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js', 'resources/js/file-upload.js', 'resources/js/modal-file-upload.js']); ?>
 
         <!-- Script para evitar parpadeo de sidebar -->
         <script>

@@ -478,7 +478,7 @@
                 window.previewManager.radicadoData = {
                     numero_radicado: '{{ $datosPreview['numero_radicado'] }}',
                     tipo: 'interno',
-                    redirect_url: '{{ route('radicacion.interna.index') }}'
+                    redirect_url: '{{ route('radicacion.index') }}'
                 };
             }
         });

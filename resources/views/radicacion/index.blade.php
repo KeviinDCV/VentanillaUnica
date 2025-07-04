@@ -1132,15 +1132,8 @@
                     });
                 }
 
-                // Event listener para envío del formulario
-                const formInterna = document.getElementById('radicacionInternaForm');
-                if (formInterna) {
-                    formInterna.addEventListener('submit', function(e) {
-                        console.log('Formulario interno enviado');
-                        // Permitir envío normal del formulario
-                        return true;
-                    });
-                }
+                // Event listener para envío del formulario - ELIMINADO para evitar conflictos
+                // El formulario interno maneja su propia validación en interno.blade.php
 
                 // Mostrar/ocultar fecha límite según requiere respuesta
                 const requiereRespuesta = document.getElementById('requiere_respuesta');
@@ -1150,10 +1143,9 @@
                     requiereRespuesta.addEventListener('change', function() {
                         if (this.value === 'si') {
                             fechaLimiteContainer.classList.remove('hidden');
-                            document.getElementById('fecha_limite_respuesta').required = true;
+                            // NO AGREGAR REQUIRED - se valida en el servidor
                         } else {
                             fechaLimiteContainer.classList.add('hidden');
-                            document.getElementById('fecha_limite_respuesta').required = false;
                             document.getElementById('fecha_limite_respuesta').value = '';
                         }
                     });
@@ -1161,7 +1153,7 @@
                     // Verificar estado inicial
                     if (requiereRespuesta.value === 'si') {
                         fechaLimiteContainer.classList.remove('hidden');
-                        document.getElementById('fecha_limite_respuesta').required = true;
+                        // NO AGREGAR REQUIRED - se valida en el servidor
                     }
                 }
             }

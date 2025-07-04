@@ -10,7 +10,7 @@
                 </p>
             </div>
             <div class="flex space-x-3">
-                <a href="{{ route('radicacion.entrada.index') }}"
+                <a href="{{ route('radicacion.index') }}"
                    class="create-button">
                     Nuevo Radicado
                 </a>
@@ -277,7 +277,7 @@
                             Volver al Dashboard
                         </a>
                         <div class="flex space-x-3">
-                            <a href="{{ route('radicacion.entrada.index') }}"
+                            <a href="{{ route('radicacion.index') }}"
                                class="px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition duration-200">
                                 Nuevo Radicado
                             </a>

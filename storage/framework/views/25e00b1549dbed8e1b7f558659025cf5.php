@@ -33,8 +33,8 @@
                     <option value="">Seleccionar...</option>
                     <option value="CC" <?php echo e(old('tipo_documento_destinatario') == 'CC' ? 'selected' : ''); ?>>Cédula de Ciudadanía</option>
                     <option value="CE" <?php echo e(old('tipo_documento_destinatario') == 'CE' ? 'selected' : ''); ?>>Cédula de Extranjería</option>
-                    <option value="NIT" <?php echo e(old('tipo_documento_destinatario') == 'NIT' ? 'selected' : ''); ?>>NIT</option>
-                    <option value="PASAPORTE" <?php echo e(old('tipo_documento_destinatario') == 'PASAPORTE' ? 'selected' : ''); ?>>Pasaporte</option>
+                    <option value="TI" <?php echo e(old('tipo_documento_destinatario') == 'TI' ? 'selected' : ''); ?>>Tarjeta de Identidad</option>
+                    <option value="PP" <?php echo e(old('tipo_documento_destinatario') == 'PP' ? 'selected' : ''); ?>>Pasaporte</option>
                     <option value="OTRO" <?php echo e(old('tipo_documento_destinatario') == 'OTRO' ? 'selected' : ''); ?>>Otro</option>
                 </select>
             </div>
@@ -49,6 +49,17 @@
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Ingrese el número de documento">
             </div>
+        </div>
+
+        <!-- Campo NIT para Persona Jurídica y Entidad Pública -->
+        <div class="mb-4" id="campo-nit" style="display: none;">
+            <label for="nit_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
+                NIT <span class="text-red-500">*</span>
+            </label>
+            <input type="text" name="nit_destinatario" id="nit_destinatario"
+                   value="<?php echo e(old('nit_destinatario')); ?>"
+                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                   placeholder="Ingrese el NIT">
         </div>
 
         <!-- Nombre Completo del Destinatario -->
@@ -157,15 +168,15 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <!-- Tipo de Comunicación -->
             <div>
-                <label for="tipo_comunicacion_salida" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="tipo_comunicacion" class="block text-sm font-medium text-gray-700 mb-2">
                     Tipo de Comunicación <span class="text-red-500">*</span>
                 </label>
-                <select name="tipo_comunicacion_salida" id="tipo_comunicacion_salida" required
+                <select name="tipo_comunicacion" id="tipo_comunicacion" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
                     <?php $__currentLoopData = $tiposSolicitud; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <option value="<?php echo e($tipo->codigo); ?>"
-                                <?php echo e(old('tipo_comunicacion_salida') == $tipo->codigo ? 'selected' : ''); ?>>
+                                <?php echo e(old('tipo_comunicacion') == $tipo->codigo ? 'selected' : ''); ?>>
                             <?php echo e($tipo->nombre); ?>
 
                         </option>
@@ -181,12 +192,10 @@
                 <select name="medio_envio" id="medio_envio" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="fisico" <?php echo e(old('medio_envio') == 'fisico' ? 'selected' : ''); ?>>Físico</option>
-                    <option value="email" <?php echo e(old('medio_envio') == 'email' ? 'selected' : ''); ?>>Correo Electrónico</option>
-                    <option value="correo_certificado" <?php echo e(old('medio_envio') == 'correo_certificado' ? 'selected' : ''); ?>>Correo Certificado</option>
+                    <option value="correo_fisico" <?php echo e(old('medio_envio') == 'correo_fisico' ? 'selected' : ''); ?>>Correo Físico</option>
+                    <option value="correo_electronico" <?php echo e(old('medio_envio') == 'correo_electronico' ? 'selected' : ''); ?>>Correo Electrónico</option>
                     <option value="mensajeria" <?php echo e(old('medio_envio') == 'mensajeria' ? 'selected' : ''); ?>>Mensajería</option>
-                    <option value="fax" <?php echo e(old('medio_envio') == 'fax' ? 'selected' : ''); ?>>Fax</option>
-                    <option value="otro" <?php echo e(old('medio_envio') == 'otro' ? 'selected' : ''); ?>>Otro</option>
+                    <option value="entrega_personal" <?php echo e(old('medio_envio') == 'entrega_personal' ? 'selected' : ''); ?>>Entrega Personal</option>
                 </select>
             </div>
 
@@ -209,11 +218,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <!-- Asunto -->
             <div class="md:col-span-2">
-                <label for="asunto_salida" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="asunto" class="block text-sm font-medium text-gray-700 mb-2">
                     Asunto <span class="text-red-500">*</span>
                 </label>
-                <input type="text" name="asunto_salida" id="asunto_salida" required
-                       value="<?php echo e(old('asunto_salida')); ?>"
+                <input type="text" name="asunto" id="asunto" required
+                       value="<?php echo e(old('asunto')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Asunto del documento">
             </div>
@@ -378,11 +387,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <!-- Cargo -->
             <div>
-                <label for="cargo_responsable" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="cargo_remitente" class="block text-sm font-medium text-gray-700 mb-2">
                     Cargo
                 </label>
-                <input type="text" name="cargo_responsable" id="cargo_responsable"
-                       value="<?php echo e(old('cargo_responsable')); ?>"
+                <input type="text" name="cargo_remitente" id="cargo_remitente"
+                       value="<?php echo e(old('cargo_remitente')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Cargo del funcionario">
             </div>
@@ -396,6 +405,54 @@
                        value="<?php echo e(old('fecha_envio', date('Y-m-d'))); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
             </div>
+        </div>
+
+        <!-- Tipo de Anexo -->
+        <div class="mb-4">
+            <label for="tipo_anexo" class="block text-sm font-medium text-gray-700 mb-2">
+                Tipo de Anexo <span class="text-red-500">*</span>
+            </label>
+            <select name="tipo_anexo" id="tipo_anexo" required
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                <option value="">Seleccionar...</option>
+                <option value="original" <?php echo e(old('tipo_anexo') == 'original' ? 'selected' : ''); ?>>Original</option>
+                <option value="copia" <?php echo e(old('tipo_anexo') == 'copia' ? 'selected' : ''); ?>>Copia</option>
+                <option value="ninguno" <?php echo e(old('tipo_anexo') == 'ninguno' ? 'selected' : ''); ?>>Ninguno</option>
+            </select>
+        </div>
+
+        <!-- Requiere Acuse de Recibo -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                ¿Requiere Acuse de Recibo? <span class="text-red-500">*</span>
+            </label>
+            <div class="flex space-x-4">
+                <label class="inline-flex items-center">
+                    <input type="radio" name="requiere_acuse_recibo" value="1" required
+                           <?php echo e(old('requiere_acuse_recibo') == '1' ? 'checked' : ''); ?>
+
+                           class="form-radio text-uniradical-blue">
+                    <span class="ml-2">Sí</span>
+                </label>
+                <label class="inline-flex items-center">
+                    <input type="radio" name="requiere_acuse_recibo" value="0" required
+                           <?php echo e(old('requiere_acuse_recibo') == '0' ? 'checked' : ''); ?>
+
+                           class="form-radio text-uniradical-blue">
+                    <span class="ml-2">No</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Fecha Límite de Respuesta -->
+        <div class="mb-4" id="fecha-limite-container" style="display: none;">
+            <label for="fecha_limite_respuesta" class="block text-sm font-medium text-gray-700 mb-2">
+                Fecha Límite de Respuesta
+            </label>
+            <input type="date" name="fecha_limite_respuesta" id="fecha_limite_respuesta"
+                   value="<?php echo e(old('fecha_limite_respuesta')); ?>"
+                   min="<?php echo e(date('Y-m-d', strtotime('+1 day'))); ?>"
+                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
         </div>
 
         <!-- Instrucciones de Envío -->

@@ -387,11 +387,21 @@ window.RadicacionInterna = {
             dependenciaDestino.addEventListener('change', () => RadicacionInterna.validateDependencias());
         }
 
-        // Requiere respuesta
-        const requiereRespuesta = document.querySelectorAll('input[name="requiere_respuesta"]');
-        requiereRespuesta.forEach(radio => {
-            radio.addEventListener('change', () => RadicacionInterna.toggleFechaLimite());
-        });
+        // Requiere respuesta - Manejar tanto select como radio buttons
+        const requiereRespuestaSelect = document.getElementById('requiere_respuesta');
+        const requiereRespuestaRadios = document.querySelectorAll('input[name="requiere_respuesta"]');
+
+        if (requiereRespuestaSelect) {
+            console.log('🔧 Configurando select requiere_respuesta');
+            requiereRespuestaSelect.addEventListener('change', () => RadicacionInterna.toggleFechaLimiteSelect());
+        }
+
+        if (requiereRespuestaRadios.length > 0) {
+            console.log('🔧 Configurando radio buttons requiere_respuesta');
+            requiereRespuestaRadios.forEach(radio => {
+                radio.addEventListener('change', () => RadicacionInterna.toggleFechaLimite());
+            });
+        }
 
         // Botón de previsualización
         const btnPreviewInterno = document.getElementById('btn-preview-interno');
@@ -406,6 +416,7 @@ window.RadicacionInterna = {
         // Formulario
         const form = document.getElementById('radicacionInternaForm');
         if (form) {
+            console.log('Configurando event listener del formulario interno');
             form.addEventListener('submit', (e) => RadicacionInterna.validateForm(e));
         }
     },
@@ -425,11 +436,44 @@ window.RadicacionInterna = {
 
         if (requiereRespuesta && requiereRespuesta.value === '1') {
             fechaLimiteContainer.style.display = 'block';
-            fechaLimiteInput.required = true;
+            // NO AGREGAR REQUIRED - se valida en el servidor
         } else {
             fechaLimiteContainer.style.display = 'none';
-            fechaLimiteInput.required = false;
             fechaLimiteInput.value = '';
+        }
+    },
+
+    toggleFechaLimiteSelect() {
+        const requiereRespuestaSelect = document.getElementById('requiere_respuesta');
+        const fechaLimiteContainer = document.getElementById('fecha-limite-container');
+        const fechaLimiteInput = document.getElementById('fecha_limite_respuesta');
+
+        console.log('🔧 toggleFechaLimiteSelect - Valor:', requiereRespuestaSelect ? requiereRespuestaSelect.value : 'no encontrado');
+
+        if (requiereRespuestaSelect && fechaLimiteContainer && fechaLimiteInput) {
+            if (requiereRespuestaSelect.value === 'si') {
+                // Usar style.display en lugar de clases para mayor compatibilidad
+                fechaLimiteContainer.style.display = 'block';
+                fechaLimiteContainer.classList.remove('hidden');
+                fechaLimiteInput.disabled = false;
+                fechaLimiteInput.removeAttribute('disabled');
+                console.log('✅ Campo fecha límite mostrado y habilitado');
+                console.log('  - Container display:', fechaLimiteContainer.style.display);
+                console.log('  - Container classes:', fechaLimiteContainer.className);
+                console.log('  - Input disabled:', fechaLimiteInput.disabled);
+            } else {
+                // Ocultar usando ambos métodos
+                fechaLimiteContainer.style.display = 'none';
+                fechaLimiteContainer.classList.add('hidden');
+                fechaLimiteInput.value = '';
+                fechaLimiteInput.disabled = true;
+                console.log('✅ Campo fecha límite oculto y deshabilitado');
+            }
+        } else {
+            console.error('❌ No se encontraron elementos para fecha límite');
+            console.error('  - Select:', !!requiereRespuestaSelect);
+            console.error('  - Container:', !!fechaLimiteContainer);
+            console.error('  - Input:', !!fechaLimiteInput);
         }
     },
 
@@ -446,49 +490,72 @@ window.RadicacionInterna = {
         const destino = destinoElement.value;
 
         if (origen && destino && origen === destino) {
-            window.UniRadicNotifications.warning(
-                'Dependencias Inválidas',
-                'La dependencia de origen y destino deben ser diferentes'
-            );
+            console.log('❌ Dependencias iguales detectadas');
+            alert('La dependencia de origen y destino deben ser diferentes');
             destinoElement.value = '';
             return false;
         }
+        console.log('✅ Validación de dependencias exitosa');
         return true;
     },
 
     validateForm(e) {
+        console.log('🔧 RadicacionInterna.validateForm - Iniciando validación');
+
         if (!RadicacionInterna.validateDependencias()) {
+            console.log('❌ Validación de dependencias falló');
             e.preventDefault();
             return false;
         }
 
-        const requiereRespuesta = document.querySelector('input[name="requiere_respuesta"]:checked');
+        // Cambiar para usar select en lugar de radio button
+        const requiereRespuestaSelect = document.getElementById('requiere_respuesta');
 
-        if (!requiereRespuesta) {
+        if (!requiereRespuestaSelect || !requiereRespuestaSelect.value) {
+            console.log('❌ Campo requiere_respuesta no válido');
             e.preventDefault();
-            window.UniRadicNotifications.warning(
-                'Campo Requerido',
-                'Debe indicar si el documento requiere respuesta'
-            );
+            alert('Debe indicar si el documento requiere respuesta');
             return false;
         }
 
-        if (requiereRespuesta.value === '1') {
-            const fechaLimite = document.getElementById('fecha_limite_respuesta').value;
-            if (!fechaLimite) {
+        // Cambiar comparación para usar 'si' en lugar de '1'
+        if (requiereRespuestaSelect.value === 'si') {
+            const fechaLimiteInput = document.getElementById('fecha_limite_respuesta');
+            const fechaLimiteContainer = document.getElementById('fecha-limite-container');
+
+            console.log('🔧 Verificando fecha límite:');
+            console.log('  - Input encontrado:', !!fechaLimiteInput);
+            console.log('  - Container encontrado:', !!fechaLimiteContainer);
+            console.log('  - Container hidden:', fechaLimiteContainer ? fechaLimiteContainer.classList.contains('hidden') : 'N/A');
+            console.log('  - Input value:', fechaLimiteInput ? fechaLimiteInput.value : 'N/A');
+            console.log('  - Input disabled:', fechaLimiteInput ? fechaLimiteInput.disabled : 'N/A');
+
+            if (!fechaLimiteInput || !fechaLimiteInput.value) {
+                console.log('❌ Fecha límite requerida pero no proporcionada');
                 e.preventDefault();
-                window.UniRadicNotifications.warning(
-                    'Campo Requerido',
-                    'Debe especificar la fecha límite de respuesta cuando se requiere respuesta'
-                );
+                alert('Debe especificar la fecha límite de respuesta cuando se requiere respuesta');
                 return false;
             }
         }
 
+        console.log('✅ Validación exitosa, enviando formulario');
+        console.log('🔧 Datos del formulario antes del envío:');
+
+        // Log de todos los campos del formulario
+        const formData = new FormData(e.target);
+        for (let [key, value] of formData.entries()) {
+            console.log(`  - ${key}: ${value}`);
+        }
+
         // Mostrar indicador de carga
         const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Procesando...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Procesando...';
+        }
+
+        console.log('🔧 Formulario enviándose a:', e.target.action);
+        console.log('🔧 Método:', e.target.method);
 
         return true;
     },
@@ -583,7 +650,13 @@ window.RadicacionInterna = {
     },
 
     initValidations() {
+        // Inicializar estado para radio buttons (si existen)
         this.toggleFechaLimite();
+
+        // Inicializar estado para select (si existe)
+        this.toggleFechaLimiteSelect();
+
+        console.log('🔧 RadicacionInterna - Validaciones inicializadas');
     }
 };
 
@@ -623,6 +696,12 @@ window.RadicacionSalida = {
             });
         }
 
+        // Requiere acuse de recibo
+        const requiereAcuseRadios = document.querySelectorAll('input[name="requiere_acuse_recibo"]');
+        requiereAcuseRadios.forEach(radio => {
+            radio.addEventListener('change', () => RadicacionSalida.toggleFechaLimite());
+        });
+
         // Formulario
         const form = document.getElementById('radicacionSalidaForm');
         if (form) {
@@ -632,32 +711,66 @@ window.RadicacionSalida = {
 
     toggleTipoDestinatario() {
         const tipoDestinatarioElement = document.getElementById('tipo_destinatario');
-        const camposPersonaNatural = document.getElementById('campos-persona-natural');
-        const camposJuridica = document.getElementById('campos-juridica');
+        const campoNit = document.getElementById('campo-nit');
+        const nitInput = document.getElementById('nit_destinatario');
+        const numeroDocumentoInput = document.getElementById('numero_documento_destinatario');
+        const tipoDocumentoSelect = document.getElementById('tipo_documento_destinatario');
 
-        // Verificar si los elementos existen (pueden no existir en formularios de modal)
-        if (!tipoDestinatarioElement || !camposPersonaNatural || !camposJuridica) {
-            console.log('Elementos de tipo destinatario no encontrados, saltando toggleTipoDestinatario');
+        // Verificar si los elementos existen
+        if (!tipoDestinatarioElement) {
+            console.log('Elemento tipo_destinatario no encontrado, saltando toggleTipoDestinatario');
             return;
         }
 
         const tipoDestinatario = tipoDestinatarioElement.value;
 
-        // Ocultar todos los campos primero
-        camposPersonaNatural.style.display = 'none';
-        camposJuridica.style.display = 'none';
+        // Manejar campo NIT
+        if (campoNit && nitInput) {
+            if (tipoDestinatario === 'persona_juridica' || tipoDestinatario === 'entidad_publica') {
+                campoNit.style.display = 'block';
+                nitInput.setAttribute('required', 'required');
+                nitInput.disabled = false;
+                // Para personas jurídicas, deshabilitar campos de documento personal
+                if (numeroDocumentoInput) {
+                    numeroDocumentoInput.removeAttribute('required');
+                    numeroDocumentoInput.disabled = true;
+                    numeroDocumentoInput.value = '';
+                }
+                if (tipoDocumentoSelect) {
+                    tipoDocumentoSelect.removeAttribute('required');
+                    tipoDocumentoSelect.disabled = true;
+                    tipoDocumentoSelect.value = '';
+                }
+            } else {
+                campoNit.style.display = 'none';
+                nitInput.removeAttribute('required');
+                nitInput.disabled = true;
+                nitInput.value = '';
+                // Para personas naturales, habilitar campos de documento personal
+                if (numeroDocumentoInput) {
+                    numeroDocumentoInput.setAttribute('required', 'required');
+                    numeroDocumentoInput.disabled = false;
+                }
+                if (tipoDocumentoSelect) {
+                    tipoDocumentoSelect.setAttribute('required', 'required');
+                    tipoDocumentoSelect.disabled = false;
+                }
+            }
+        }
+    },
 
-        // Remover required de todos los campos
-        RadicacionSalida.setRequiredFields(camposPersonaNatural, false);
-        RadicacionSalida.setRequiredFields(camposJuridica, false);
+    toggleFechaLimite() {
+        const requiereAcuse = document.querySelector('input[name="requiere_acuse_recibo"]:checked');
+        const fechaLimiteContainer = document.getElementById('fecha-limite-container');
+        const fechaLimiteInput = document.getElementById('fecha_limite_respuesta');
 
-        // Mostrar campos según el tipo
-        if (tipoDestinatario === 'persona_natural') {
-            camposPersonaNatural.style.display = 'block';
-            RadicacionSalida.setRequiredFields(camposPersonaNatural, true);
-        } else if (tipoDestinatario === 'persona_juridica' || tipoDestinatario === 'entidad_publica') {
-            camposJuridica.style.display = 'block';
-            RadicacionSalida.setRequiredFields(camposJuridica, true);
+        if (requiereAcuse && requiereAcuse.value === '1') {
+            fechaLimiteContainer.style.display = 'block';
+        } else {
+            fechaLimiteContainer.style.display = 'none';
+            if (fechaLimiteInput) {
+                fechaLimiteInput.value = '';
+            }
         }
     },
 
@@ -692,6 +805,17 @@ window.RadicacionSalida = {
             return false;
         }
 
+        // Limpiar campos deshabilitados antes de enviar
+        const form = e.target;
+        const disabledInputs = form.querySelectorAll('input:disabled, select:disabled');
+
+        disabledInputs.forEach(input => {
+            if (input.name) {
+                // Remover el name del input deshabilitado para que no se envíe
+                input.removeAttribute('name');
+            }
+        });
+
         // Mostrar indicador de carga
         const submitBtn = e.target.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
@@ -721,8 +845,8 @@ window.RadicacionSalida = {
                 'dependencia_origen_id',
                 'funcionario_remitente',
                 'trd_id',
-                'asunto_salida',
-                'tipo_comunicacion_salida',
+                'asunto',
+                'tipo_comunicacion',
                 'prioridad'
             ];
             let camposFaltantes = [];
@@ -794,6 +918,7 @@ window.RadicacionSalida = {
 
     initValidations() {
         this.toggleTipoDestinatario();
+        this.toggleFechaLimite();
     }
 };
 

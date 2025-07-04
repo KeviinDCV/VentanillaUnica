@@ -140,7 +140,7 @@
                                 <h3 class="mt-2 text-sm font-medium text-gray-900">No hay radicados</h3>
                                 <p class="mt-1 text-sm text-gray-500">Comienza creando tu primer radicado.</p>
                                 <div class="mt-6">
-                                    <a href="{{ route('radicacion.entrada.index') }}"
+                                    <a href="{{ route('radicacion.index') }}"
                                        class="create-button inline-flex items-center shadow-sm text-sm">
                                         Crear Radicado
                                     </a>

@@ -62,7 +62,6 @@ Route::middleware(['auth'])->group(function () {
     // Rutas del módulo de radicación de entrada
     Route::prefix('radicacion')->name('radicacion.')->group(function () {
         Route::prefix('entrada')->name('entrada.')->group(function () {
-            Route::get('/', [App\Http\Controllers\RadicacionEntradaController::class, 'index'])->name('index');
             Route::post('/', [App\Http\Controllers\RadicacionEntradaController::class, 'store'])->name('store');
             Route::get('/buscar-remitente', [App\Http\Controllers\RadicacionEntradaController::class, 'buscarRemitente'])->name('buscar-remitente');
             Route::post('/preview', [App\Http\Controllers\RadicacionEntradaController::class, 'previsualizacion'])->name('preview');
@@ -71,7 +70,6 @@ Route::middleware(['auth'])->group(function () {
 
         // Rutas del módulo de radicación interna
         Route::prefix('interna')->name('interna.')->group(function () {
-            Route::get('/', [App\Http\Controllers\RadicacionInternaController::class, 'index'])->name('index');
             Route::post('/', [App\Http\Controllers\RadicacionInternaController::class, 'store'])->name('store');
             Route::post('/preview', [App\Http\Controllers\RadicacionInternaController::class, 'previsualizacion'])->name('preview');
             Route::get('/buscar-radicados', [App\Http\Controllers\RadicacionInternaController::class, 'buscarRadicados'])->name('buscar-radicados');
@@ -80,7 +78,6 @@ Route::middleware(['auth'])->group(function () {
 
         // Rutas del módulo de radicación de salida
         Route::prefix('salida')->name('salida.')->group(function () {
-            Route::get('/', [App\Http\Controllers\RadicacionSalidaController::class, 'index'])->name('index');
             Route::post('/', [App\Http\Controllers\RadicacionSalidaController::class, 'store'])->name('store');
             Route::post('/preview', [App\Http\Controllers\RadicacionSalidaController::class, 'preview'])->name('preview');
             Route::get('/{id}', [App\Http\Controllers\RadicacionSalidaController::class, 'show'])->name('show');

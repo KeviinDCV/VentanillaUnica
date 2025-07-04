@@ -20,26 +20,21 @@ use Carbon\Carbon;
 
 class RadicacionSalidaController extends Controller
 {
-    /**
-     * Mostrar el formulario de radicación de salida
-     */
-    public function index()
-    {
-        $dependencias = Dependencia::activas()->orderBy('nombre')->get();
-        $ciudades = Ciudad::with('departamento')->activo()->ordenado()->get();
-        $departamentos = Departamento::activo()->ordenado()->get();
-        $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
-        $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
-
-        return view('radicacion.salida.index', compact('dependencias', 'ciudades', 'departamentos', 'unidadesAdministrativas', 'tiposSolicitud'));
-    }
 
     /**
      * Procesar la radicación de salida
      */
     public function store(Request $request)
     {
+        \Log::info('🔧 RadicacionSalida::store - INICIANDO PROCESO', [
+            'request_data' => $request->except(['documento']),
+            'files' => $request->files->all(),
+            'has_file_documento' => $request->hasFile('documento'),
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()->name
+        ]);
+
         $validator = Validator::make($request->all(), [
             // Datos del destinatario externo
             'tipo_destinatario' => 'required|in:persona_natural,persona_juridica,entidad_publica',
@@ -104,13 +99,21 @@ class RadicacionSalidaController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Log::error('RadicacionSalida::store - Validación fallida', [
+                'errors' => $validator->errors()->toArray(),
+                'request_data' => $request->except(['documento'])
+            ]);
             return back()->withErrors($validator)->withInput();
         }
 
+        \Log::info('RadicacionSalida::store - Validación exitosa, continuando...');
+
         try {
+            \Log::info('RadicacionSalida::store - Iniciando transacción');
             DB::beginTransaction();
 
             // Crear destinatario externo como remitente (para mantener consistencia en el modelo)
+            \Log::info('RadicacionSalida::store - Preparando datos del destinatario');
             $tipoDocumento = null;
             $numeroDocumento = null;
 
@@ -150,8 +153,12 @@ class RadicacionSalidaController extends Controller
                 'observaciones' => "DESTINATARIO EXTERNO - Tipo: " . ucfirst(str_replace('_', ' ', $request->tipo_destinatario)),
             ]);
 
+            \Log::info('RadicacionSalida::store - Destinatario creado', ['id' => $destinatario->id]);
+
             // Generar número de radicado de salida
+            \Log::info('RadicacionSalida::store - Generando número de radicado');
             $numeroRadicado = Radicado::generarNumeroRadicado('salida');
+            \Log::info('RadicacionSalida::store - Número generado', ['numero' => $numeroRadicado]);
 
             // Crear radicado
             $radicado = Radicado::create([
@@ -289,7 +296,7 @@ class RadicacionSalidaController extends Controller
                 'subserie' => $subserie->nombre,
                 'asunto' => $subserie->descripcion,
             ],
-            'asunto' => $request->asunto_salida,
+            'asunto' => $request->asunto,
             'tipo_comunicacion' => $request->tipo_comunicacion,
             'numero_folios' => $request->numero_folios ?: 1,
             'observaciones' => $request->observaciones,

@@ -27,24 +27,7 @@ class RadicacionEntradaController extends Controller
         // La verificación de autenticación se hace manualmente en cada método
     }
 
-    /**
-     * Mostrar el formulario de radicación de entrada
-     */
-    public function index()
-    {
-        // Verificación manual de autenticación
-        if (!auth()->check()) {
-            return redirect()->route('login')->with('message', 'Por favor, inicia sesión para acceder a esta página.');
-        }
 
-        $dependencias = Dependencia::activas()->orderBy('nombre')->get();
-        $ciudades = Ciudad::with('departamento')->activo()->ordenado()->get();
-        $departamentos = Departamento::activo()->ordenado()->get();
-        $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
-        $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
-
-        return view('radicacion.entrada.index', compact('dependencias', 'ciudades', 'departamentos', 'tiposSolicitud', 'unidadesAdministrativas'));
-    }
 
     /**
      * Procesar la radicación de entrada

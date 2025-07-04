@@ -16,23 +16,7 @@ use Carbon\Carbon;
 
 class RadicacionInternaController extends Controller
 {
-    /**
-     * Mostrar el formulario de radicación interna
-     */
-    public function index(Request $request)
-    {
-        $dependencias = Dependencia::activas()->orderBy('nombre')->get();
-        $unidadesAdministrativas = UnidadAdministrativa::activas()->orderBy('codigo')->get();
 
-        // Si viene como respuesta a un documento
-        $radicadoRespuesta = null;
-        if ($request->has('respuesta_a')) {
-            $radicadoRespuesta = Radicado::with(['remitente', 'dependenciaDestino'])
-                                        ->find($request->respuesta_a);
-        }
-
-        return view('radicacion.interna.index', compact('dependencias', 'unidadesAdministrativas', 'radicadoRespuesta'));
-    }
 
     /**
      * Buscar radicados para respuesta
@@ -74,6 +58,15 @@ class RadicacionInternaController extends Controller
      */
     public function store(Request $request)
     {
+        // Log para debugging MEJORADO
+        \Log::info('🔧 RadicacionInterna::store - INICIANDO PROCESO', [
+            'request_data' => $request->all(),
+            'files' => $request->allFiles(),
+            'has_file_documento' => $request->hasFile('documento'),
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()->name ?? 'N/A'
+        ]);
+
         $validator = Validator::make($request->all(), [
             // Datos del remitente interno (dependencia origen)
             'dependencia_origen_id' => 'required|exists:dependencias,id',
@@ -92,14 +85,13 @@ class RadicacionInternaController extends Controller
             // TRD (Subserie)
             'trd_id' => 'required|exists:subseries,id',
 
-            // Respuesta a documento (opcional)
+            // Respuesta a documento (opcional) - Funcionalidad pendiente de implementar
             'es_respuesta' => 'nullable|boolean',
-            'radicado_respuesta_id' => 'nullable|exists:radicados,id|required_if:es_respuesta,1',
 
             // Destino
             'dependencia_destino_id' => 'required|exists:dependencias,id|different:dependencia_origen_id',
-            'requiere_respuesta' => 'required|boolean',
-            'fecha_limite_respuesta' => 'nullable|date|after:today|required_if:requiere_respuesta,1',
+            'requiere_respuesta' => 'required|in:si,no',
+            'fecha_limite_respuesta' => 'nullable|date|after:today|required_if:requiere_respuesta,si',
             'tipo_anexo' => 'required|in:original,copia,ninguno',
 
             // Documento
@@ -129,18 +121,35 @@ class RadicacionInternaController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Log::error('RadicacionInterna::store - Validación fallida', [
+                'errors' => $validator->errors()->toArray()
+            ]);
+
+            // Si es una petición AJAX, devolver JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors()->toArray()
+                ], 422);
+            }
+
             return back()->withErrors($validator)->withInput();
         }
 
+        \Log::info('RadicacionInterna::store - Validación exitosa, continuando...');
+
         try {
             DB::beginTransaction();
+            \Log::info('RadicacionInterna::store - Transacción iniciada');
 
             // Crear remitente interno (representando la dependencia origen)
+            \Log::info('RadicacionInterna::store - Buscando dependencia origen', ['id' => $request->dependencia_origen_id]);
             $dependenciaOrigen = Dependencia::findOrFail($request->dependencia_origen_id);
+            \Log::info('RadicacionInterna::store - Dependencia origen encontrada', ['nombre' => $dependenciaOrigen->nombre_completo]);
 
             $remitente = Remitente::create([
                 'tipo' => 'registrado',
-                'tipo_documento' => 'INTERNO',
+                'tipo_documento' => 'OTRO', // Usar 'OTRO' en lugar de 'INTERNO' para cumplir con el enum
                 'numero_documento' => $dependenciaOrigen->codigo,
                 'nombre_completo' => $request->funcionario_remitente,
                 'telefono' => $request->telefono_remitente,
@@ -149,14 +158,19 @@ class RadicacionInternaController extends Controller
                 'ciudad' => null,
                 'departamento' => null,
                 'entidad' => $dependenciaOrigen->nombre_completo,
-                'observaciones' => "Cargo: " . ($request->cargo_remitente ?: 'No especificado'),
+                'observaciones' => "Cargo: " . ($request->cargo_remitente ?: 'No especificado') . " | Tipo: INTERNO",
             ]);
+            \Log::info('RadicacionInterna::store - Remitente creado', ['id' => $remitente->id]);
 
             // Generar número de radicado interno
             $numeroRadicado = Radicado::generarNumeroRadicado('interno');
+            \Log::info('RadicacionInterna::store - Número de radicado generado', ['numero' => $numeroRadicado]);
+
+            // Convertir requiere_respuesta de string a boolean
+            $requiereRespuesta = $request->requiere_respuesta === 'si';
 
             // Crear radicado
-            $radicado = Radicado::create([
+            $radicadoData = [
                 'numero_radicado' => $numeroRadicado,
                 'tipo' => 'interno',
                 'fecha_radicado' => Carbon::now()->toDateString(),
@@ -164,25 +178,31 @@ class RadicacionInternaController extends Controller
                 'remitente_id' => $remitente->id,
                 'subserie_id' => $request->trd_id, // trd_id viene del formulario pero se guarda como subserie_id
                 'dependencia_destino_id' => $request->dependencia_destino_id,
+                'dependencia_origen_id' => $request->dependencia_origen_id, // Agregar dependencia de origen
                 'usuario_radica_id' => auth()->id(),
-                'medio_recepcion' => 'interno',
-                'tipo_comunicacion' => 'fisico',
+                'medio_recepcion' => 'otro', // Para documentos internos
+                'tipo_comunicacion' => $request->tipo_comunicacion,
                 'numero_folios' => $request->numero_folios,
                 'observaciones' => $request->observaciones,
-                'medio_respuesta' => $request->requiere_respuesta ? 'interno' : 'no_requiere',
+                'medio_respuesta' => $requiereRespuesta ? 'presencial' : 'no_requiere', // Para documentos internos
                 'tipo_anexo' => $request->tipo_anexo,
-                'fecha_limite_respuesta' => $request->requiere_respuesta ? $request->fecha_limite_respuesta : null,
+                'fecha_limite_respuesta' => $requiereRespuesta ? $request->fecha_limite_respuesta : null,
                 'estado' => 'pendiente',
-                'radicado_respuesta_id' => $request->es_respuesta ? $request->radicado_respuesta_id : null,
-            ]);
+            ];
 
+            \Log::info('RadicacionInterna::store - Datos del radicado preparados', $radicadoData);
+
+            $radicado = Radicado::create($radicadoData);
+            \Log::info('RadicacionInterna::store - Radicado creado exitosamente', ['id' => $radicado->id]);
+
+            // TODO: Implementar lógica de respuesta cuando se agregue el campo radicado_respuesta_id
             // Si es respuesta, actualizar el radicado original
-            if ($request->es_respuesta && $request->radicado_respuesta_id) {
-                $radicadoOriginal = Radicado::find($request->radicado_respuesta_id);
-                if ($radicadoOriginal) {
-                    $radicadoOriginal->update(['estado' => 'respondido']);
-                }
-            }
+            // if ($request->es_respuesta && $request->radicado_respuesta_id) {
+            //     $radicadoOriginal = Radicado::find($request->radicado_respuesta_id);
+            //     if ($radicadoOriginal) {
+            //         $radicadoOriginal->update(['estado' => 'respondido']);
+            //     }
+            // }
 
             // Agregar campos específicos para documentos internos en observaciones
             $observacionesInternas = [
@@ -240,6 +260,18 @@ class RadicacionInternaController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('RadicacionInterna::store - Error en el proceso', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Si es una petición AJAX, devolver JSON
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Error al crear el radicado interno: ' . $e->getMessage()
+                ], 500);
+            }
 
             return back()->withErrors(['error' => 'Error al crear el radicado interno: ' . $e->getMessage()])
                         ->withInput();

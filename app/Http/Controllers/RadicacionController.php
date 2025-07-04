@@ -470,39 +470,64 @@ class RadicacionController extends Controller
      */
     public function cargarFormulario($tipo)
     {
-
+        \Log::info('RadicacionController::cargarFormulario - Iniciando', [
+            'tipo' => $tipo,
+            'user_authenticated' => auth()->check(),
+            'session_id' => session()->getId(),
+            'user_id' => auth()->id()
+        ]);
 
         // Verificación de autenticación
         if (!auth()->check()) {
+            \Log::warning('RadicacionController::cargarFormulario - Usuario no autenticado');
             return response()->json(['error' => 'No autorizado'], 401);
         }
 
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        // Verificar permisos para radicación de salida
-        if ($tipo === 'salida' && !$user->isAdmin()) {
-            return response()->json(['error' => 'No tienes permisos para radicar documentos de salida'], 403);
-        }
+            // Verificar permisos para radicación de salida
+            if ($tipo === 'salida' && !$user->isAdmin()) {
+                \Log::warning('RadicacionController::cargarFormulario - Sin permisos para salida', ['user_id' => $user->id]);
+                return response()->json(['error' => 'No tienes permisos para radicar documentos de salida'], 403);
+            }
 
-        // Obtener datos necesarios para los formularios
-        $dependencias = \App\Models\Dependencia::activas()->orderBy('nombre')->get();
-        $unidadesAdministrativas = \App\Models\UnidadAdministrativa::activas()->orderBy('codigo')->get();
-        $ciudades = \App\Models\Ciudad::with('departamento')->activo()->ordenado()->get();
-        $departamentos = \App\Models\Departamento::activo()->ordenado()->get();
-        $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
+            \Log::info('RadicacionController::cargarFormulario - Cargando datos', ['tipo' => $tipo]);
 
-        switch ($tipo) {
-            case 'entrada':
-                return view('radicacion.forms.entrada', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));
+            // Obtener datos necesarios para los formularios
+            $dependencias = \App\Models\Dependencia::activas()->orderBy('nombre')->get();
+            $unidadesAdministrativas = \App\Models\UnidadAdministrativa::activas()->orderBy('codigo')->get();
+            $ciudades = \App\Models\Ciudad::with('departamento')->activo()->ordenado()->get();
+            $departamentos = \App\Models\Departamento::activo()->ordenado()->get();
+            $tiposSolicitud = \App\Models\TipoSolicitud::activos()->ordenado()->get();
 
-            case 'interno':
-                return view('radicacion.forms.interno', compact('dependencias', 'unidadesAdministrativas'));
+            \Log::info('RadicacionController::cargarFormulario - Datos cargados exitosamente', [
+                'dependencias_count' => $dependencias->count(),
+                'unidades_count' => $unidadesAdministrativas->count()
+            ]);
 
-            case 'salida':
-                return view('radicacion.forms.salida', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));
+            switch ($tipo) {
+                case 'entrada':
+                    return view('radicacion.forms.entrada', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));
 
-            default:
-                return response()->json(['error' => 'Tipo de formulario no válido'], 400);
+                case 'interno':
+                    \Log::info('RadicacionController::cargarFormulario - Renderizando vista interno');
+                    return view('radicacion.forms.interno', compact('dependencias', 'unidadesAdministrativas'));
+
+                case 'salida':
+                    return view('radicacion.forms.salida', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));
+
+                default:
+                    \Log::warning('RadicacionController::cargarFormulario - Tipo no válido', ['tipo' => $tipo]);
+                    return response()->json(['error' => 'Tipo de formulario no válido'], 400);
+            }
+        } catch (\Exception $e) {
+            \Log::error('RadicacionController::cargarFormulario - Error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'tipo' => $tipo
+            ]);
+            return response()->json(['error' => 'Error interno del servidor: ' . $e->getMessage()], 500);
         }
     }
 
