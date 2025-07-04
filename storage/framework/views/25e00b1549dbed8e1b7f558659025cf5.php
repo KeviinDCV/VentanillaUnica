@@ -1,4 +1,4 @@
-<!-- Formulario de Radicación de Salida para Modal -->
+<!-- Formulario de Radicación de Salida COMPLETAMENTE NUEVO -->
 <form action="<?php echo e(route('radicacion.salida.store')); ?>" method="POST" enctype="multipart/form-data" id="radicacionSalidaForm" data-protect="true">
     <?php echo csrf_field(); ?>
 
@@ -22,44 +22,46 @@
             </select>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Tipo de Documento -->
-            <div>
-                <label for="tipo_documento_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
-                    Tipo de Documento <span class="text-red-500">*</span>
-                </label>
-                <select name="tipo_documento_destinatario" id="tipo_documento_destinatario" required
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                    <option value="">Seleccionar...</option>
-                    <option value="CC" <?php echo e(old('tipo_documento_destinatario') == 'CC' ? 'selected' : ''); ?>>Cédula de Ciudadanía</option>
-                    <option value="CE" <?php echo e(old('tipo_documento_destinatario') == 'CE' ? 'selected' : ''); ?>>Cédula de Extranjería</option>
-                    <option value="TI" <?php echo e(old('tipo_documento_destinatario') == 'TI' ? 'selected' : ''); ?>>Tarjeta de Identidad</option>
-                    <option value="PP" <?php echo e(old('tipo_documento_destinatario') == 'PP' ? 'selected' : ''); ?>>Pasaporte</option>
-                    <option value="OTRO" <?php echo e(old('tipo_documento_destinatario') == 'OTRO' ? 'selected' : ''); ?>>Otro</option>
-                </select>
-            </div>
-
-            <!-- Número de Documento -->
-            <div>
-                <label for="numero_documento_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
-                    Número de Documento <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="numero_documento_destinatario" id="numero_documento_destinatario" required
-                       value="<?php echo e(old('numero_documento_destinatario')); ?>"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                       placeholder="Ingrese el número de documento">
+        <!-- Campos para Persona Natural - SIEMPRE VISIBLES -->
+        <div id="campos-persona-natural">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="tipo_documento_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
+                        Tipo de Documento <span id="tipo_doc_required" class="text-red-500 hidden">*</span>
+                    </label>
+                    <select name="tipo_documento_destinatario" id="tipo_documento_destinatario"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                        <option value="">Seleccionar...</option>
+                        <option value="CC" <?php echo e(old('tipo_documento_destinatario') == 'CC' ? 'selected' : ''); ?>>Cédula de Ciudadanía</option>
+                        <option value="CE" <?php echo e(old('tipo_documento_destinatario') == 'CE' ? 'selected' : ''); ?>>Cédula de Extranjería</option>
+                        <option value="TI" <?php echo e(old('tipo_documento_destinatario') == 'TI' ? 'selected' : ''); ?>>Tarjeta de Identidad</option>
+                        <option value="PP" <?php echo e(old('tipo_documento_destinatario') == 'PP' ? 'selected' : ''); ?>>Pasaporte</option>
+                        <option value="OTRO" <?php echo e(old('tipo_documento_destinatario') == 'OTRO' ? 'selected' : ''); ?>>Otro</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="numero_documento_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
+                        Número de Documento <span id="num_doc_required" class="text-red-500 hidden">*</span>
+                    </label>
+                    <input type="text" name="numero_documento_destinatario" id="numero_documento_destinatario"
+                           value="<?php echo e(old('numero_documento_destinatario')); ?>"
+                           class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                           placeholder="Ingrese el número de documento">
+                </div>
             </div>
         </div>
 
-        <!-- Campo NIT para Persona Jurídica y Entidad Pública -->
-        <div class="mb-4" id="campo-nit" style="display: none;">
-            <label for="nit_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
-                NIT <span class="text-red-500">*</span>
-            </label>
-            <input type="text" name="nit_destinatario" id="nit_destinatario"
-                   value="<?php echo e(old('nit_destinatario')); ?>"
-                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                   placeholder="Ingrese el NIT">
+        <!-- Campos para Persona Jurídica/Entidad Pública - SIEMPRE VISIBLES -->
+        <div id="campos-juridica">
+            <div class="mb-4">
+                <label for="nit_destinatario" class="block text-sm font-medium text-gray-700 mb-2">
+                    NIT <span id="nit_required" class="text-red-500 hidden">*</span>
+                </label>
+                <input type="text" name="nit_destinatario" id="nit_destinatario"
+                       value="<?php echo e(old('nit_destinatario')); ?>"
+                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                       placeholder="Ingrese el NIT">
+            </div>
         </div>
 
         <!-- Nombre Completo del Destinatario -->
@@ -215,17 +217,15 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Asunto -->
-            <div class="md:col-span-2">
-                <label for="asunto" class="block text-sm font-medium text-gray-700 mb-2">
-                    Asunto <span class="text-red-500">*</span>
-                </label>
-                <input type="text" name="asunto" id="asunto" required
-                       value="<?php echo e(old('asunto')); ?>"
-                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                       placeholder="Asunto del documento">
-            </div>
+        <!-- Asunto -->
+        <div class="mb-4">
+            <label for="asunto" class="block text-sm font-medium text-gray-700 mb-2">
+                Asunto <span class="text-red-500">*</span>
+            </label>
+            <input type="text" name="asunto" id="asunto" required
+                   value="<?php echo e(old('asunto')); ?>"
+                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                   placeholder="Asunto del documento">
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -291,7 +291,7 @@
 <?php endif; ?>
     </div>
 
-    <!-- Sección 4: Documento -->
+    <!-- Sección 4: Adjuntar Documento -->
     <div class="mb-6">
         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
             4. Adjuntar Documento
@@ -347,10 +347,10 @@
         </div>
     </div>
 
-    <!-- Sección 4: Información de Envío -->
+    <!-- Sección 5: Información de Envío -->
     <div class="mb-6">
         <h3 class="text-lg font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">
-            4. Información de Envío
+            5. Información de Envío
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -483,29 +483,228 @@
 </form>
 
 <script>
-// Funcionalidad específica del formulario de salida
+// Función global para el componente TRD (compatible con trd-selector.js)
+window.updateTrdId = function(subserieId) {
+    const trdIdInput = document.getElementById('trd_id');
+    if (trdIdInput) {
+        // Si se pasa un parámetro, usarlo; si no, obtener del select
+        const valorTrd = subserieId || document.getElementById('subserie_id')?.value || '';
+        trdIdInput.value = valorTrd;
+        console.log('TRD ID actualizado:', valorTrd);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Cascada de departamento-ciudad para destinatario
+    // Manejo del tipo de destinatario
+    const tipoDestinatario = document.getElementById('tipo_destinatario');
+
+    tipoDestinatario.addEventListener('change', function() {
+        const valor = this.value;
+
+        // Elementos de campos requeridos
+        const tipoDocRequired = document.getElementById('tipo_doc_required');
+        const numDocRequired = document.getElementById('num_doc_required');
+        const nitRequired = document.getElementById('nit_required');
+
+        // Resetear todos los campos como no requeridos
+        document.getElementById('tipo_documento_destinatario').required = false;
+        document.getElementById('numero_documento_destinatario').required = false;
+        document.getElementById('nit_destinatario').required = false;
+
+        // Ocultar todos los asteriscos
+        tipoDocRequired.classList.add('hidden');
+        numDocRequired.classList.add('hidden');
+        nitRequired.classList.add('hidden');
+
+        // Configurar según el tipo seleccionado
+        if (valor === 'persona_natural') {
+            document.getElementById('tipo_documento_destinatario').required = true;
+            document.getElementById('numero_documento_destinatario').required = true;
+            tipoDocRequired.classList.remove('hidden');
+            numDocRequired.classList.remove('hidden');
+            // Limpiar campo NIT
+            document.getElementById('nit_destinatario').value = '';
+        } else if (valor === 'persona_juridica' || valor === 'entidad_publica') {
+            document.getElementById('nit_destinatario').required = true;
+            nitRequired.classList.remove('hidden');
+            // Limpiar campos de persona natural
+            document.getElementById('tipo_documento_destinatario').value = '';
+            document.getElementById('numero_documento_destinatario').value = '';
+        } else {
+            // Si no hay selección, limpiar todos los campos
+            document.getElementById('tipo_documento_destinatario').value = '';
+            document.getElementById('numero_documento_destinatario').value = '';
+            document.getElementById('nit_destinatario').value = '';
+        }
+    });
+    });
+
+    // Filtro de ciudades por departamento
     const departamentoSelect = document.getElementById('departamento_destinatario');
     const ciudadSelect = document.getElementById('ciudad_destinatario');
+    const todasLasCiudades = Array.from(ciudadSelect.options);
 
-    if (departamentoSelect && ciudadSelect) {
-        departamentoSelect.addEventListener('change', function() {
-            const departamentoSeleccionado = this.value;
-            const opciones = ciudadSelect.querySelectorAll('option');
+    departamentoSelect.addEventListener('change', function() {
+        const departamentoSeleccionado = this.value;
 
-            opciones.forEach(opcion => {
-                if (opcion.value === '') {
-                    opcion.style.display = 'block';
-                } else {
-                    const departamentoOpcion = opcion.getAttribute('data-departamento');
-                    opcion.style.display = departamentoOpcion === departamentoSeleccionado ? 'block' : 'none';
-                }
+        // Limpiar ciudades
+        ciudadSelect.innerHTML = '<option value="">Seleccionar ciudad...</option>';
+
+        if (departamentoSeleccionado) {
+            // Filtrar ciudades por departamento
+            const ciudadesFiltradas = todasLasCiudades.filter(option =>
+                option.dataset.departamento === departamentoSeleccionado
+            );
+
+            ciudadesFiltradas.forEach(option => {
+                ciudadSelect.appendChild(option.cloneNode(true));
             });
+        }
+    });
 
-            ciudadSelect.value = '';
+    // Manejo de acuse de recibo
+    const acuseRadios = document.querySelectorAll('input[name="requiere_acuse_recibo"]');
+    const fechaLimiteContainer = document.getElementById('fecha-limite-container');
+
+    acuseRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === '1') {
+                fechaLimiteContainer.style.display = 'block';
+                document.getElementById('fecha_limite_respuesta').required = true;
+            } else {
+                fechaLimiteContainer.style.display = 'none';
+                document.getElementById('fecha_limite_respuesta').required = false;
+            }
         });
+    });
+
+    // Manejo de archivos - Drag and Drop
+    const dropZone = document.getElementById('drop-zone-modal-salida');
+    const fileInput = document.getElementById('documento_modal_salida');
+    const dropZoneContent = document.getElementById('drop-zone-content-modal-salida');
+    const filePreview = document.getElementById('file-preview-modal-salida');
+    const fileName = document.getElementById('file-name-modal-salida');
+    const fileSize = document.getElementById('file-size-modal-salida');
+    const removeFileBtn = document.getElementById('remove-file-modal-salida');
+
+    // Prevenir comportamiento por defecto
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
+
+    // Resaltar zona de drop
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('border-uniradical-blue', 'bg-blue-50');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('border-uniradical-blue', 'bg-blue-50');
+    }
+
+    // Manejar archivos soltados
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    }
+
+    // Manejar selección de archivos
+    fileInput.addEventListener('change', function(e) {
+        handleFiles(this.files);
+    });
+
+    function handleFiles(files) {
+        if (files.length > 0) {
+            const file = files[0];
+
+            // Validar tipo de archivo
+            const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Tipo de archivo no permitido. Solo se permiten archivos PDF, Word e imágenes.');
+                return;
+            }
+
+            // Validar tamaño (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('El archivo es demasiado grande. El tamaño máximo es 10MB.');
+                return;
+            }
+
+            // Mostrar vista previa
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+
+            dropZoneContent.classList.add('hidden');
+            filePreview.classList.remove('hidden');
+
+            // Asignar archivo al input
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+        }
+    }
+
+    // Remover archivo
+    removeFileBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        dropZoneContent.classList.remove('hidden');
+        filePreview.classList.add('hidden');
+    });
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Botón volver
+    document.getElementById('btn-volver-seleccion').addEventListener('click', function() {
+        window.location.href = '<?php echo e(route("radicacion.index")); ?>';
+    });
+
+    // Botón preview
+    document.getElementById('btn-preview').addEventListener('click', function() {
+        // Validar campos requeridos antes de mostrar preview
+        const form = document.getElementById('radicacionSalidaForm');
+        if (form.checkValidity()) {
+            // Aquí se puede implementar la lógica de preview
+            alert('Funcionalidad de preview en desarrollo');
+        } else {
+            form.reportValidity();
+        }
+    });
+
+    // Inicializar estado del formulario
+    if (tipoDestinatario.value) {
+        tipoDestinatario.dispatchEvent(new Event('change'));
+    }
+
+    const acuseChecked = document.querySelector('input[name="requiere_acuse_recibo"]:checked');
+    if (acuseChecked) {
+        acuseChecked.dispatchEvent(new Event('change'));
+    }
+
+    // Inicializar TRD selector - Las funciones principales están en trd-selector.js
+    // Solo necesitamos asegurar que updateTrdId esté disponible
+    console.log('Formulario de salida inicializado correctamente');
 });
 </script>
 <?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/radicacion/forms/salida.blade.php ENDPATH**/ ?>

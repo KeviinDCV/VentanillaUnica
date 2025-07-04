@@ -4,116 +4,120 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Radicado;
 use App\Models\Remitente;
 use App\Models\Dependencia;
-
-use App\Models\Documento;
-use App\Models\Ciudad;
-use App\Models\Departamento;
-use App\Models\UnidadAdministrativa;
 use App\Models\Subserie;
-use Illuminate\Support\Facades\Log;
+use App\Models\TipoSolicitud;
+use App\Models\Documento;
 use Carbon\Carbon;
 
 class RadicacionSalidaController extends Controller
 {
-
-
     /**
-     * Procesar la radicación de salida
+     * Almacenar un nuevo radicado de salida
      */
     public function store(Request $request)
     {
-        \Log::info('🔧 RadicacionSalida::store - INICIANDO PROCESO', [
-            'request_data' => $request->except(['documento']),
-            'files' => $request->files->all(),
-            'has_file_documento' => $request->hasFile('documento'),
+        // Log inmediato para verificar que el método se ejecuta
+        \Log::emergency('🚨 RADICACION SALIDA STORE EJECUTÁNDOSE 🚨');
+
+        \Log::info('RadicacionSalida::store - INICIO', [
             'user_id' => auth()->id(),
-            'user_name' => auth()->user()->name
+            'user_name' => auth()->user()->name,
+            'timestamp' => now(),
+            'request_method' => $request->method(),
+            'request_url' => $request->url(),
+            'all_request_data' => $request->except(['documento', '_token']),
+            'has_file' => $request->hasFile('documento'),
+            'content_type' => $request->header('Content-Type')
         ]);
 
-        $validator = Validator::make($request->all(), [
-            // Datos del destinatario externo
+        // Verificar si es una petición POST
+        if (!$request->isMethod('POST')) {
+            \Log::error('RadicacionSalida::store - MÉTODO INCORRECTO', ['method' => $request->method()]);
+            return back()->withErrors(['error' => 'Método de petición incorrecto']);
+        }
+
+
+
+        // Validaciones específicas para radicación de salida
+        $rules = [
+            // Destinatario
             'tipo_destinatario' => 'required|in:persona_natural,persona_juridica,entidad_publica',
-            'tipo_documento_destinatario' => 'required_if:tipo_destinatario,persona_natural|in:CC,CE,TI,PP,OTRO',
-            'numero_documento_destinatario' => 'required_if:tipo_destinatario,persona_natural|string|max:20',
-            'nit_destinatario' => 'required_if:tipo_destinatario,persona_juridica,entidad_publica|string|max:20',
             'nombre_destinatario' => 'required|string|max:255',
-            'telefono_destinatario' => 'nullable|string|max:20',
-            'email_destinatario' => 'nullable|email|max:255',
-            'direccion_destinatario' => 'required|string',
-            'ciudad_destinatario' => 'required|string|max:100',
+            'direccion_destinatario' => 'required|string|max:500',
             'departamento_destinatario' => 'required|string|max:100',
-
-            // Datos del remitente interno (dependencia origen)
-            'dependencia_origen_id' => 'required|exists:dependencias,id',
-            'funcionario_remitente' => 'required|string|max:255',
-            'cargo_remitente' => 'nullable|string|max:255',
-
-            // Datos del documento
-            'asunto' => 'required|string|max:500',
-            'tipo_comunicacion' => 'required|exists:tipos_solicitud,codigo',
-            'numero_folios' => 'required|integer|min:1',
-            'observaciones' => 'nullable|string',
-            'prioridad' => 'required|in:baja,normal,alta,urgente',
-
-            // TRD (Subserie)
-            'trd_id' => 'required|exists:subseries,id',
-
-            // Información de envío
-            'medio_envio' => 'required|in:correo_fisico,correo_electronico,mensajeria,entrega_personal',
-            'requiere_acuse_recibo' => 'required|boolean',
-            'fecha_limite_respuesta' => 'nullable|date|after:today',
-            'tipo_anexo' => 'required|in:original,copia,ninguno',
+            'ciudad_destinatario' => 'required|string|max:100',
 
             // Documento
-            'documento' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB max
-        ], [
+            'asunto' => 'required|string|max:500',
+            'numero_folios' => 'nullable|integer|min:1',
+
+            // TRD
+            'trd_id' => 'required|exists:subseries,id',
+
+            // Envío
+            'dependencia_origen_id' => 'required|exists:dependencias,id',
+            'funcionario_remitente' => 'required|string|max:255',
+            'tipo_anexo' => 'required|in:original,copia,ninguno',
+            'requiere_acuse_recibo' => 'required|boolean',
+
+            // Archivo
+            'documento' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+        ];
+
+        // Validaciones condicionales según el tipo de destinatario
+        if ($request->tipo_destinatario === 'persona_natural') {
+            $rules['tipo_documento_destinatario'] = 'required|in:CC,CE,TI,PP,OTRO';
+            $rules['numero_documento_destinatario'] = 'required|string|max:20';
+        } elseif (in_array($request->tipo_destinatario, ['persona_juridica', 'entidad_publica'])) {
+            $rules['nit_destinatario'] = 'required|string|max:20';
+        }
+
+        $messages = [
             'tipo_destinatario.required' => 'Debe seleccionar el tipo de destinatario',
-            'tipo_documento_destinatario.required_if' => 'El tipo de documento es obligatorio para personas naturales',
-            'numero_documento_destinatario.required_if' => 'El número de documento es obligatorio para personas naturales',
-            'nit_destinatario.required_if' => 'El NIT es obligatorio para personas jurídicas y entidades públicas',
             'nombre_destinatario.required' => 'El nombre del destinatario es obligatorio',
-            'direccion_destinatario.required' => 'La dirección del destinatario es obligatoria',
-            'ciudad_destinatario.required' => 'La ciudad del destinatario es obligatoria',
-            'departamento_destinatario.required' => 'El departamento del destinatario es obligatorio',
+            'tipo_documento_destinatario.required' => 'Debe seleccionar el tipo de documento para personas naturales',
+            'numero_documento_destinatario.required' => 'El número de documento es obligatorio para personas naturales',
+            'nit_destinatario.required' => 'El NIT es obligatorio para personas jurídicas y entidades públicas',
+            'direccion_destinatario.required' => 'La dirección es obligatoria',
+            'departamento_destinatario.required' => 'Debe seleccionar el departamento',
+            'ciudad_destinatario.required' => 'Debe seleccionar la ciudad',
+            'asunto.required' => 'El asunto es obligatorio',
+            'numero_folios.min' => 'El número de folios debe ser al menos 1',
+            'trd_id.required' => 'Debe seleccionar la serie/subserie TRD',
             'dependencia_origen_id.required' => 'Debe seleccionar la dependencia de origen',
             'funcionario_remitente.required' => 'El nombre del funcionario remitente es obligatorio',
-            'asunto.required' => 'El asunto del documento es obligatorio',
-            'asunto.max' => 'El asunto no puede superar los 500 caracteres',
-            'tipo_comunicacion.required' => 'Debe seleccionar el tipo de comunicación',
-            'numero_folios.required' => 'El número de folios es obligatorio',
-            'numero_folios.min' => 'El número de folios debe ser al menos 1',
-            'prioridad.required' => 'Debe seleccionar la prioridad del documento',
-            'trd_id.required' => 'Debe seleccionar un TRD',
-            'medio_envio.required' => 'Debe seleccionar el medio de envío',
-            'requiere_acuse_recibo.required' => 'Debe indicar si requiere acuse de recibo',
-            'fecha_limite_respuesta.after' => 'La fecha límite debe ser posterior a hoy',
             'tipo_anexo.required' => 'Debe seleccionar el tipo de anexo',
+            'requiere_acuse_recibo.required' => 'Debe indicar si requiere acuse de recibo',
             'documento.required' => 'Debe adjuntar un documento',
             'documento.mimes' => 'El documento debe ser PDF, Word o imagen',
             'documento.max' => 'El documento no puede superar los 10MB',
-        ]);
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            \Log::error('RadicacionSalida::store - Validación fallida', [
-                'errors' => $validator->errors()->toArray(),
-                'request_data' => $request->except(['documento'])
+            \Log::error('RadicacionSalida::store - VALIDACIÓN FALLIDA', [
+                'errors' => $validator->errors()->toArray()
             ]);
+
             return back()->withErrors($validator)->withInput();
         }
 
-        \Log::info('RadicacionSalida::store - Validación exitosa, continuando...');
-
         try {
-            \Log::info('RadicacionSalida::store - Iniciando transacción');
             DB::beginTransaction();
+            \Log::info('RadicacionSalida::store - TRANSACCIÓN INICIADA');
 
-            // Crear destinatario externo como remitente (para mantener consistencia en el modelo)
-            \Log::info('RadicacionSalida::store - Preparando datos del destinatario');
+            // 1. Crear destinatario
+            \Log::info('RadicacionSalida::store - CREANDO DESTINATARIO', [
+                'tipo' => $request->tipo_destinatario,
+                'nombre' => $request->nombre_destinatario
+            ]);
+
             $tipoDocumento = null;
             $numeroDocumento = null;
 
@@ -125,124 +129,127 @@ class RadicacionSalidaController extends Controller
                 $numeroDocumento = $request->nit_destinatario;
             }
 
-            // Obtener nombres de ciudad y departamento si se seleccionaron
-            $ciudadNombre = null;
-            $departamentoNombre = null;
-
-            if ($request->ciudad_destinatario_id) {
-                $ciudad = Ciudad::find($request->ciudad_destinatario_id);
-                $ciudadNombre = $ciudad ? $ciudad->nombre : null;
-            }
-
-            if ($request->departamento_destinatario_id) {
-                $departamento = Departamento::find($request->departamento_destinatario_id);
-                $departamentoNombre = $departamento ? $departamento->nombre : null;
-            }
-
-            $destinatario = Remitente::create([
-                'tipo' => 'registrado',
+            $destinatario = Remitente::firstOrCreate([
                 'tipo_documento' => $tipoDocumento,
                 'numero_documento' => $numeroDocumento,
+            ], [
+                'tipo' => 'registrado',
                 'nombre_completo' => $request->nombre_destinatario,
                 'telefono' => $request->telefono_destinatario,
                 'email' => $request->email_destinatario,
                 'direccion' => $request->direccion_destinatario,
-                'ciudad' => $ciudadNombre,
-                'departamento' => $departamentoNombre,
-                'entidad' => $request->tipo_destinatario === 'persona_natural' ? null : $request->nombre_destinatario,
-                'observaciones' => "DESTINATARIO EXTERNO - Tipo: " . ucfirst(str_replace('_', ' ', $request->tipo_destinatario)),
+                'departamento' => $request->departamento_destinatario,
+                'ciudad' => $request->ciudad_destinatario,
+                'entidad' => $request->entidad_destinatario,
+                'observaciones' => 'DESTINATARIO DE SALIDA - Tipo: ' . ucfirst(str_replace('_', ' ', $request->tipo_destinatario)),
             ]);
 
-            \Log::info('RadicacionSalida::store - Destinatario creado', ['id' => $destinatario->id]);
+            \Log::info('RadicacionSalida::store - DESTINATARIO CREADO', [
+                'id' => $destinatario->id,
+                'nombre' => $destinatario->nombre_completo
+            ]);
 
-            // Generar número de radicado de salida
-            \Log::info('RadicacionSalida::store - Generando número de radicado');
+            // 2. Generar número de radicado
+            \Log::info('RadicacionSalida::store - GENERANDO NÚMERO DE RADICADO');
             $numeroRadicado = Radicado::generarNumeroRadicado('salida');
-            \Log::info('RadicacionSalida::store - Número generado', ['numero' => $numeroRadicado]);
+            \Log::info('RadicacionSalida::store - NÚMERO GENERADO', ['numero' => $numeroRadicado]);
 
-            // Crear radicado
+            // 3. Crear radicado
+            \Log::info('RadicacionSalida::store - CREANDO RADICADO');
             $radicado = Radicado::create([
                 'numero_radicado' => $numeroRadicado,
                 'tipo' => 'salida',
                 'fecha_radicado' => Carbon::now()->toDateString(),
                 'hora_radicado' => Carbon::now()->toTimeString(),
-                'remitente_id' => $destinatario->id, // En salida, el "remitente" es el destinatario externo
-                'subserie_id' => $request->trd_id, // trd_id viene del formulario pero se guarda como subserie_id
-                'dependencia_destino_id' => $request->dependencia_origen_id, // La dependencia origen es quien envía
+                'remitente_id' => $destinatario->id,
+                'subserie_id' => $request->trd_id,
+                'dependencia_destino_id' => $request->dependencia_origen_id,
                 'usuario_radica_id' => auth()->id(),
-                'medio_recepcion' => 'salida',
-                'tipo_comunicacion' => 'fisico',
+                'medio_recepcion' => 'fisico',
+                'tipo_comunicacion' => $request->tipo_comunicacion,
                 'numero_folios' => $request->numero_folios,
                 'observaciones' => $request->observaciones,
-                'medio_respuesta' => $request->requiere_acuse_recibo ? $request->medio_envio : 'no_requiere',
+                'medio_respuesta' => $request->requiere_acuse_recibo ? 'fisico' : 'no_requiere',
                 'tipo_anexo' => $request->tipo_anexo,
                 'fecha_limite_respuesta' => $request->fecha_limite_respuesta,
                 'estado' => 'pendiente',
             ]);
 
-            // Agregar campos específicos para documentos de salida en observaciones
+            \Log::info('RadicacionSalida::store - RADICADO CREADO', [
+                'id' => $radicado->id,
+                'numero' => $radicado->numero_radicado
+            ]);
+
+            // 4. Actualizar observaciones con información completa
             $dependenciaOrigen = Dependencia::findOrFail($request->dependencia_origen_id);
-            $observacionesSalida = [
-                "DOCUMENTO DE SALIDA",
-                "Dependencia Origen: {$dependenciaOrigen->nombre_completo}",
+            $observacionesCompletas = [
+                "=== DOCUMENTO DE SALIDA ===",
+                "Número: {$numeroRadicado}",
+                "Dependencia Origen: {$dependenciaOrigen->nombre}",
                 "Funcionario: {$request->funcionario_remitente}",
                 "Destinatario: {$request->nombre_destinatario}",
-                "Tipo: " . ucfirst($request->tipo_comunicacion),
                 "Asunto: {$request->asunto}",
                 "Prioridad: " . ucfirst($request->prioridad),
                 "Medio de Envío: " . ucfirst(str_replace('_', ' ', $request->medio_envio)),
+                "Tipo de Anexo: " . ucfirst($request->tipo_anexo),
             ];
 
             if ($request->cargo_remitente) {
-                $observacionesSalida[] = "Cargo: {$request->cargo_remitente}";
+                $observacionesCompletas[] = "Cargo: {$request->cargo_remitente}";
             }
 
             if ($request->requiere_acuse_recibo) {
-                $observacionesSalida[] = "Requiere Acuse de Recibo: Sí";
+                $observacionesCompletas[] = "Requiere Acuse de Recibo: SÍ";
+            }
+
+            if ($request->instrucciones_envio) {
+                $observacionesCompletas[] = "Instrucciones: {$request->instrucciones_envio}";
             }
 
             if ($request->observaciones) {
-                $observacionesSalida[] = "Observaciones: {$request->observaciones}";
+                $observacionesCompletas[] = "";
+                $observacionesCompletas[] = "Observaciones adicionales:";
+                $observacionesCompletas[] = $request->observaciones;
             }
 
-            $radicado->update([
-                'observaciones' => implode(" | ", $observacionesSalida)
-            ]);
+            $radicado->update(['observaciones' => implode("\n", $observacionesCompletas)]);
 
-            // Procesar documento adjunto
+            // 5. Procesar archivo adjunto
             if ($request->hasFile('documento')) {
+                \Log::info('RadicacionSalida::store - PROCESANDO ARCHIVO');
                 $archivo = $request->file('documento');
-                $nombreOriginal = $archivo->getClientOriginalName();
-                $extension = $archivo->getClientOriginalExtension();
-                $nombreArchivo = $numeroRadicado . '_' . time() . '.' . $extension;
-
-                // Guardar archivo en directorio específico para documentos de salida
+                $nombreArchivo = $numeroRadicado . '_' . time() . '_' . $archivo->getClientOriginalName();
                 $rutaArchivo = $archivo->storeAs('documentos/salida', $nombreArchivo, 'public');
 
-                // Calcular hash para integridad
                 $contenido = file_get_contents($archivo->getPathname());
                 $hashArchivo = hash('sha256', $contenido);
 
-                // Crear registro de documento
                 Documento::create([
                     'radicado_id' => $radicado->id,
-                    'nombre_archivo' => $nombreOriginal,
+                    'nombre_archivo' => $archivo->getClientOriginalName(),
                     'ruta_archivo' => $rutaArchivo,
                     'tipo_mime' => $archivo->getMimeType(),
                     'tamaño_archivo' => $archivo->getSize(),
                     'hash_archivo' => $hashArchivo,
-                    'descripcion' => "Documento de salida: {$request->tipo_comunicacion} - {$request->asunto}",
+                    'descripcion' => "Documento de salida: {$request->asunto}",
                     'es_principal' => true,
                 ]);
+
+                \Log::info('RadicacionSalida::store - ARCHIVO PROCESADO', ['ruta' => $rutaArchivo]);
             }
 
             DB::commit();
+            \Log::info('RadicacionSalida::store - ÉXITO COMPLETO', ['radicado_id' => $radicado->id]);
 
             return redirect()->route('radicacion.salida.show', $radicado->id)
                            ->with('success', "Radicado de salida {$numeroRadicado} creado exitosamente");
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('RadicacionSalida::store - ERROR CRÍTICO', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return back()->withErrors(['error' => 'Error al crear el radicado de salida: ' . $e->getMessage()])
                         ->withInput();
@@ -250,41 +257,45 @@ class RadicacionSalidaController extends Controller
     }
 
     /**
-     * Mostrar previsualización del radicado de salida
+     * Mostrar un radicado de salida específico
+     */
+    public function show($id)
+    {
+        $radicado = Radicado::with(['remitente', 'subserie.serie.unidadAdministrativa', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
+                           ->where('tipo', 'salida')
+                           ->findOrFail($id);
+
+        return view('radicacion.salida.show', compact('radicado'));
+    }
+
+    /**
+     * Generar vista previa del radicado de salida
      */
     public function preview(Request $request)
     {
-        // Validar datos básicos
-        $validator = Validator::make($request->all(), [
+        // Validar datos básicos para la vista previa
+        $request->validate([
+            'nombre_destinatario' => 'required|string',
+            'departamento_destinatario' => 'required|string',
+            'ciudad_destinatario' => 'required|string',
             'dependencia_origen_id' => 'required|exists:dependencias,id',
-            'funcionario_remitente' => 'required|string|max:255',
+            'funcionario_remitente' => 'required|string',
+            'asunto' => 'required|string',
             'trd_id' => 'required|exists:subseries,id',
-            'asunto_salida' => 'required|string|max:500',
         ]);
 
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        // Obtener datos para la previsualización
+        // Obtener datos para la vista previa
         $dependenciaOrigen = Dependencia::findOrFail($request->dependencia_origen_id);
         $subserie = Subserie::with(['serie.unidadAdministrativa'])->findOrFail($request->trd_id);
 
-        // Generar número de radicado temporal
-        $numeroRadicado = Radicado::generarNumeroRadicado('salida');
-
-        // Preparar datos para la vista
         $datosPreview = [
-            'numero_radicado' => $numeroRadicado,
             'tipo' => 'salida',
-            'fecha_radicado' => now()->format('d/m/Y'),
-            'hora_radicado' => now()->format('H:i:s'),
             'dependencia_origen' => $dependenciaOrigen,
             'funcionario_remitente' => $request->funcionario_remitente,
             'cargo_remitente' => $request->cargo_remitente,
-            'telefono_remitente' => $request->telefono_remitente,
-            'email_remitente' => $request->email_remitente,
             'nombre_destinatario' => $request->nombre_destinatario,
+            'tipo_documento_destinatario' => $request->tipo_documento_destinatario,
+            'numero_documento_destinatario' => $request->numero_documento_destinatario,
             'telefono_destinatario' => $request->telefono_destinatario,
             'email_destinatario' => $request->email_destinatario,
             'direccion_destinatario' => $request->direccion_destinatario,
@@ -307,17 +318,5 @@ class RadicacionSalidaController extends Controller
         ];
 
         return view('radicacion.salida.preview', compact('datosPreview'));
-    }
-
-    /**
-     * Mostrar un radicado de salida específico
-     */
-    public function show($id)
-    {
-        $radicado = Radicado::with(['remitente', 'trd', 'dependenciaDestino', 'usuarioRadica', 'documentos'])
-                           ->where('tipo', 'salida')
-                           ->findOrFail($id);
-
-        return view('radicacion.salida.show', compact('radicado'));
     }
 }

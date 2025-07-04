@@ -712,9 +712,6 @@ window.RadicacionSalida = {
     toggleTipoDestinatario() {
         const tipoDestinatarioElement = document.getElementById('tipo_destinatario');
         const campoNit = document.getElementById('campo-nit');
-        const nitInput = document.getElementById('nit_destinatario');
-        const numeroDocumentoInput = document.getElementById('numero_documento_destinatario');
-        const tipoDocumentoSelect = document.getElementById('tipo_documento_destinatario');
 
         // Verificar si los elementos existen
         if (!tipoDestinatarioElement) {
@@ -724,37 +721,12 @@ window.RadicacionSalida = {
 
         const tipoDestinatario = tipoDestinatarioElement.value;
 
-        // Manejar campo NIT
-        if (campoNit && nitInput) {
+        // Manejar campo NIT - solo mostrar/ocultar
+        if (campoNit) {
             if (tipoDestinatario === 'persona_juridica' || tipoDestinatario === 'entidad_publica') {
                 campoNit.style.display = 'block';
-                nitInput.setAttribute('required', 'required');
-                nitInput.disabled = false;
-                // Para personas jurídicas, deshabilitar campos de documento personal
-                if (numeroDocumentoInput) {
-                    numeroDocumentoInput.removeAttribute('required');
-                    numeroDocumentoInput.disabled = true;
-                    numeroDocumentoInput.value = '';
-                }
-                if (tipoDocumentoSelect) {
-                    tipoDocumentoSelect.removeAttribute('required');
-                    tipoDocumentoSelect.disabled = true;
-                    tipoDocumentoSelect.value = '';
-                }
             } else {
                 campoNit.style.display = 'none';
-                nitInput.removeAttribute('required');
-                nitInput.disabled = true;
-                nitInput.value = '';
-                // Para personas naturales, habilitar campos de documento personal
-                if (numeroDocumentoInput) {
-                    numeroDocumentoInput.setAttribute('required', 'required');
-                    numeroDocumentoInput.disabled = false;
-                }
-                if (tipoDocumentoSelect) {
-                    tipoDocumentoSelect.setAttribute('required', 'required');
-                    tipoDocumentoSelect.disabled = false;
-                }
             }
         }
     },
@@ -804,17 +776,6 @@ window.RadicacionSalida = {
             );
             return false;
         }
-
-        // Limpiar campos deshabilitados antes de enviar
-        const form = e.target;
-        const disabledInputs = form.querySelectorAll('input:disabled, select:disabled');
-
-        disabledInputs.forEach(input => {
-            if (input.name) {
-                // Remover el name del input deshabilitado para que no se envíe
-                input.removeAttribute('name');
-            }
-        });
 
         // Mostrar indicador de carga
         const submitBtn = e.target.querySelector('button[type="submit"]');
