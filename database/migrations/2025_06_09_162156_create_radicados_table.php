@@ -20,7 +20,6 @@ return new class extends Migration
 
             // Relaciones
             $table->foreignId('remitente_id')->constrained('remitentes')->onDelete('cascade');
-            $table->foreignId('trd_id')->constrained('trd')->onDelete('restrict');
             $table->foreignId('dependencia_destino_id')->constrained('dependencias')->onDelete('restrict');
             $table->foreignId('usuario_radica_id')->constrained('users')->onDelete('restrict');
 
