@@ -1,8 +1,17 @@
-<x-app-layout>
-    <x-slot name="header">
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+     <?php $__env->slot('header', null, []); ?> 
         <div class="flex justify-between items-center">
             <div class="flex items-center space-x-4">
-                <a href="{{ route('gestion.index') }}"
+                <a href="<?php echo e(route('gestion.index')); ?>"
                    class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue transition-colors duration-200">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -18,9 +27,28 @@
                     </p>
                 </div>
             </div>
-            <x-hospital-brand />
+            <?php if (isset($component)) { $__componentOriginal891e6c0b8a48d6de15606ccc6221404b = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.hospital-brand','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('hospital-brand'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal891e6c0b8a48d6de15606ccc6221404b)): ?>
+<?php $attributes = $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b; ?>
+<?php unset($__attributesOriginal891e6c0b8a48d6de15606ccc6221404b); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal891e6c0b8a48d6de15606ccc6221404b)): ?>
+<?php $component = $__componentOriginal891e6c0b8a48d6de15606ccc6221404b; ?>
+<?php unset($__componentOriginal891e6c0b8a48d6de15606ccc6221404b); ?>
+<?php endif; ?>
         </div>
-    </x-slot>
+     <?php $__env->endSlot(); ?>
 
     <div class="py-12">
         <div class="container-minimal">
@@ -36,21 +64,21 @@
                                 <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">Entrada</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasTipo['entrada']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasTipo['entrada'])); ?></span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">Interno</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasTipo['interno']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasTipo['interno'])); ?></span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">Salida</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasTipo['salida']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasTipo['salida'])); ?></span>
                         </div>
                     </div>
                 </div>
@@ -64,28 +92,28 @@
                                 <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">Pendiente</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasEstado['pendiente']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasEstado['pendiente'])); ?></span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">En Proceso</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasEstado['en_proceso']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasEstado['en_proceso'])); ?></span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">Respondido</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasEstado['respondido']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasEstado['respondido'])); ?></span>
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
                                 <span class="text-sm text-gray-700">Archivado</span>
                             </div>
-                            <span class="text-sm font-medium text-gray-900">{{ number_format($estadisticasEstado['archivado']) }}</span>
+                            <span class="text-sm font-medium text-gray-900"><?php echo e(number_format($estadisticasEstado['archivado'])); ?></span>
                         </div>
                     </div>
                 </div>
@@ -103,9 +131,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_usuarios']) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_usuarios'])); ?></p>
                     <p class="text-sm text-gray-500 mb-4">Usuarios registrados</p>
-                    <a href="{{ route('admin.usuarios') }}"
+                    <a href="<?php echo e(route('admin.usuarios')); ?>"
                        class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500">
                         Gestionar usuarios
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -124,9 +152,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_dependencias']) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_dependencias'])); ?></p>
                     <p class="text-sm text-gray-500 mb-4">Dependencias activas</p>
-                    <a href="{{ route('admin.dependencias') }}"
+                    <a href="<?php echo e(route('admin.dependencias')); ?>"
                        class="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-500">
                         Gestionar dependencias
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -146,9 +174,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_comunicaciones']) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_comunicaciones'])); ?></p>
                     <p class="text-sm text-gray-500 mb-4">Tipos de comunicación</p>
-                    <a href="{{ route('admin.comunicaciones.index') }}"
+                    <a href="<?php echo e(route('admin.comunicaciones.index')); ?>"
                        class="inline-flex items-center text-sm font-medium text-cyan-600 hover:text-cyan-500">
                         Gestionar comunicaciones
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -167,9 +195,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_tipos_solicitud']) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_tipos_solicitud'])); ?></p>
                     <p class="text-sm text-gray-500 mb-4">Tipos parametrizados</p>
-                    <a href="{{ route('admin.tipos-solicitud.index') }}"
+                    <a href="<?php echo e(route('admin.tipos-solicitud.index')); ?>"
                        class="inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-500">
                         Gestionar tipos
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -191,9 +219,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_departamentos']) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_departamentos'])); ?></p>
                     <p class="text-sm text-gray-500 mb-4">Departamentos activos</p>
-                    <a href="{{ route('admin.departamentos.index') }}"
+                    <a href="<?php echo e(route('admin.departamentos.index')); ?>"
                        class="inline-flex items-center text-sm font-medium text-teal-600 hover:text-teal-500">
                         Gestionar departamentos
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -212,9 +240,9 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">{{ number_format($estadisticas['total_ciudades']) }}</p>
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_ciudades'])); ?></p>
                     <p class="text-sm text-gray-500 mb-4">Ciudades registradas</p>
-                    <a href="{{ route('admin.ciudades.index') }}"
+                    <a href="<?php echo e(route('admin.ciudades.index')); ?>"
                        class="inline-flex items-center text-sm font-medium text-orange-600 hover:text-orange-500">
                         Gestionar ciudades
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -250,16 +278,16 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-800">Actividad Reciente</h3>
-                        <a href="{{ route('admin.logs') }}"
+                        <a href="<?php echo e(route('admin.logs')); ?>"
                            class="text-sm font-medium text-blue-600 hover:text-blue-500">
                             Ver todos los logs
                         </a>
                     </div>
                 </div>
                 <div class="p-6">
-                    @if($radicadosRecientes->count() > 0)
+                    <?php if($radicadosRecientes->count() > 0): ?>
                         <div class="space-y-4">
-                            @foreach($radicadosRecientes->take(5) as $radicado)
+                            <?php $__currentLoopData = $radicadosRecientes->take(5); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $radicado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="flex items-center space-x-4">
                                 <div class="flex-shrink-0">
                                     <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
@@ -270,23 +298,36 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-medium text-gray-900">
-                                        {{ $radicado->numero_radicado }}
+                                        <?php echo e($radicado->numero_radicado); ?>
+
                                     </p>
                                     <p class="text-sm text-gray-500">
-                                        {{ $radicado->remitente->nombre_completo }} → {{ $radicado->dependenciaDestino->nombre }}
+                                        <?php echo e($radicado->remitente->nombre_completo); ?> → <?php echo e($radicado->dependenciaDestino->nombre); ?>
+
                                     </p>
                                 </div>
                                 <div class="flex-shrink-0 text-sm text-gray-500">
-                                    {{ $radicado->created_at->diffForHumans() }}
+                                    <?php echo e($radicado->created_at->diffForHumans()); ?>
+
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
-                    @else
+                    <?php else: ?>
                         <p class="text-gray-500 text-center py-4">No hay actividad reciente</p>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/admin/index.blade.php ENDPATH**/ ?>

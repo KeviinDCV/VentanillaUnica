@@ -166,6 +166,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/subseries/series-por-unidad/{unidad}', [App\Http\Controllers\Admin\SubserieController::class, 'seriesPorUnidad'])->name('subseries.series-por-unidad');
         Route::get('/subseries/buscar-series', [App\Http\Controllers\Admin\SubserieController::class, 'buscarSeries'])->name('subseries.buscar-series');
 
+        // Gestión de Comunicaciones
+        Route::get('/comunicaciones', [App\Http\Controllers\Admin\ComunicacionController::class, 'index'])->name('comunicaciones.index');
+        Route::post('/comunicaciones', [App\Http\Controllers\Admin\ComunicacionController::class, 'store'])->name('comunicaciones.store');
+        Route::put('/comunicaciones/{comunicacion}', [App\Http\Controllers\Admin\ComunicacionController::class, 'update'])->name('comunicaciones.update');
+        Route::delete('/comunicaciones/{comunicacion}', [App\Http\Controllers\Admin\ComunicacionController::class, 'destroy'])->name('comunicaciones.destroy');
+        Route::patch('/comunicaciones/{comunicacion}/toggle-active', [App\Http\Controllers\Admin\ComunicacionController::class, 'toggleActive'])->name('comunicaciones.toggle-active');
+
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');
     });

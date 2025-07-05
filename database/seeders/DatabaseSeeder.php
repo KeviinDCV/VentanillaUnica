@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SerieSeeder::class,
             SubserieSeeder::class,
             TipoSolicitudSeeder::class,
+            ComunicacionSeeder::class,
         ]);
     }
 }

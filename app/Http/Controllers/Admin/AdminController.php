@@ -32,7 +32,7 @@ class AdminController extends Controller
                                      ->whereYear('fecha_radicado', Carbon::now()->year)->count(),
             'total_usuarios' => User::count(),
             'total_dependencias' => Dependencia::count(),
-            'total_comunicaciones' => 0, // TODO: Implementar cuando se cree el modelo Comunicacion
+            'total_comunicaciones' => \App\Models\Comunicacion::count(),
             'total_departamentos' => Departamento::count(),
             'total_ciudades' => Ciudad::count(),
             'total_tipos_solicitud' => TipoSolicitud::count(),

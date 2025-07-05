@@ -20,6 +20,7 @@ export default defineConfig({
                 'resources/js/admin-ciudades.js',
                 'resources/js/admin-tipos-solicitud.js',
                 'resources/js/admin-unidades-administrativas.js',
+                'resources/js/admin-comunicaciones.js',
                 'resources/js/gestion-series.js',
                 'resources/js/colombia-time.js',
                 'resources/js/ciudad-departamento.js'
@@ -53,6 +54,7 @@ export default defineConfig({
                 'resources/js/admin-ciudades.js',
                 'resources/js/admin-tipos-solicitud.js',
                 'resources/js/admin-unidades-administrativas.js',
+                'resources/js/admin-comunicaciones.js',
                 'resources/js/gestion-series.js',
                 'resources/js/colombia-time.js',
                 'resources/js/ciudad-departamento.js'
