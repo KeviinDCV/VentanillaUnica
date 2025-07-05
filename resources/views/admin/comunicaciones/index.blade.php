@@ -11,10 +11,6 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-                <button data-action="create-comunicacion"
-                        class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
-                    Nuevo Tipo de Comunicación
-                </button>
                 <x-hospital-brand />
             </div>
         </div>
@@ -262,6 +258,14 @@
                 <!-- Paginación -->
                 <div class="px-6 py-4 border-t border-gray-200">
                     {{ $comunicaciones->links() }}
+                </div>
+
+                <!-- Botón Agregar -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <button data-action="create-comunicacion"
+                            class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                        Nuevo Tipo de Comunicación
+                    </button>
                 </div>
             </div>
         </div>
@@ -586,4 +590,7 @@
         });
     </script>
 
+    @push('scripts')
+    @vite(['resources/js/admin-comunicaciones.js'])
+    @endpush
 </x-app-layout>

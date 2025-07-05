@@ -26,18 +26,18 @@ class ComunicacionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:100',
-            'codigo' => 'required|string|max:20|unique:comunicaciones,codigo',
-            'descripcion' => 'nullable|string|max:500',
-        ]);
-
         try {
+            $request->validate([
+                'nombre' => 'required|string|max:100',
+                'codigo' => 'required|string|max:20|unique:comunicaciones,codigo',
+                'descripcion' => 'nullable|string|max:500',
+            ]);
+
             $comunicacion = Comunicacion::create([
                 'nombre' => $request->nombre,
                 'codigo' => strtolower($request->codigo),
                 'descripcion' => $request->descripcion,
-                'activo' => true,
+                'activo' => $request->has('activo') ? (bool)$request->activo : true,
             ]);
 
             return response()->json([
@@ -45,6 +45,13 @@ class ComunicacionController extends Controller
                 'message' => 'Tipo de comunicación creado exitosamente',
                 'data' => $comunicacion
             ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
 
         } catch (\Exception $e) {
             Log::error('Error al crear comunicación', [
@@ -64,17 +71,18 @@ class ComunicacionController extends Controller
      */
     public function update(Request $request, Comunicacion $comunicacion)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:100',
-            'codigo' => 'required|string|max:20|unique:comunicaciones,codigo,' . $comunicacion->id,
-            'descripcion' => 'nullable|string|max:500',
-        ]);
-
         try {
+            $request->validate([
+                'nombre' => 'required|string|max:100',
+                'codigo' => 'required|string|max:20|unique:comunicaciones,codigo,' . $comunicacion->id,
+                'descripcion' => 'nullable|string|max:500',
+            ]);
+
             $comunicacion->update([
                 'nombre' => $request->nombre,
                 'codigo' => strtolower($request->codigo),
                 'descripcion' => $request->descripcion,
+                'activo' => $request->has('activo') ? (bool)$request->activo : $comunicacion->activo,
             ]);
 
             return response()->json([
@@ -82,6 +90,13 @@ class ComunicacionController extends Controller
                 'message' => 'Tipo de comunicación actualizado exitosamente',
                 'data' => $comunicacion->fresh()
             ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
 
         } catch (\Exception $e) {
             Log::error('Error al actualizar comunicación', [

@@ -20,10 +20,6 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-                <button data-action="create-comunicacion"
-                        class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
-                    Nuevo Tipo de Comunicación
-                </button>
                 <?php if (isset($component)) { $__componentOriginal891e6c0b8a48d6de15606ccc6221404b = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.hospital-brand','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -293,6 +289,14 @@
                 <div class="px-6 py-4 border-t border-gray-200">
                     <?php echo e($comunicaciones->links()); ?>
 
+                </div>
+
+                <!-- Botón Agregar -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <button data-action="create-comunicacion"
+                            class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                        Nuevo Tipo de Comunicación
+                    </button>
                 </div>
             </div>
         </div>
@@ -617,6 +621,9 @@
         });
     </script>
 
+    <?php $__env->startPush('scripts'); ?>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/js/admin-comunicaciones.js']); ?>
+    <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

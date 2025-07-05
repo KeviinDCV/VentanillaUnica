@@ -76,9 +76,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Funciones para modales
     function openCreateModal() {
-        clearForm('createComunicacionForm');
+        const modal = document.getElementById('createComunicacionModal');
+        const form = document.getElementById('createComunicacionForm');
+
+        // Limpiar formulario
+        form.reset();
+
+        // Limpiar errores
         hideErrors('createModalErrors');
-        showModal('createComunicacionModal');
+
+        // Mostrar modal con animación
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        const modalContent = modal.querySelector('.relative');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+            // Focus en el primer campo
+            document.getElementById('create_nombre').focus();
+        }, 10);
+
+        console.log('Modal de crear comunicación abierto');
     }
 
     function openEditModal(btn) {
@@ -97,7 +120,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
         clearForm('editComunicacionForm', false);
         hideErrors('editModalErrors');
-        showModal('editComunicacionModal');
+
+        // Mostrar modal con animación
+        const modal = document.getElementById('editComunicacionModal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        const modalContent = modal.querySelector('.relative');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+            // Focus en el primer campo
+            document.getElementById('edit_nombre').focus();
+        }, 10);
     }
 
     function showDeleteConfirmation(btn) {
@@ -316,14 +355,45 @@ document.addEventListener('DOMContentLoaded', function() {
         if (modal) {
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+
+            // Animación de entrada
+            const modalContent = modal.querySelector('.relative');
+            if (modalContent) {
+                modalContent.style.opacity = '0';
+                modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+                setTimeout(() => {
+                    modalContent.style.opacity = '1';
+                    modalContent.style.transform = 'scale(1) translateY(0)';
+                }, 10);
+            }
+
+            console.log(`Modal ${modalId} mostrado`);
+        } else {
+            console.error(`Modal ${modalId} no encontrado`);
         }
     }
 
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
+            const modalContent = modal.querySelector('.relative');
+
+            if (modalContent) {
+                // Animación de salida
+                modalContent.style.opacity = '0';
+                modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 200);
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
+            console.log(`Modal ${modalId} cerrado`);
         }
     }
 
