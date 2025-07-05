@@ -19,7 +19,7 @@
 
     <style>
         body {
-            font-family: 'Figtree', sans-serif;
+            font-family: 'Figtree', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
         }
 
         .hospital-bg {

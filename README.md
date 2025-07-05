@@ -46,17 +46,18 @@
 
 ## 🎯 Descripción General
 
-**UniRadic** es un sistema integral de gestión documental de última generación, diseñado específicamente para instituciones hospitalarias y entidades del sector salud en Colombia. El sistema permite la radicación, seguimiento, gestión y control de documentos de entrada, internos y de salida, cumpliendo estrictamente con los estándares normativos de gestión documental establecidos por el Archivo General de la Nación (AGN) y las regulaciones del sector salud.
+**UniRadic** es un sistema integral de gestión documental de última generación, desarrollado específicamente para el **E.S.E Hospital San Agustín Puerto Merizalde**. El sistema permite la radicación, seguimiento, gestión y control de documentos de entrada, internos y de salida, cumpliendo estrictamente con los estándares normativos de gestión documental establecidos por el Archivo General de la Nación (AGN) y las regulaciones del sector salud en Colombia.
 
-### 🏥 Contexto Hospitalario
+### 🏥 Contexto del E.S.E Hospital San Agustín Puerto Merizalde
 
-El sistema está optimizado para el entorno hospitalario, considerando:
+El sistema está optimizado específicamente para las necesidades del Hospital San Agustín Puerto Merizalde, considerando:
 
-- **Flujo de Pacientes**: Integración con procesos de atención médica
-- **Normatividad Sanitaria**: Cumplimiento de resoluciones del Ministerio de Salud
-- **Confidencialidad Médica**: Protección de datos sensibles según Ley 1581 de 2012
-- **Trazabilidad Clínica**: Seguimiento completo de documentos médicos
-- **Interoperabilidad**: Preparado para integración con sistemas HIS/RIS/PACS
+- **Flujo de Pacientes**: Integración con procesos de atención médica del hospital
+- **Normatividad Sanitaria**: Cumplimiento de resoluciones del Ministerio de Salud y Protección Social
+- **Confidencialidad Médica**: Protección de datos sensibles según Ley 1581 de 2012 (Habeas Data)
+- **Trazabilidad Clínica**: Seguimiento completo de documentos médicos y administrativos
+- **Interoperabilidad**: Preparado para integración con sistemas HIS/RIS/PACS del hospital
+- **Gestión Territorial**: Adaptado a las necesidades de la región del Pacífico colombiano
 
 ### 🎯 Objetivos del Sistema
 
@@ -1023,7 +1024,7 @@ graph TD
 
 ```mermaid
 graph TD
-    A[Hospital] --> B[Dirección General]
+    A[E.S.E Hospital San Agustín<br/>Puerto Merizalde] --> B[Dirección General]
     A --> C[Subdirección Médica]
     A --> D[Subdirección Administrativa]
     A --> E[Subdirección Financiera]
@@ -1031,19 +1032,24 @@ graph TD
     B --> B1[Secretaría General]
     B --> B2[Oficina Jurídica]
     B --> B3[Control Interno]
+    B --> B4[Oficina de Calidad]
 
     C --> C1[Urgencias]
     C --> C2[Hospitalización]
     C --> C3[Cirugía]
     C --> C4[Consulta Externa]
+    C --> C5[Laboratorio Clínico]
+    C --> C6[Imagenología]
 
     D --> D1[Talento Humano]
     D --> D2[Servicios Generales]
-    D --> D3[Sistemas]
+    D --> D3[Sistemas de Información]
+    D --> D4[Archivo y Correspondencia]
 
     E --> E1[Contabilidad]
     E --> E2[Presupuesto]
     E --> E3[Facturación]
+    E --> E4[Cartera]
 ```
 
 ##### 🔧 Configuración de Dependencias
@@ -4568,11 +4574,12 @@ SOFTWARE.
 
 #### 📧 Información de Contacto
 
+- **Institución**: E.S.E Hospital San Agustín Puerto Merizalde
 - **Desarrollador Principal**: Kevin David Ch E
 - **Email**: Keviindavid00@gmail.com
-- **Soporte Técnico**: soporte@uniradic.com
-- **Documentación**: https://docs.uniradic.com
-- **Repository**: https://github.com/hospital/uniradic
+- **Soporte Técnico**: sistemas@hospitalsanagustin.gov.co
+- **Documentación**: https://docs.uniradic.hospitalsanagustin.gov.co
+- **Repository**: https://github.com/hospitalsanagustin/uniradic
 
 #### 🔧 Niveles de Soporte
 
@@ -4610,13 +4617,13 @@ SOFTWARE.
 
 ---
 
-### 🌟 Desarrollado con dedicación para el sector salud colombiano
+### 🌟 Desarrollado con dedicación para el E.S.E Hospital San Agustín Puerto Merizalde
 
-**Transformando la gestión documental hospitalaria, un radicado a la vez.**
+**Transformando la gestión documental hospitalaria en el Pacífico colombiano, un radicado a la vez.**
 
 ---
 
-*© 2025 UniRadic. Todos los derechos reservados.*
+*© 2025 E.S.E Hospital San Agustín Puerto Merizalde. Todos los derechos reservados.*
 
 </div>
 ```
