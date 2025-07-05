@@ -1,3 +1,32 @@
+// Función para manejar los menús desplegables (disponible globalmente)
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) {
+        console.error('No se encontró el dropdown con ID:', dropdownId);
+        return;
+    }
+
+    const isHidden = dropdown.classList.contains('hidden');
+
+    // Cerrar todos los dropdowns abiertos
+    document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
+        if (d.id !== dropdownId) {
+            d.classList.add('hidden');
+        }
+    });
+
+    if (isHidden) {
+        // Mostrar dropdown
+        dropdown.classList.remove('hidden');
+    } else {
+        // Ocultar dropdown
+        dropdown.classList.add('hidden');
+    }
+}
+
+// Hacer la función disponible globalmente inmediatamente
+window.toggleDropdown = toggleDropdown;
+
 document.addEventListener('DOMContentLoaded', function() {
     // Variables globales
     let remitenteActual = null;
@@ -8,40 +37,54 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCrearRemitente = document.getElementById('btn-crear-remitente');
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const btnCancelar = document.getElementById('btn-cancelar');
+    const buscarInput = document.getElementById('buscar-remitente');
+    const filtroTipo = document.getElementById('filtro-tipo');
 
     // Event Listeners
     btnCerrarModal?.addEventListener('click', cerrarModal);
     btnCancelar?.addEventListener('click', cerrarModal);
     formRemitente?.addEventListener('submit', guardarRemitente);
 
+    // Event listeners para búsqueda y filtros
+    if (buscarInput) {
+        buscarInput.addEventListener('input', filtrarRemitentes);
+    }
+
+    if (filtroTipo) {
+        filtroTipo.addEventListener('change', filtrarRemitentes);
+    }
+
     // Configurar event listeners para el modal de confirmación
     setupConfirmModalEventListeners();
 
-    // Event delegation para botones con data-action
+    // Event listeners para botones de la tabla
     document.addEventListener('click', function(e) {
-        const action = e.target.closest('[data-action]')?.getAttribute('data-action');
-
-        switch(action) {
-            case 'create-remitente':
-                abrirModalCrear();
-                break;
-            case 'edit-remitente':
-                const editBtn = e.target.closest('[data-action="edit-remitente"]');
-                abrirModalEditar(editBtn);
-                break;
-            case 'delete-remitente':
-                const deleteBtn = e.target.closest('[data-action="delete-remitente"]');
-                confirmarEliminacion(deleteBtn);
-                break;
+        if (e.target.closest('.btn-editar')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const btn = e.target.closest('.btn-editar');
+            abrirModalEditar(btn);
+            return;
+        } else if (e.target.closest('.btn-eliminar')) {
+            e.preventDefault();
+            e.stopPropagation();
+            const btn = e.target.closest('.btn-eliminar');
+            confirmarEliminacion(btn);
+            return;
+        } else if (e.target.closest('[data-action="create-remitente"]')) {
+            abrirModalCrear();
+            return;
         }
     });
 
-    // Cerrar modales al hacer click fuera
-    window.addEventListener('click', function(e) {
-        if (e.target === modalRemitente) {
-            cerrarModal();
-        }
-    });
+    // Cerrar modal al hacer clic en el fondo
+    if (modalRemitente) {
+        modalRemitente.addEventListener('click', function(e) {
+            if (e.target === modalRemitente) {
+                cerrarModal();
+            }
+        });
+    }
 
     // Funciones principales
     function closeAllDropdowns() {
@@ -52,27 +95,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setupConfirmModalEventListeners() {
-        // Verificar si el modal existe antes de agregar event listeners
-        const confirmModal = document.getElementById('confirmStatusModal');
-        if (!confirmModal) return;
-
-        // Cerrar modal al hacer clic fuera de él
-        confirmModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeConfirmModal();
-            }
-        });
-
-        // Cerrar modal con tecla Escape
+        // Solo manejar tecla Escape - el resto se maneja en el event listener principal
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !confirmModal.classList.contains('hidden')) {
-                closeConfirmModal();
+            if (e.key === 'Escape') {
+                const confirmModal = document.getElementById('confirmStatusModal');
+                if (confirmModal && !confirmModal.classList.contains('hidden')) {
+                    closeConfirmModal();
+                }
+                if (modalRemitente && !modalRemitente.classList.contains('hidden')) {
+                    cerrarModal();
+                }
             }
-        });
-
-        // Botones de cerrar modal
-        document.querySelectorAll('[data-action="close-confirm-modal"]').forEach(button => {
-            button.addEventListener('click', closeConfirmModal);
         });
     }
 
@@ -99,18 +132,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function abrirModalEditar(btn) {
+        console.log('abrirModalEditar ejecutándose');
+
+        // Cerrar todos los menús desplegables
+        closeAllDropdowns();
+
         remitenteActual = {
-            id: btn.dataset.remitenteId,
-            nombre_completo: btn.dataset.remitenteNombre,
-            tipo: btn.dataset.remitenteTipo,
-            tipo_documento: btn.dataset.remitenteTipoDocumento,
-            numero_documento: btn.dataset.remitenteNumeroDocumento,
-            email: btn.dataset.remitenteEmail,
-            telefono: btn.dataset.remitenteTelefono,
-            direccion: btn.dataset.remitenteDireccion,
-            ciudad: btn.dataset.remitenteCiudad,
-            departamento: btn.dataset.remitenteDepartamento,
-            entidad: btn.dataset.remitenteEntidad
+            id: btn.dataset.id,
+            nombre_completo: btn.dataset.nombreCompleto,
+            tipo: btn.dataset.tipo,
+            tipo_documento: btn.dataset.tipoDocumento,
+            numero_documento: btn.dataset.numeroDocumento,
+            email: btn.dataset.email,
+            telefono: btn.dataset.telefono,
+            direccion: btn.dataset.direccion,
+            ciudad: btn.dataset.ciudad,
+            departamento: btn.dataset.departamento,
+            entidad: btn.dataset.entidad
         };
 
         document.getElementById('modal-titulo').textContent = 'Editar Remitente';
@@ -222,8 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Cerrar todos los menús desplegables
         closeAllDropdowns();
 
-        const id = btn.dataset.remitenteId;
-        const nombre = btn.dataset.remitenteName;
+        const id = btn.dataset.id;
+        const nombre = btn.dataset.nombre;
 
         showConfirmModal({
             title: 'Eliminar Remitente',
@@ -278,114 +316,199 @@ document.addEventListener('DOMContentLoaded', function() {
                 duration: 4000
             });
         } else {
-            alert(message);
+            console.log(`${type.toUpperCase()}: ${message}`);
         }
     }
 
     // Función para mostrar modal de confirmación personalizado
     function showConfirmModal(options) {
-        const modal = document.getElementById('confirmStatusModal');
-        const title = document.getElementById('confirmModalTitle');
-        const message = document.getElementById('confirmModalMessage');
-        const actionButton = document.getElementById('confirmModalAction');
-        const iconContainer = document.getElementById('confirmModalIcon');
+        console.log('Creando modal dinámico...');
 
-        if (!modal || !title || !message || !actionButton || !iconContainer) {
-            console.error('Modal elements not found, falling back to confirm()');
-            if (confirm(options.message)) {
-                options.onConfirm();
-            }
-            return;
+        // Eliminar cualquier modal previo
+        const existingModal = document.getElementById('dynamic-confirm-modal');
+        if (existingModal) {
+            existingModal.remove();
         }
 
-        // Configurar contenido del modal
-        title.textContent = options.title;
-        message.textContent = options.message;
-        actionButton.textContent = options.actionText;
+        // Crear modal con la estructura exacta de ciudades
+        const modalHtml = `
+            <div id="dynamic-confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full backdrop-blur-sm" style="z-index: 999999 !important; display: block !important;">
+                <div id="modal-content" class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out" style="opacity: 0; transform: scale(0.95) translateY(-20px);">
+                    <!-- Header del Modal -->
+                    <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">${options.title}</h3>
+                        <button id="dynamic-close-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
 
-        // Configurar ícono
-        iconContainer.className = `flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full ${options.iconClass}`;
-        iconContainer.innerHTML = `
-            <svg class="w-6 h-6 ${options.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-            </svg>
+                    <!-- Contenido del Modal -->
+                    <div class="p-4">
+                        <div class="flex items-center mb-4">
+                            <div class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full ${options.iconClass}">
+                                <svg class="w-6 h-6 ${options.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                </svg>
+                            </div>
+                            <div class="ml-4 flex-1">
+                                <p class="text-sm text-gray-600">${options.message}</p>
+                            </div>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" id="dynamic-cancel-btn" class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                Cancelar
+                            </button>
+                            <button type="button" id="dynamic-confirm-btn" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}">
+                                ${options.actionText}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
 
-        // Limpiar todas las clases del botón y aplicar las nuevas
-        actionButton.className = '';
-        actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
+        // Insertar en el body
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-        // Forzar los estilos con colores específicos
-        if (options.actionClass.includes('bg-orange-600')) {
-            actionButton.style.backgroundColor = '#ea580c';
-            actionButton.style.borderColor = '#ea580c';
-        } else if (options.actionClass.includes('bg-red-600')) {
-            actionButton.style.backgroundColor = '#dc2626';
-            actionButton.style.borderColor = '#dc2626';
-        } else if (options.actionClass.includes('bg-green-600')) {
-            actionButton.style.backgroundColor = '#16a34a';
-            actionButton.style.borderColor = '#16a34a';
-        } else if (options.actionClass.includes('bg-blue-600')) {
-            actionButton.style.backgroundColor = '#2563eb';
-            actionButton.style.borderColor = '#2563eb';
-        }
+        // Event listeners
+        const modal = document.getElementById('dynamic-confirm-modal');
+        const modalContent = document.getElementById('modal-content');
+        const cancelBtn = document.getElementById('dynamic-cancel-btn');
+        const confirmBtn = document.getElementById('dynamic-confirm-btn');
 
-        // Asegurar que el texto sea blanco
-        actionButton.style.color = '#ffffff';
-
-        // Configurar event listener para el botón de acción
-        actionButton.onclick = function() {
-            if (options.onConfirm) {
-                options.onConfirm();
-            }
-            closeConfirmModal();
-        };
-
-        // Mostrar modal con animación
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-
-        // Animación de entrada
-        const modalContent = modal.querySelector('.relative');
-        modalContent.style.opacity = '0';
-        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-
-        setTimeout(() => {
-            modalContent.style.opacity = '1';
-            modalContent.style.transform = 'scale(1) translateY(0)';
-        }, 10);
-    }
-
-    function closeConfirmModal() {
-        const modal = document.getElementById('confirmStatusModal');
-        if (modal) {
-            const modalContent = modal.querySelector('.relative');
-
-            // Resetear estilos del botón
-            const actionButton = document.getElementById('confirmModalAction');
-            if (actionButton) {
-                actionButton.className = 'px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]';
-                actionButton.style.backgroundColor = '';
-                actionButton.style.borderColor = '';
-                actionButton.style.color = '';
-                actionButton.onclick = null;
-            }
-
-            if (modalContent) {
+        const closeModal = () => {
+            if (modal && modal.parentNode) {
                 // Animación de salida
                 modalContent.style.opacity = '0';
                 modalContent.style.transform = 'scale(0.95) translateY(-20px)';
 
                 setTimeout(() => {
-                    modal.classList.add('hidden');
+                    if (modal && modal.parentNode) {
+                        modal.remove();
+                    }
                     document.body.style.overflow = '';
-                }, 200);
-            } else {
+                }, 300);
+            }
+        };
+
+        cancelBtn.onclick = closeModal;
+        confirmBtn.onclick = () => {
+            if (options.onConfirm) {
+                options.onConfirm();
+            }
+            closeModal();
+        };
+
+        // Cerrar con Escape
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+
+        // Cerrar al hacer clic en el fondo
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Bloquear scroll del body
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+        }, 10);
+
+        console.log('Modal dinámico creado y mostrado');
+    }
+
+    function closeConfirmModal() {
+        const modal = document.getElementById('confirmStatusModal');
+        if (!modal) return;
+
+        const modalContent = modal.querySelector('.relative');
+
+        if (modalContent) {
+            // Animación de salida
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
                 modal.classList.add('hidden');
                 document.body.style.overflow = '';
-            }
+            }, 200);
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
         }
     }
+
+    // Función para filtrar remitentes
+    function filtrarRemitentes() {
+        const busqueda = buscarInput ? buscarInput.value.toLowerCase() : '';
+        const tipo = filtroTipo ? filtroTipo.value : '';
+        const filas = document.querySelectorAll('.remitente-row');
+
+        filas.forEach(fila => {
+            const nombre = fila.dataset.name || '';
+            const email = fila.dataset.email || '';
+            const documento = fila.dataset.documento || '';
+            const entidad = fila.dataset.entidad || '';
+            const telefono = fila.dataset.telefono || '';
+            const tipoRemitente = fila.dataset.tipo;
+
+            // Verificar coincidencia en búsqueda (nombre, email, documento, entidad, teléfono)
+            const coincideBusqueda = busqueda === '' ||
+                nombre.includes(busqueda) ||
+                email.includes(busqueda) ||
+                documento.includes(busqueda) ||
+                entidad.includes(busqueda) ||
+                telefono.includes(busqueda);
+
+            // Verificar coincidencia en filtro de tipo
+            let coincideTipo = true;
+            if (tipo !== '') {
+                coincideTipo = tipoRemitente === tipo;
+            }
+
+            // Mostrar u ocultar fila según coincidencias
+            if (coincideBusqueda && coincideTipo) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+
+        // Actualizar contador de resultados
+        actualizarContadorResultados();
+    }
+
+    // Función para actualizar contador de resultados
+    function actualizarContadorResultados() {
+        const filasVisibles = document.querySelectorAll('.remitente-row:not([style*="display: none"])');
+        const totalFilas = document.querySelectorAll('.remitente-row');
+
+        // Si hay un elemento contador, actualizarlo
+        const contador = document.getElementById('contador-resultados');
+        if (contador) {
+            contador.textContent = `Mostrando ${filasVisibles.length} de ${totalFilas.length} remitentes`;
+        }
+    }
+
+
+
+
+
+
 
 
 

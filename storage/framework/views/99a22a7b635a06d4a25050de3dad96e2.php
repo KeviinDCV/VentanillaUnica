@@ -148,7 +148,10 @@
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-medium text-gray-800">Lista de Remitentes</h3>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-800">Lista de Remitentes</h3>
+                            <p id="contador-resultados" class="text-sm text-gray-500 mt-1">Mostrando <?php echo e($remitentes->count()); ?> de <?php echo e($remitentes->total()); ?> remitentes</p>
+                        </div>
                         <div class="flex-1 max-w-md ml-6">
                             <div class="relative">
                                 <input type="text"
@@ -203,7 +206,9 @@
                                 data-name="<?php echo e(strtolower($remitente->nombre_completo)); ?>"
                                 data-tipo="<?php echo e($remitente->tipo); ?>"
                                 data-email="<?php echo e(strtolower($remitente->email ?? '')); ?>"
-                                data-documento="<?php echo e($remitente->numero_documento ?? ''); ?>">
+                                data-documento="<?php echo e($remitente->numero_documento ?? ''); ?>"
+                                data-entidad="<?php echo e(strtolower($remitente->entidad ?? '')); ?>"
+                                data-telefono="<?php echo e($remitente->telefono ?? ''); ?>">
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-8 w-8">
@@ -283,19 +288,18 @@
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Editar -->
-                                                <button data-action="edit-remitente"
-                                                        data-remitente-id="<?php echo e($remitente->id); ?>"
-                                                        data-remitente-nombre="<?php echo e($remitente->nombre_completo); ?>"
-                                                        data-remitente-tipo="<?php echo e($remitente->tipo); ?>"
-                                                        data-remitente-tipo-documento="<?php echo e($remitente->tipo_documento); ?>"
-                                                        data-remitente-numero-documento="<?php echo e($remitente->numero_documento); ?>"
-                                                        data-remitente-email="<?php echo e($remitente->email); ?>"
-                                                        data-remitente-telefono="<?php echo e($remitente->telefono); ?>"
-                                                        data-remitente-ciudad="<?php echo e($remitente->ciudad); ?>"
-                                                        data-remitente-departamento="<?php echo e($remitente->departamento); ?>"
-                                                        data-remitente-entidad="<?php echo e($remitente->entidad); ?>"
-                                                        data-remitente-direccion="<?php echo e($remitente->direccion); ?>"
-                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                                                        data-id="<?php echo e($remitente->id); ?>"
+                                                        data-nombre-completo="<?php echo e($remitente->nombre_completo); ?>"
+                                                        data-tipo="<?php echo e($remitente->tipo); ?>"
+                                                        data-tipo-documento="<?php echo e($remitente->tipo_documento); ?>"
+                                                        data-numero-documento="<?php echo e($remitente->numero_documento); ?>"
+                                                        data-email="<?php echo e($remitente->email); ?>"
+                                                        data-telefono="<?php echo e($remitente->telefono); ?>"
+                                                        data-ciudad="<?php echo e($remitente->ciudad); ?>"
+                                                        data-departamento="<?php echo e($remitente->departamento); ?>"
+                                                        data-entidad="<?php echo e($remitente->entidad); ?>"
+                                                        data-direccion="<?php echo e($remitente->direccion); ?>">
                                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                     </svg>
@@ -306,10 +310,9 @@
                                                 <div class="border-t border-gray-100"></div>
 
                                                 <!-- Eliminar -->
-                                                <button data-action="delete-remitente"
-                                                        data-remitente-id="<?php echo e($remitente->id); ?>"
-                                                        data-remitente-name="<?php echo e($remitente->nombre_completo); ?>"
-                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                <button class="btn-eliminar w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+                                                        data-id="<?php echo e($remitente->id); ?>"
+                                                        data-nombre="<?php echo e($remitente->nombre_completo); ?>">
                                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
@@ -496,7 +499,7 @@
             </div>
         </div>
     <!-- Modal de Confirmación Personalizado -->
-    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-[60] backdrop-blur-sm">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
             <!-- Header del Modal -->
             <div class="flex items-center justify-between p-4 border-b border-gray-200">
@@ -536,113 +539,19 @@
                 </div>
             </div>
         </div>
-    <script>
-        // Función simple para manejar los menús desplegables con posicionamiento absoluto
-        function toggleDropdown(dropdownId) {
-            const dropdown = document.getElementById(dropdownId);
-            if (!dropdown) {
-                console.error('No se encontró el dropdown con ID:', dropdownId);
-                return;
-            }
-
-            // Cerrar todos los otros dropdowns
-            document.querySelectorAll('[id^="dropdown-"]:not(#' + dropdownId + ')').forEach(otherDropdown => {
-                resetDropdown(otherDropdown);
-            });
-
-            // Toggle del dropdown actual
-            if (dropdown.classList.contains('hidden')) {
-                // Mostrar dropdown
-                dropdown.classList.remove('hidden');
-
-                // Calcular posición inteligente
-                const button = dropdown.previousElementSibling;
-                const rect = button.getBoundingClientRect();
-                const dropdownRect = dropdown.getBoundingClientRect();
-                const viewportHeight = window.innerHeight;
-                const viewportWidth = window.innerWidth;
-
-                // Verificar si hay espacio suficiente abajo
-                const spaceBelow = viewportHeight - rect.bottom;
-                const spaceAbove = rect.top;
-
-                // Verificar si hay espacio suficiente a la derecha
-                const spaceRight = viewportWidth - rect.right;
-
-                // Posicionamiento vertical
-                if (spaceBelow < 200 && spaceAbove > spaceBelow) {
-                    // Mostrar arriba
-                    dropdown.classList.remove('top-full', 'mt-1');
-                    dropdown.classList.add('bottom-full', 'mb-1');
-                    dropdown.style.transformOrigin = 'bottom right';
-                } else {
-                    // Mostrar abajo (comportamiento por defecto)
-                    dropdown.classList.remove('bottom-full', 'mb-1');
-                    dropdown.classList.add('top-full', 'mt-1');
-                    dropdown.style.transformOrigin = 'top right';
-                }
-
-                // Posicionamiento horizontal
-                if (spaceRight < 200) {
-                    // Mostrar a la izquierda
-                    dropdown.classList.remove('right-0');
-                    dropdown.classList.add('left-0');
-                    dropdown.style.transformOrigin = dropdown.style.transformOrigin.replace('right', 'left');
-                } else {
-                    // Mostrar a la derecha (comportamiento por defecto)
-                    dropdown.classList.remove('left-0');
-                    dropdown.classList.add('right-0');
-                    dropdown.style.transformOrigin = 'top right';
-                }
-            } else {
-                // Ocultar dropdown
-                resetDropdown(dropdown);
-            }
-        }
-
-        // Función para resetear dropdown a estado inicial
-        function resetDropdown(dropdown) {
-            dropdown.classList.add('hidden');
-            dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
-            dropdown.classList.add('right-0', 'top-full', 'mt-1');
-            dropdown.style.transformOrigin = 'top right';
-        }
-
-        // Cerrar dropdowns al hacer clic fuera
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id^="dropdown-"]')) {
-                document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-                    resetDropdown(dropdown);
-                });
-            }
-        });
-
-        // Cerrar dropdown después de hacer clic en una acción
-        document.addEventListener('click', function(event) {
-            if (event.target.closest('[id^="dropdown-"] button') || event.target.closest('[id^="dropdown-"] a')) {
-                setTimeout(() => {
-                    document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-                        resetDropdown(dropdown);
-                    });
-                }, 100);
-            }
-        });
-
-        // Cerrar dropdowns al hacer scroll (opcional, para mejor UX)
-        window.addEventListener('scroll', function() {
-            document.querySelectorAll('[id^="dropdown-"]:not(.hidden)').forEach(dropdown => {
-                resetDropdown(dropdown);
-            });
-        });
-    </script>
+    </div>
 
     <?php $__env->startPush('styles'); ?>
     <style>
-        /* Estilos para dropdowns con posicionamiento absoluto inteligente */
+        /* Estilos para dropdowns con posicionamiento absoluto */
         [id^="dropdown-"] {
-            transition: opacity 0.1s ease-out, transform 0.1s ease-out;
+            z-index: 50;
+            min-width: 12rem;
+            transform-origin: top right;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
         }
 
+        /* Animaciones suaves para apertura */
         [id^="dropdown-"]:not(.hidden) {
             opacity: 1;
             transform: scale(1);
@@ -651,26 +560,21 @@
         [id^="dropdown-"].hidden {
             opacity: 0;
             transform: scale(0.95);
+            pointer-events: none;
         }
 
-        /* Asegurar que los contenedores de la tabla permitan overflow */
-        .overflow-x-auto {
+        /* Asegurar que los contenedores de la tabla permitan overflow, pero no afecten modales */
+        .overflow-x-auto:not(#confirmStatusModal):not(#confirmStatusModal *) {
             overflow: visible !important;
         }
 
-        /* Mejorar el contenedor de acciones para posicionamiento relativo */
-        .relative.inline-block {
-            position: relative;
+        .table-container:not(#confirmStatusModal):not(#confirmStatusModal *) {
+            overflow: visible !important;
         }
 
-        /* Asegurar que la tabla no interfiera */
-        table {
-            position: relative;
-        }
-
-        /* Asegurar z-index correcto para dropdowns */
-        [id^="dropdown-"] {
-            z-index: 60;
+        /* Asegurar que el modal tenga prioridad sobre otros estilos */
+        #confirmStatusModal {
+            overflow-y: auto !important;
         }
     </style>
     <?php $__env->stopPush(); ?>
@@ -678,6 +582,70 @@
     <?php $__env->startPush('scripts'); ?>
     <?php echo app('Illuminate\Foundation\Vite')(['resources/js/admin-remitentes.js']); ?>
     <?php $__env->stopPush(); ?>
+
+    <script>
+        // Función para manejar los menús desplegables
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            const isHidden = dropdown.classList.contains('hidden');
+
+            // Cerrar todos los dropdowns abiertos
+            document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
+                if (d.id !== dropdownId) {
+                    d.classList.add('hidden');
+                    // Resetear estilos
+                    d.style.top = '';
+                    d.style.bottom = '';
+                    d.classList.remove('origin-bottom-right', 'mb-2');
+                    d.classList.add('origin-top-right', 'mt-2');
+                }
+            });
+
+            if (isHidden) {
+                // Mostrar dropdown
+                dropdown.classList.remove('hidden');
+
+                // Calcular posición
+                const button = dropdown.previousElementSibling;
+                const rect = button.getBoundingClientRect();
+                const dropdownRect = dropdown.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+
+                // Verificar si hay espacio suficiente abajo
+                const spaceBelow = viewportHeight - rect.bottom;
+                const spaceAbove = rect.top;
+
+                if (spaceBelow < 200 && spaceAbove > spaceBelow) {
+                    // Mostrar arriba
+                    dropdown.style.bottom = (viewportHeight - rect.top) + 'px';
+                    dropdown.style.top = 'auto';
+                    dropdown.classList.remove('origin-top-right', 'mt-2');
+                    dropdown.classList.add('origin-bottom-right', 'mb-2');
+                } else {
+                    // Mostrar abajo (comportamiento por defecto)
+                    dropdown.style.top = rect.bottom + 'px';
+                    dropdown.style.bottom = 'auto';
+                    dropdown.classList.remove('origin-bottom-right', 'mb-2');
+                    dropdown.classList.add('origin-top-right', 'mt-2');
+                }
+
+                // Posición horizontal
+                dropdown.style.left = (rect.left - dropdown.offsetWidth + button.offsetWidth) + 'px';
+            } else {
+                // Ocultar dropdown
+                dropdown.classList.add('hidden');
+            }
+        }
+
+        // Cerrar dropdowns al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[data-dropdown-menu]') && !e.target.closest('button[onclick*="toggleDropdown"]')) {
+                document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+        });
+    </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
