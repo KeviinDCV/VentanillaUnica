@@ -1,80 +1,52 @@
-/**
- * Funcionalidad para la administración de departamentos
- */
-
 document.addEventListener('DOMContentLoaded', function() {
     // Variables globales
-    let departamentoActual = null;
+    let remitenteActual = null;
 
-    // Elementos del DOM
-    const modalDepartamento = document.getElementById('modal-departamento');
-    const formDepartamento = document.getElementById('form-departamento');
-    const buscarInput = document.getElementById('buscar-departamento');
-    const filtroEstado = document.getElementById('filtro-estado');
-
-    // Botones
-    const btnCrear = document.getElementById('btn-crear-departamento');
-    const btnCerrar = document.getElementById('btn-cerrar-modal');
+    // Referencias a elementos del DOM
+    const modalRemitente = document.getElementById('modal-remitente');
+    const formRemitente = document.getElementById('form-remitente');
+    const btnCrearRemitente = document.getElementById('btn-crear-remitente');
+    const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const btnCancelar = document.getElementById('btn-cancelar');
-    const btnGuardar = document.getElementById('btn-guardar');
 
     // Event Listeners
-    if (btnCrear) {
-        btnCrear.addEventListener('click', abrirModalCrear);
-    }
-
-    if (btnCerrar) {
-        btnCerrar.addEventListener('click', cerrarModal);
-    }
-
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', cerrarModal);
-    }
+    btnCerrarModal?.addEventListener('click', cerrarModal);
+    btnCancelar?.addEventListener('click', cerrarModal);
+    formRemitente?.addEventListener('submit', guardarRemitente);
 
     // Configurar event listeners para el modal de confirmación
     setupConfirmModalEventListeners();
 
-    if (formDepartamento) {
-        formDepartamento.addEventListener('submit', guardarDepartamento);
-    }
-
-    if (buscarInput) {
-        buscarInput.addEventListener('input', filtrarDepartamentos);
-    }
-
-    if (filtroEstado) {
-        filtroEstado.addEventListener('change', filtrarDepartamentos);
-    }
-
-    // Event listeners para botones de acción
+    // Event delegation para botones con data-action
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.btn-editar')) {
-            const btn = e.target.closest('.btn-editar');
-            abrirModalEditar(btn);
-        }
+        const action = e.target.closest('[data-action]')?.getAttribute('data-action');
 
-        if (e.target.closest('.btn-toggle-estado')) {
-            const btn = e.target.closest('.btn-toggle-estado');
-            confirmarToggleEstado(btn);
-        }
-
-        if (e.target.closest('.btn-eliminar')) {
-            const btn = e.target.closest('.btn-eliminar');
-            confirmarEliminacion(btn);
+        switch(action) {
+            case 'create-remitente':
+                abrirModalCrear();
+                break;
+            case 'edit-remitente':
+                const editBtn = e.target.closest('[data-action="edit-remitente"]');
+                abrirModalEditar(editBtn);
+                break;
+            case 'delete-remitente':
+                const deleteBtn = e.target.closest('[data-action="delete-remitente"]');
+                confirmarEliminacion(deleteBtn);
+                break;
         }
     });
 
     // Cerrar modales al hacer click fuera
     window.addEventListener('click', function(e) {
-        if (e.target === modalDepartamento) {
+        if (e.target === modalRemitente) {
             cerrarModal();
         }
     });
 
-    // Funciones
+    // Funciones principales
     function closeAllDropdowns() {
         // Cerrar todos los dropdowns abiertos
-        document.querySelectorAll('[id^="dropdown-departamento-"]').forEach(dropdown => {
+        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
             dropdown.classList.add('hidden');
         });
     }
@@ -105,206 +77,170 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function abrirModalCrear() {
-        departamentoActual = null;
-        document.getElementById('modal-title').textContent = 'Crear Nuevo Departamento';
-        document.getElementById('btn-guardar').textContent = 'Crear Departamento';
-        formDepartamento.reset();
-        document.getElementById('campo-activo').style.display = 'none';
-
+        remitenteActual = null;
+        document.getElementById('modal-titulo').textContent = 'Crear Remitente';
+        document.getElementById('btn-guardar').textContent = 'Crear';
+        formRemitente.reset();
+        document.getElementById('remitente-id').value = '';
+        
         // Mostrar modal
-        modalDepartamento.classList.remove('hidden');
+        modalRemitente.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-
+        
         // Animación de entrada
-        const modalContent = modalDepartamento.querySelector('.relative');
+        const modalContent = modalRemitente.querySelector('.relative');
         modalContent.style.opacity = '0';
         modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-
+        
         setTimeout(() => {
             modalContent.style.opacity = '1';
             modalContent.style.transform = 'scale(1) translateY(0)';
-            // Focus en el primer campo
-            document.getElementById('departamento-nombre').focus();
         }, 10);
     }
 
     function abrirModalEditar(btn) {
-        departamentoActual = btn.dataset.id;
-        document.getElementById('modal-title').textContent = 'Editar Departamento';
-        document.getElementById('btn-guardar').textContent = 'Actualizar Departamento';
+        remitenteActual = {
+            id: btn.dataset.remitenteId,
+            nombre_completo: btn.dataset.remitenteNombre,
+            tipo: btn.dataset.remitenteTipo,
+            tipo_documento: btn.dataset.remitenteTipoDocumento,
+            numero_documento: btn.dataset.remitenteNumeroDocumento,
+            email: btn.dataset.remitenteEmail,
+            telefono: btn.dataset.remitenteTelefono,
+            direccion: btn.dataset.remitenteDireccion,
+            ciudad: btn.dataset.remitenteCiudad,
+            departamento: btn.dataset.remitenteDepartamento,
+            entidad: btn.dataset.remitenteEntidad
+        };
+
+        document.getElementById('modal-titulo').textContent = 'Editar Remitente';
+        document.getElementById('btn-guardar').textContent = 'Actualizar';
 
         // Llenar el formulario
-        document.getElementById('departamento-nombre').value = btn.dataset.nombre || '';
-        document.getElementById('departamento-codigo').value = btn.dataset.codigo || '';
-        document.getElementById('departamento-activo').checked = btn.dataset.activo === 'true';
-        document.getElementById('campo-activo').style.display = 'block';
+        document.getElementById('remitente-id').value = remitenteActual.id;
+        document.getElementById('nombre_completo').value = remitenteActual.nombre_completo;
+        document.getElementById('tipo').value = remitenteActual.tipo;
+        document.getElementById('tipo_documento').value = remitenteActual.tipo_documento || '';
+        document.getElementById('numero_documento').value = remitenteActual.numero_documento || '';
+        document.getElementById('email').value = remitenteActual.email || '';
+        document.getElementById('telefono').value = remitenteActual.telefono || '';
+        document.getElementById('direccion').value = remitenteActual.direccion || '';
+        document.getElementById('ciudad').value = remitenteActual.ciudad || '';
+        document.getElementById('departamento').value = remitenteActual.departamento || '';
+        document.getElementById('entidad').value = remitenteActual.entidad || '';
 
         // Mostrar modal
-        modalDepartamento.classList.remove('hidden');
+        modalRemitente.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
 
         // Animación de entrada
-        const modalContent = modalDepartamento.querySelector('.relative');
+        const modalContent = modalRemitente.querySelector('.relative');
         modalContent.style.opacity = '0';
         modalContent.style.transform = 'scale(0.95) translateY(-20px)';
 
         setTimeout(() => {
             modalContent.style.opacity = '1';
             modalContent.style.transform = 'scale(1) translateY(0)';
-            // Focus en el primer campo
-            document.getElementById('departamento-nombre').focus();
         }, 10);
     }
 
     function cerrarModal() {
-        const modalContent = modalDepartamento.querySelector('.relative');
-
+        const modalContent = modalRemitente.querySelector('.relative');
+        
         // Animación de salida
         modalContent.style.opacity = '0';
         modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-
+        
         setTimeout(() => {
-            modalDepartamento.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            formDepartamento.reset();
-            departamentoActual = null;
+            modalRemitente.classList.add('hidden');
+            document.body.style.overflow = '';
+            formRemitente.reset();
+            remitenteActual = null;
         }, 200);
     }
 
-    function cerrarModalConfirmacion() {
-        const modalContent = modalConfirmacion.querySelector('.relative');
-
-        // Animación de salida
-        modalContent.style.opacity = '0';
-        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
-
-        setTimeout(() => {
-            modalConfirmacion.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            accionActual = null;
-        }, 200);
-    }
-
-    async function guardarDepartamento(e) {
+    async function guardarRemitente(e) {
         e.preventDefault();
         
-        const formData = new FormData(formDepartamento);
-        const url = departamentoActual 
-            ? `/admin/departamentos/${departamentoActual}`
-            : '/admin/departamentos';
+        const formData = new FormData(formRemitente);
+        const data = Object.fromEntries(formData);
         
-        if (departamentoActual) {
-            formData.append('_method', 'PUT');
-        }
-
+        const btnGuardar = document.getElementById('btn-guardar');
+        const textoOriginal = btnGuardar.textContent;
+        
         try {
             btnGuardar.disabled = true;
-            btnGuardar.textContent = 'Guardando...';
-
+            btnGuardar.textContent = remitenteActual ? 'Actualizando...' : 'Creando...';
+            
+            const url = remitenteActual 
+                ? `/admin/remitentes/${remitenteActual.id}`
+                : '/admin/remitentes';
+            
+            const method = remitenteActual ? 'PUT' : 'POST';
+            
             const response = await fetch(url, {
-                method: 'POST',
-                body: formData,
+                method: method,
                 headers: {
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
+                },
+                body: JSON.stringify(data)
             });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification(data.message, 'success');
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
                 cerrarModal();
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             } else {
-                showNotification(data.message || 'Error al guardar el departamento', 'error');
+                if (result.errors) {
+                    // Mostrar errores de validación
+                    let errorMessage = 'Errores de validación:\n';
+                    Object.values(result.errors).forEach(errors => {
+                        errors.forEach(error => {
+                            errorMessage += `• ${error}\n`;
+                        });
+                    });
+                    showNotification(errorMessage, 'error');
+                } else {
+                    showNotification(result.message || 'Error al guardar el remitente', 'error');
+                }
             }
         } catch (error) {
             console.error('Error:', error);
             showNotification('Error de conexión', 'error');
         } finally {
             btnGuardar.disabled = false;
-            btnGuardar.textContent = departamentoActual ? 'Actualizar Departamento' : 'Crear Departamento';
+            btnGuardar.textContent = textoOriginal;
         }
-    }
-
-    async function toggleEstado(id) {
-        try {
-            const response = await fetch(`/admin/departamentos/${id}/toggle-status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification(data.message, 'success');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } else {
-                showNotification(data.message || 'Error al cambiar el estado', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification('Error de conexión', 'error');
-        }
-    }
-
-    function confirmarToggleEstado(btn) {
-        // Cerrar todos los menús desplegables
-        closeAllDropdowns();
-
-        const id = btn.dataset.id;
-        const isActive = btn.textContent.trim().includes('Desactivar');
-        const action = isActive ? 'desactivar' : 'activar';
-        const actionCapital = isActive ? 'Desactivar' : 'Activar';
-
-        // Buscar el nombre del departamento desde la fila
-        const row = btn.closest('tr');
-        const nombreElement = row.querySelector('.text-sm.font-medium.text-gray-900');
-        const nombre = nombreElement ? nombreElement.textContent.trim() : 'este departamento';
-
-        showConfirmModal({
-            title: `${actionCapital} Departamento`,
-            message: `¿Estás seguro de que deseas ${action} el departamento "${nombre}"?`,
-            actionText: actionCapital,
-            actionClass: isActive ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700',
-            iconClass: isActive ? 'bg-orange-100' : 'bg-green-100',
-            iconColor: isActive ? 'text-orange-600' : 'text-green-600',
-            onConfirm: () => {
-                toggleEstado(id);
-            }
-        });
     }
 
     function confirmarEliminacion(btn) {
         // Cerrar todos los menús desplegables
         closeAllDropdowns();
 
-        const id = btn.dataset.id;
-        const nombre = btn.dataset.nombre;
+        const id = btn.dataset.remitenteId;
+        const nombre = btn.dataset.remitenteName;
 
         showConfirmModal({
-            title: 'Eliminar Departamento',
-            message: `¿Estás seguro de que deseas eliminar permanentemente el departamento "${nombre}"? Esta acción no se puede deshacer.`,
+            title: 'Eliminar Remitente',
+            message: `¿Estás seguro de que deseas eliminar permanentemente el remitente "${nombre}"? Esta acción no se puede deshacer.`,
             actionText: 'Eliminar',
             actionClass: 'bg-red-600 hover:bg-red-700',
             iconClass: 'bg-red-100',
             iconColor: 'text-red-600',
             onConfirm: () => {
-                eliminarDepartamento(id);
+                eliminarRemitente(id);
             }
         });
     }
 
-    async function eliminarDepartamento(id) {
+    async function eliminarRemitente(id) {
         try {
-            const response = await fetch(`/admin/departamentos/${id}`, {
+            const response = await fetch(`/admin/remitentes/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -321,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.location.reload();
                 }, 1000);
             } else {
-                showNotification(data.message || 'Error al eliminar el departamento', 'error');
+                showNotification(data.message || 'Error al eliminar el remitente', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -329,35 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function filtrarDepartamentos() {
-        const busqueda = buscarInput.value.toLowerCase();
-        const estado = filtroEstado.value;
-        const filas = document.querySelectorAll('.departamento-row');
-
-        filas.forEach(fila => {
-            const nombre = fila.dataset.name || '';
-            const activo = fila.dataset.active;
-
-            const coincideBusqueda = nombre.includes(busqueda);
-
-            // Convertir el valor del filtro a formato boolean string para comparar
-            let coincideEstado = true;
-            if (estado !== '') {
-                const estadoBoolean = estado === '1' ? 'true' : 'false';
-                coincideEstado = activo === estadoBoolean;
-            }
-
-            if (coincideBusqueda && coincideEstado) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
-    }
-
-    // Función para mostrar notificaciones
     function showNotification(message, type = 'info') {
-        if (typeof window.UniRadicNotifications !== 'undefined') {
+        if (window.UniRadicNotifications) {
             const title = type === 'success' ? 'Éxito' :
                          type === 'error' ? 'Error' :
                          type === 'warning' ? 'Advertencia' : 'Información';
@@ -478,9 +387,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+
+
     // Hacer las funciones globales para que puedan ser llamadas desde el HTML
     window.showConfirmModal = showConfirmModal;
     window.closeConfirmModal = closeConfirmModal;
 });
-
-

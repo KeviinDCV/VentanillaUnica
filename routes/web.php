@@ -173,6 +173,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/comunicaciones/{comunicacion}', [App\Http\Controllers\Admin\ComunicacionController::class, 'destroy'])->name('comunicaciones.destroy');
         Route::patch('/comunicaciones/{comunicacion}/toggle-active', [App\Http\Controllers\Admin\ComunicacionController::class, 'toggleActive'])->name('comunicaciones.toggle-active');
 
+        // Gestión de Remitentes
+        Route::get('/remitentes', [App\Http\Controllers\Admin\RemitentesController::class, 'index'])->name('remitentes.index');
+        Route::post('/remitentes', [App\Http\Controllers\Admin\RemitentesController::class, 'store'])->name('remitentes.store');
+        Route::put('/remitentes/{remitente}', [App\Http\Controllers\Admin\RemitentesController::class, 'update'])->name('remitentes.update');
+        Route::delete('/remitentes/{remitente}', [App\Http\Controllers\Admin\RemitentesController::class, 'destroy'])->name('remitentes.destroy');
+        Route::patch('/remitentes/{remitente}/toggle-estado', [App\Http\Controllers\Admin\RemitentesController::class, 'toggleEstado'])->name('remitentes.toggle-estado');
+
         Route::get('/suspender', [App\Http\Controllers\SistemaController::class, 'mostrarSuspension'])->name('suspender');
         Route::post('/suspender', [App\Http\Controllers\SistemaController::class, 'suspender'])->name('suspender.procesar');
     });

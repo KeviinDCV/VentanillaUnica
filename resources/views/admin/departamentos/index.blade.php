@@ -11,9 +11,6 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="btn-crear-departamento" class="create-button">
-                    Nuevo Departamento
-                </button>
                 <x-hospital-brand />
             </div>
         </div>
@@ -282,6 +279,14 @@
                 <div class="px-6 py-4 border-t border-gray-200">
                     {{ $departamentos->links() }}
                 </div>
+
+                <!-- Botón Agregar -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <button id="btn-crear-departamento"
+                            class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                        Nuevo Departamento
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -348,20 +353,44 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación -->
-    <div id="modal-confirmacion" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    <!-- Modal de Confirmación Personalizado -->
+    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
+            <!-- Header del Modal -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 id="confirmModalTitle" class="text-lg font-medium text-gray-900">Confirmar Acción</h3>
+                <button data-action="close-confirm-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
+                </button>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="p-4">
+                <div class="flex items-center mb-4">
+                    <div id="confirmModalIcon" class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full">
+                        <!-- Icono se agregará dinámicamente -->
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p id="confirmModalMessage" class="text-sm text-gray-600">
+                            <!-- Mensaje se agregará dinámicamente -->
+                        </p>
+                    </div>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2" id="confirmacion-titulo">Confirmar Eliminación</h3>
-                <p class="text-sm text-gray-500 mb-4" id="confirmacion-mensaje"></p>
-                <div class="flex justify-center space-x-3">
-                    <button id="btn-cancelar-confirmacion" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue">Cancelar</button>
-                    <button id="btn-confirmar-accion" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Eliminar</button>
+
+                <!-- Botones de Acción -->
+                <div class="flex justify-end space-x-3">
+                    <button type="button"
+                            data-action="close-confirm-modal"
+                            class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            id="confirmModalAction"
+                            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]">
+                        Confirmar
+                    </button>
                 </div>
             </div>
         </div>

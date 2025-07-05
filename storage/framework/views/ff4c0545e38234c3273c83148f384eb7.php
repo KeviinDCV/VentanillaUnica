@@ -261,11 +261,11 @@
                             </svg>
                         </div>
                     </div>
-                    <p class="text-2xl font-bold text-gray-900 mb-2">0</p>
-                    <p class="text-sm text-gray-500 mb-4">Entidades externas</p>
-                    <a href="#"
+                    <p class="text-2xl font-bold text-gray-900 mb-2"><?php echo e(number_format($estadisticas['total_remitentes'])); ?></p>
+                    <p class="text-sm text-gray-500 mb-4">Remitentes registrados</p>
+                    <a href="<?php echo e(route('admin.remitentes.index')); ?>"
                        class="inline-flex items-center text-sm font-medium text-teal-600 hover:text-teal-500">
-                        Gestionar entidades
+                        Gestionar remitentes
                         <svg class="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>

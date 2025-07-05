@@ -112,6 +112,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function closeAllDropdowns() {
+        // Cerrar todos los dropdowns abiertos
+        document.querySelectorAll('[id^="dropdown-tipo-"]').forEach(dropdown => {
+            dropdown.classList.add('hidden');
+        });
+    }
+
     function setupConfirmModalEventListeners() {
         // Verificar si el modal existe antes de agregar event listeners
         const confirmModal = document.getElementById('confirmStatusModal');
@@ -172,6 +179,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function confirmarToggleEstado(btn) {
+        // Cerrar todos los menús desplegables
+        closeAllDropdowns();
+
         const id = btn.dataset.id;
         const isActive = btn.textContent.trim().includes('Desactivar');
         const action = isActive ? 'desactivar' : 'activar';
@@ -220,6 +230,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function confirmarEliminacion(btn) {
+        // Cerrar todos los menús desplegables
+        closeAllDropdowns();
+
         const nombre = btn.dataset.nombre;
         const uso = parseInt(btn.dataset.uso) || 0;
 
