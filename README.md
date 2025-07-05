@@ -4577,7 +4577,6 @@ SOFTWARE.
 - **Institución**: E.S.E Hospital San Agustín Puerto Merizalde
 - **Desarrollador Principal**: Kevin David Ch E
 - **Email**: Keviindavid00@gmail.com
-- **Soporte Técnico**: sistemas@hospitalsanagustin.gov.co
 - **Documentación**: https://docs.uniradic.hospitalsanagustin.gov.co
 - **Repository**: https://github.com/hospitalsanagustin/uniradic
 
