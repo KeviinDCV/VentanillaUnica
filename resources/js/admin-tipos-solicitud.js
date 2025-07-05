@@ -3,28 +3,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos del DOM
     const btnCrearTipo = document.getElementById('btn-crear-tipo');
     const modalTipo = document.getElementById('modal-tipo');
-    const modalConfirmacion = document.getElementById('modal-confirmacion');
     const formTipo = document.getElementById('form-tipo');
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const btnCancelar = document.getElementById('btn-cancelar');
-    const btnCancelarConfirmacion = document.getElementById('btn-cancelar-confirmacion');
-    const btnConfirmarAccion = document.getElementById('btn-confirmar-accion');
     const buscarTipo = document.getElementById('buscar-tipo');
     const filtroEstado = document.getElementById('filtro-estado');
 
     // Variables globales
     let tipoActual = null;
-    let accionConfirmacion = null;
 
     // Event Listeners
     btnCrearTipo?.addEventListener('click', () => abrirModalCrear());
     btnCerrarModal?.addEventListener('click', cerrarModal);
     btnCancelar?.addEventListener('click', cerrarModal);
-    btnCancelarConfirmacion?.addEventListener('click', cerrarModalConfirmacion);
-    btnConfirmarAccion?.addEventListener('click', ejecutarAccionConfirmacion);
     formTipo?.addEventListener('submit', guardarTipo);
     buscarTipo?.addEventListener('input', debounce(buscarTipos, 300));
     filtroEstado?.addEventListener('change', buscarTipos);
+
+    // Event listeners para el modal de confirmación
+    setupConfirmModalEventListeners();
 
     // Event delegation para botones dinámicos
     document.addEventListener('click', function(e) {
@@ -33,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             abrirModalEditar(btn);
         } else if (e.target.closest('.btn-toggle-estado')) {
             const btn = e.target.closest('.btn-toggle-estado');
-            toggleEstado(btn.dataset.id);
+            confirmarToggleEstado(btn);
         } else if (e.target.closest('.btn-eliminar')) {
             const btn = e.target.closest('.btn-eliminar');
             confirmarEliminacion(btn);
@@ -47,8 +44,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('btn-guardar').textContent = 'Guardar Tipo';
         document.getElementById('campo-activo').style.display = 'none';
         formTipo.reset();
+
+        // Mostrar modal con animación
         modalTipo.classList.remove('hidden');
-        document.getElementById('tipo-nombre').focus();
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        const modalContent = modalTipo.querySelector('.relative');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+            document.getElementById('tipo-nombre').focus();
+        }, 10);
     }
 
     function abrirModalEditar(btn) {
@@ -56,27 +66,75 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modal-title').textContent = 'Editar Tipo de Solicitud';
         document.getElementById('btn-guardar').textContent = 'Actualizar Tipo';
         document.getElementById('campo-activo').style.display = 'block';
-        
+
         // Llenar formulario
         document.getElementById('tipo-id').value = btn.dataset.id;
         document.getElementById('tipo-nombre').value = btn.dataset.nombre;
         document.getElementById('tipo-codigo').value = btn.dataset.codigo;
         document.getElementById('tipo-descripcion').value = btn.dataset.descripcion || '';
         document.getElementById('tipo-activo').checked = btn.dataset.activo === 'true';
-        
+
+        // Mostrar modal con animación
         modalTipo.classList.remove('hidden');
-        document.getElementById('tipo-nombre').focus();
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        const modalContent = modalTipo.querySelector('.relative');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+            document.getElementById('tipo-nombre').focus();
+        }, 10);
     }
 
     function cerrarModal() {
-        modalTipo.classList.add('hidden');
-        formTipo.reset();
-        tipoActual = null;
+        const modalContent = modalTipo.querySelector('.relative');
+
+        if (modalContent) {
+            // Animación de salida
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modalTipo.classList.add('hidden');
+                document.body.style.overflow = '';
+                formTipo.reset();
+                tipoActual = null;
+            }, 200);
+        } else {
+            modalTipo.classList.add('hidden');
+            document.body.style.overflow = '';
+            formTipo.reset();
+            tipoActual = null;
+        }
     }
 
-    function cerrarModalConfirmacion() {
-        modalConfirmacion.classList.add('hidden');
-        accionConfirmacion = null;
+    function setupConfirmModalEventListeners() {
+        // Verificar si el modal existe antes de agregar event listeners
+        const confirmModal = document.getElementById('confirmStatusModal');
+        if (!confirmModal) return;
+
+        // Cerrar modal al hacer clic fuera de él
+        confirmModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmModal();
+            }
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !confirmModal.classList.contains('hidden')) {
+                closeConfirmModal();
+            }
+        });
+
+        // Botones de cerrar modal
+        document.querySelectorAll('[data-action="close-confirm-modal"]').forEach(button => {
+            button.addEventListener('click', closeConfirmModal);
+        });
     }
 
     async function guardarTipo(e) {
@@ -113,6 +171,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function confirmarToggleEstado(btn) {
+        const id = btn.dataset.id;
+        const isActive = btn.textContent.trim().includes('Desactivar');
+        const action = isActive ? 'desactivar' : 'activar';
+        const actionCapital = isActive ? 'Desactivar' : 'Activar';
+
+        // Buscar el nombre del tipo desde la fila
+        const row = btn.closest('tr');
+        const nombreElement = row.querySelector('.text-sm.font-medium.text-gray-900');
+        const nombre = nombreElement ? nombreElement.textContent.trim() : 'este tipo de solicitud';
+
+        showConfirmModal({
+            title: `${actionCapital} Tipo de Solicitud`,
+            message: `¿Estás seguro de que deseas ${action} el tipo de solicitud "${nombre}"?`,
+            actionText: actionCapital,
+            actionClass: isActive ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700',
+            iconClass: isActive ? 'bg-orange-100' : 'bg-green-100',
+            iconColor: isActive ? 'text-orange-600' : 'text-green-600',
+            onConfirm: () => {
+                toggleEstado(id);
+            }
+        });
+    }
+
     async function toggleEstado(id) {
         try {
             const response = await fetch(`/admin/tipos-solicitud/${id}/toggle-status`, {
@@ -140,18 +222,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function confirmarEliminacion(btn) {
         const nombre = btn.dataset.nombre;
         const uso = parseInt(btn.dataset.uso) || 0;
-        
+
         if (uso > 0) {
-            showNotification(`No se puede eliminar "${nombre}" porque tiene ${uso} radicado(s) asociado(s)`, 'error');
+            showConfirmModal({
+                title: 'No se puede eliminar',
+                message: `El tipo de solicitud "${nombre}" tiene ${uso} radicado(s) asociado(s). No se puede eliminar. Puede desactivarlo en su lugar.`,
+                actionText: 'Entendido',
+                actionClass: 'bg-blue-600 hover:bg-blue-700',
+                iconClass: 'bg-yellow-100',
+                iconColor: 'text-yellow-600',
+                onConfirm: () => {
+                    closeConfirmModal();
+                }
+            });
             return;
         }
 
-        document.getElementById('confirmacion-titulo').textContent = 'Confirmar Eliminación';
-        document.getElementById('confirmacion-mensaje').textContent = 
-            `¿Está seguro de que desea eliminar el tipo de solicitud "${nombre}"? Esta acción no se puede deshacer.`;
-        
-        accionConfirmacion = () => eliminarTipo(btn.dataset.id);
-        modalConfirmacion.classList.remove('hidden');
+        showConfirmModal({
+            title: 'Eliminar Tipo de Solicitud',
+            message: `¿Estás seguro de que deseas eliminar permanentemente el tipo de solicitud "${nombre}"? Esta acción no se puede deshacer.`,
+            actionText: 'Eliminar',
+            actionClass: 'bg-red-600 hover:bg-red-700',
+            iconClass: 'bg-red-100',
+            iconColor: 'text-red-600',
+            onConfirm: () => {
+                eliminarTipo(btn.dataset.id);
+            }
+        });
     }
 
     async function eliminarTipo(id) {
@@ -168,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (data.success) {
                 showNotification(data.message, 'success');
-                cerrarModalConfirmacion();
+                closeConfirmModal();
                 setTimeout(() => window.location.reload(), 1000);
             } else {
                 showNotification(data.message || 'Error al eliminar el tipo de solicitud', 'error');
@@ -179,11 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function ejecutarAccionConfirmacion() {
-        if (accionConfirmacion) {
-            accionConfirmacion();
-        }
-    }
+
 
     async function buscarTipos() {
         const termino = buscarTipo.value;
@@ -278,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                         </svg>
                     </button>
-                    <div id="dropdown-tipo-${tipo.id}" class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style="z-index: 9999;" data-dropdown-menu>
+                    <div id="dropdown-tipo-${tipo.id}" class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50" data-dropdown-menu>
                         <div class="py-1" role="menu">
                             <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" data-id="${tipo.id}" data-nombre="${tipo.nombre}" data-codigo="${tipo.codigo}" data-descripcion="${tipo.descripcion || ''}" data-activo="${tipo.activo}">
                                 <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,4 +428,153 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(message);
         }
     }
+
+    // Función para mostrar modal de confirmación personalizado
+    function showConfirmModal(options) {
+        // Buscar el modal en la página actual
+        let modal = document.getElementById('confirmStatusModal');
+
+        // Si no existe, crearlo dinámicamente
+        if (!modal) {
+            modal = createConfirmModal();
+            document.body.appendChild(modal);
+        }
+
+        const title = document.getElementById('confirmModalTitle');
+        const message = document.getElementById('confirmModalMessage');
+        const actionButton = document.getElementById('confirmModalAction');
+        const iconContainer = document.getElementById('confirmModalIcon');
+
+        if (!title || !message || !actionButton || !iconContainer) {
+            console.error('Modal elements not found, falling back to confirm()');
+            if (confirm(options.message)) {
+                options.onConfirm();
+            }
+            return;
+        }
+
+        // Configurar contenido del modal
+        title.textContent = options.title;
+        message.textContent = options.message;
+        actionButton.textContent = options.actionText;
+
+        // Configurar ícono
+        iconContainer.className = `flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full ${options.iconClass}`;
+        iconContainer.innerHTML = `
+            <svg class="w-6 h-6 ${options.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+        `;
+
+        // Limpiar todas las clases del botón y aplicar las nuevas
+        actionButton.className = '';
+        actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
+
+        // Forzar los estilos con colores específicos
+        if (options.actionClass.includes('bg-orange-600')) {
+            actionButton.style.backgroundColor = '#ea580c';
+            actionButton.style.borderColor = '#ea580c';
+        } else if (options.actionClass.includes('bg-red-600')) {
+            actionButton.style.backgroundColor = '#dc2626';
+            actionButton.style.borderColor = '#dc2626';
+        } else if (options.actionClass.includes('bg-green-600')) {
+            actionButton.style.backgroundColor = '#16a34a';
+            actionButton.style.borderColor = '#16a34a';
+        } else if (options.actionClass.includes('bg-blue-600')) {
+            actionButton.style.backgroundColor = '#2563eb';
+            actionButton.style.borderColor = '#2563eb';
+        }
+
+        // Asegurar que el texto sea blanco
+        actionButton.style.color = '#ffffff';
+
+        // Configurar event listener para el botón de acción
+        actionButton.onclick = function() {
+            if (options.onConfirm) {
+                options.onConfirm();
+            }
+            closeConfirmModal();
+        };
+
+        // Mostrar modal con animación
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        const modalContent = modal.querySelector('.relative');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+        }, 10);
+    }
+
+    function closeConfirmModal() {
+        const modal = document.getElementById('confirmStatusModal');
+        if (modal) {
+            const modalContent = modal.querySelector('.relative');
+
+            // Resetear estilos del botón
+            const actionButton = document.getElementById('confirmModalAction');
+            if (actionButton) {
+                actionButton.className = 'px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]';
+                actionButton.style.backgroundColor = '';
+                actionButton.style.borderColor = '';
+                actionButton.style.color = '';
+                actionButton.onclick = null;
+            }
+
+            if (modalContent) {
+                // Animación de salida
+                modalContent.style.opacity = '0';
+                modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 200);
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        }
+    }
+
+    function createConfirmModal() {
+        const modal = document.createElement('div');
+        modal.id = 'confirmStatusModal';
+        modal.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden';
+
+        modal.innerHTML = `
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white transition-all duration-300 ease-in-out">
+                <div class="mt-3 text-center">
+                    <div id="confirmModalIcon" class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full bg-red-100">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    </div>
+                    <h3 id="confirmModalTitle" class="text-lg font-medium text-gray-900 mt-4">Confirmar Acción</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p id="confirmModalMessage" class="text-sm text-gray-500">¿Estás seguro de que deseas realizar esta acción?</p>
+                    </div>
+                    <div class="flex justify-center space-x-4 px-4 py-3">
+                        <button onclick="closeConfirmModal()" class="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors min-w-[100px]">
+                            Cancelar
+                        </button>
+                        <button id="confirmModalAction" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors min-w-[100px]">
+                            Confirmar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return modal;
+    }
+
+    // Hacer las funciones globales para que puedan ser llamadas desde el HTML
+    window.showConfirmModal = showConfirmModal;
+    window.closeConfirmModal = closeConfirmModal;
 });

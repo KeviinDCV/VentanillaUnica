@@ -16,24 +16,94 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function setupEventListeners() {
-    // Botón crear dependencia
-    document.querySelector('[data-action="create-dependencia"]')?.addEventListener('click', openCreateModal);
+    // Usar delegación de eventos para manejar clics en todo el documento
+    document.addEventListener('click', function(e) {
+        // Botón crear dependencia
+        if (e.target.closest('[data-action="create-dependencia"]')) {
+            e.preventDefault();
+            openCreateModal();
+        }
 
-    // Botones editar dependencia
-    document.querySelectorAll('[data-action="edit-dependencia"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const dependenciaId = this.dataset.dependenciaId;
-            const codigo = this.dataset.dependenciaCodigo;
-            const nombre = this.dataset.dependenciaNombre;
-            const sigla = this.dataset.dependenciaSigla;
-            const descripcion = this.dataset.dependenciaDescripcion;
-            const responsable = this.dataset.dependenciaResponsable;
-            const telefono = this.dataset.dependenciaTelefono;
-            const email = this.dataset.dependenciaEmail;
-            const activa = this.dataset.dependenciaActiva === 'true';
+        // Botones editar dependencia
+        if (e.target.closest('[data-action="edit-dependencia"]')) {
+            e.preventDefault();
+            const button = e.target.closest('[data-action="edit-dependencia"]');
+            const dependenciaId = button.dataset.dependenciaId;
+            const codigo = button.dataset.dependenciaCodigo;
+            const nombre = button.dataset.dependenciaNombre;
+            const sigla = button.dataset.dependenciaSigla;
+            const descripcion = button.dataset.dependenciaDescripcion;
+            const responsable = button.dataset.dependenciaResponsable;
+            const telefono = button.dataset.dependenciaTelefono;
+            const email = button.dataset.dependenciaEmail;
+            const activa = button.dataset.dependenciaActiva === 'true';
 
             openEditModal(dependenciaId, codigo, nombre, sigla, descripcion, responsable, telefono, email, activa);
-        });
+        }
+
+        // Botones eliminar dependencia
+        if (e.target.closest('[data-action="delete-dependencia"]')) {
+            e.preventDefault();
+            const button = e.target.closest('[data-action="delete-dependencia"]');
+            const dependenciaId = button.dataset.dependenciaId;
+            const dependenciaName = button.dataset.dependenciaName;
+            const radicadosCount = parseInt(button.dataset.radicadosCount);
+
+            if (radicadosCount > 0) {
+                showConfirmModal({
+                    title: 'No se puede eliminar',
+                    message: `La dependencia "${dependenciaName}" tiene ${radicadosCount} radicado(s) asociado(s). No se puede eliminar. Puede desactivarla en su lugar.`,
+                    actionText: 'Entendido',
+                    actionClass: 'bg-blue-600 hover:bg-blue-700',
+                    iconClass: 'bg-yellow-100',
+                    iconColor: 'text-yellow-600',
+                    onConfirm: function() {
+                        closeConfirmModal();
+                    }
+                });
+            } else {
+                showConfirmModal({
+                    title: 'Eliminar Dependencia',
+                    message: `¿Estás seguro de que deseas eliminar permanentemente la dependencia "${dependenciaName}"? Esta acción no se puede deshacer.`,
+                    actionText: 'Eliminar',
+                    actionClass: 'bg-red-600 hover:bg-red-700',
+                    iconClass: 'bg-red-100',
+                    iconColor: 'text-red-600',
+                    onConfirm: function() {
+                        eliminarDependencia(dependenciaId);
+                    }
+                });
+            }
+        }
+
+        // Botones cambiar estado (activar/desactivar)
+        if (e.target.closest('button[data-dependencia-name][data-form-id]')) {
+            e.preventDefault();
+            const button = e.target.closest('button[data-dependencia-name][data-form-id]');
+
+            console.log('Toggle status button clicked for dependencia:', button.dataset.dependenciaName);
+
+            const dependenciaName = button.dataset.dependenciaName;
+            const isActive = button.dataset.dependenciaActive === 'true';
+            const formId = button.dataset.formId;
+            const accion = isActive ? 'desactivar' : 'activar';
+            const accionCapital = isActive ? 'Desactivar' : 'Activar';
+
+            console.log('Showing toggle status modal:', accionCapital);
+
+            // Usar modal personalizado en lugar de confirm()
+            showConfirmModal({
+                title: `${accionCapital} Dependencia`,
+                message: `¿Estás seguro de que deseas ${accion} la dependencia "${dependenciaName}"?`,
+                actionText: accionCapital,
+                actionClass: isActive ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700',
+                iconClass: isActive ? 'bg-orange-100' : 'bg-green-100',
+                iconColor: isActive ? 'text-orange-600' : 'text-green-600',
+                onConfirm: function() {
+                    toggleDependenciaStatus(formId);
+                }
+            });
+        }
     });
 
     // Botones eliminar dependencia
@@ -72,8 +142,7 @@ function setupEventListeners() {
         });
     });
 
-    // Botones cambiar estado
-    attachToggleStatusEventListeners();
+    // Los botones de cambiar estado ya están manejados con delegación de eventos
 
     // Formularios
     document.getElementById('createDependenciaForm')?.addEventListener('submit', handleCreateSubmit);
@@ -110,41 +179,7 @@ function setupEventListeners() {
     });
 }
 
-function attachToggleStatusEventListeners() {
-    // Selector más específico: solo botones que tienen data-dependencia-name Y data-form-id (botones de activar/desactivar)
-    document.querySelectorAll('button[data-dependencia-name][data-form-id]').forEach(button => {
-        // Evitar duplicar event listeners
-        if (button.hasAttribute('data-listener-attached')) return;
-        button.setAttribute('data-listener-attached', 'true');
 
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            console.log('Toggle status button clicked for dependencia:', this.dataset.dependenciaName);
-
-            const dependenciaName = this.dataset.dependenciaName;
-            const isActive = this.dataset.dependenciaActive === 'true';
-            const formId = this.dataset.formId;
-            const accion = isActive ? 'desactivar' : 'activar';
-            const accionCapital = isActive ? 'Desactivar' : 'Activar';
-
-            console.log('Showing toggle status modal:', accionCapital);
-
-            // Usar modal personalizado en lugar de confirm()
-            showConfirmModal({
-                title: `${accionCapital} Dependencia`,
-                message: `¿Estás seguro de que deseas ${accion} la dependencia "${dependenciaName}"?`,
-                actionText: accionCapital,
-                actionClass: isActive ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700',
-                iconClass: isActive ? 'bg-orange-100' : 'bg-green-100',
-                iconColor: isActive ? 'text-orange-600' : 'text-green-600',
-                onConfirm: function() {
-                    toggleDependenciaStatus(formId);
-                }
-            });
-        });
-    });
-}
 
 function setupConfirmModalEventListeners() {
     // Verificar si el modal existe antes de agregar event listeners
@@ -636,60 +671,8 @@ function updateDependenciasTable(dependencias) {
         tbody.appendChild(row);
     });
 
-    // Re-agregar event listeners para los nuevos elementos
-    attachToggleStatusEventListeners();
-
-    // Re-agregar event listeners para editar
-    document.querySelectorAll('[data-action="edit-dependencia"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const dependenciaId = this.dataset.dependenciaId;
-            const codigo = this.dataset.dependenciaCodigo;
-            const nombre = this.dataset.dependenciaNombre;
-            const sigla = this.dataset.dependenciaSigla;
-            const descripcion = this.dataset.dependenciaDescripcion;
-            const responsable = this.dataset.dependenciaResponsable;
-            const telefono = this.dataset.dependenciaTelefono;
-            const email = this.dataset.dependenciaEmail;
-            const activa = this.dataset.dependenciaActiva === 'true';
-
-            openEditModal(dependenciaId, codigo, nombre, sigla, descripcion, responsable, telefono, email, activa);
-        });
-    });
-
-    // Re-agregar event listeners para eliminar
-    document.querySelectorAll('[data-action="delete-dependencia"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const dependenciaId = this.dataset.dependenciaId;
-            const dependenciaName = this.dataset.dependenciaName;
-            const radicadosCount = parseInt(this.dataset.radicadosCount);
-
-            if (radicadosCount > 0) {
-                showConfirmModal({
-                    title: 'No se puede eliminar',
-                    message: `La dependencia "${dependenciaName}" tiene ${radicadosCount} radicado(s) asociado(s). No se puede eliminar. Puede desactivarla en su lugar.`,
-                    actionText: 'Entendido',
-                    actionClass: 'bg-blue-600 hover:bg-blue-700',
-                    iconClass: 'bg-yellow-100',
-                    iconColor: 'text-yellow-600',
-                    onConfirm: function() {
-                        closeConfirmModal();
-                    }
-                });
-            } else {
-                showConfirmModal({
-                    title: 'Eliminar Dependencia',
-                    message: `¿Estás seguro de que deseas eliminar permanentemente la dependencia "${dependenciaName}"? Esta acción no se puede deshacer.`,
-                    actionText: 'Eliminar',
-                    actionClass: 'bg-red-600 hover:bg-red-700',
-                    iconClass: 'bg-red-100',
-                    iconColor: 'text-red-600',
-                    onConfirm: function() {
-                        eliminarDependencia(dependenciaId);
-                    }
-                });
-            }
-        });
-    });
+    // Los event listeners ya están configurados con delegación de eventos
+    // No necesitamos re-agregarlos
 }
 
 function createDependenciaRow(dependencia) {
@@ -741,45 +724,74 @@ function createDependenciaRow(dependencia) {
             </div>
             ${dependencia.radicados_origen_count > 0 ? `<div class="text-sm text-gray-500">${dependencia.radicados_origen_count.toLocaleString()} origen</div>` : ''}
         </td>
-        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-            <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                <button data-action="edit-dependencia"
-                        data-dependencia-id="${dependencia.id}"
-                        data-dependencia-codigo="${dependencia.codigo}"
-                        data-dependencia-nombre="${dependencia.nombre}"
-                        data-dependencia-sigla="${dependencia.sigla || ''}"
-                        data-dependencia-descripcion="${dependencia.descripcion || ''}"
-                        data-dependencia-responsable="${dependencia.responsable || ''}"
-                        data-dependencia-telefono="${dependencia.telefono || ''}"
-                        data-dependencia-email="${dependencia.email || ''}"
-                        data-dependencia-activa="${dependencia.activa ? 'true' : 'false'}"
-                        class="text-blue-600 hover:text-blue-900 font-medium text-xs sm:text-sm">
-                    Editar
+        <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+            <div class="relative inline-block text-left">
+                <button type="button"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
+                        onclick="toggleDropdown('dropdown-${dependencia.id}')">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                    </svg>
                 </button>
 
-                <form action="/admin/dependencias/${dependencia.id}/toggle-status"
-                      method="POST"
-                      class="inline"
-                      id="toggle-form-${dependencia.id}">
-                    <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
-                    <input type="hidden" name="_method" value="PATCH">
-                    <button type="button"
-                            class="${dependencia.activa ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'} font-medium text-xs sm:text-sm cursor-pointer"
-                            data-dependencia-name="${dependencia.nombre}"
-                            data-dependencia-active="${dependencia.activa ? 'true' : 'false'}"
-                            data-form-id="toggle-form-${dependencia.id}"
-                            data-listener-attached="false">
-                        ${dependencia.activa ? 'Desactivar' : 'Activar'}
-                    </button>
-                </form>
+                <div id="dropdown-${dependencia.id}"
+                     class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                     data-dropdown-menu>
+                    <div class="py-1" role="menu">
+                        <!-- Editar -->
+                        <button data-action="edit-dependencia"
+                                data-dependencia-id="${dependencia.id}"
+                                data-dependencia-codigo="${dependencia.codigo}"
+                                data-dependencia-nombre="${dependencia.nombre}"
+                                data-dependencia-sigla="${dependencia.sigla || ''}"
+                                data-dependencia-descripcion="${dependencia.descripcion || ''}"
+                                data-dependencia-responsable="${dependencia.responsable || ''}"
+                                data-dependencia-telefono="${dependencia.telefono || ''}"
+                                data-dependencia-email="${dependencia.email || ''}"
+                                data-dependencia-activa="${dependencia.activa ? 'true' : 'false'}"
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                            <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Editar
+                        </button>
 
-                <button data-action="delete-dependencia"
-                        data-dependencia-id="${dependencia.id}"
-                        data-dependencia-name="${dependencia.nombre}"
-                        data-radicados-count="${dependencia.radicados_destino_count + dependencia.radicados_origen_count}"
-                        class="text-red-600 hover:text-red-900 font-medium text-xs sm:text-sm">
-                    Eliminar
-                </button>
+                        <!-- Activar/Desactivar -->
+                        <form action="/admin/dependencias/${dependencia.id}/toggle-status"
+                              method="POST"
+                              class="inline w-full"
+                              id="toggle-form-${dependencia.id}">
+                            <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
+                            <input type="hidden" name="_method" value="PATCH">
+                            <button type="button"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                                    data-dependencia-name="${dependencia.nombre}"
+                                    data-dependencia-active="${dependencia.activa ? 'true' : 'false'}"
+                                    data-form-id="toggle-form-${dependencia.id}"
+                                    data-listener-attached="false">
+                                <svg class="w-4 h-4 mr-3 ${dependencia.activa ? 'text-orange-500' : 'text-green-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${dependencia.activa ? 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}"/>
+                                </svg>
+                                ${dependencia.activa ? 'Desactivar' : 'Activar'}
+                            </button>
+                        </form>
+
+                        <!-- Separador -->
+                        <div class="border-t border-gray-100"></div>
+
+                        <!-- Eliminar -->
+                        <button data-action="delete-dependencia"
+                                data-dependencia-id="${dependencia.id}"
+                                data-dependencia-name="${dependencia.nombre}"
+                                data-radicados-count="${dependencia.radicados_destino_count + dependencia.radicados_origen_count}"
+                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                            <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
             </div>
         </td>
     `;

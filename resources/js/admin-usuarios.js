@@ -647,72 +647,8 @@ function createUserRow(usuario) {
     const estadoBadgeClass = usuario.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
     const estadoTexto = usuario.active ? 'Activo' : 'Inactivo';
 
-    // Crear botones de acción
+    // Obtener el ID del usuario actual para validaciones
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]')?.getAttribute('content'));
-
-    // Botón de activar/desactivar
-    let toggleButton = '';
-    if (usuario.id === currentUserId) {
-        toggleButton = `
-            <span class="text-gray-400 font-medium text-xs sm:text-sm cursor-not-allowed"
-                  title="No puedes cambiar el estado de tu propia cuenta">
-                ${usuario.active ? 'Desactivar' : 'Activar'}
-            </span>
-        `;
-    } else {
-        const toggleClass = usuario.active ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900';
-        const toggleText = usuario.active ? 'Desactivar' : 'Activar';
-        toggleButton = `
-            <form action="/admin/usuarios/${usuario.id}/toggle-status"
-                  method="POST"
-                  class="inline"
-                  id="toggle-form-${usuario.id}">
-                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
-                <input type="hidden" name="_method" value="PATCH">
-                <button type="button"
-                        class="${toggleClass} font-medium text-xs sm:text-sm cursor-pointer"
-                        data-user-name="${usuario.name}"
-                        data-user-active="${usuario.active ? 'true' : 'false'}"
-                        data-form-id="toggle-form-${usuario.id}">
-                    ${toggleText}
-                </button>
-            </form>
-        `;
-    }
-
-    // Botón de eliminar
-    let deleteButton = '';
-    if (usuario.id === currentUserId) {
-        deleteButton = `
-            <span class="text-gray-400 font-medium text-xs sm:text-sm cursor-not-allowed"
-                  title="No puedes eliminar tu propia cuenta">
-                Eliminar
-            </span>
-        `;
-    } else if (usuario.radicados_count > 0) {
-        deleteButton = `
-            <span class="text-gray-400 font-medium text-xs sm:text-sm cursor-not-allowed"
-                  title="No se puede eliminar: tiene ${usuario.radicados_count} radicado(s) asociado(s)">
-                Eliminar
-            </span>
-        `;
-    } else {
-        deleteButton = `
-            <form action="/admin/usuarios/${usuario.id}"
-                  method="POST"
-                  class="inline"
-                  id="delete-form-${usuario.id}">
-                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="button"
-                        class="text-red-600 hover:text-red-900 font-medium text-xs sm:text-sm cursor-pointer"
-                        data-user-name="${usuario.name}"
-                        data-form-id="delete-form-${usuario.id}">
-                    Eliminar
-                </button>
-            </form>
-        `;
-    }
 
     row.innerHTML = `
         <td class="px-4 py-4">
@@ -756,19 +692,76 @@ function createUserRow(usuario) {
         <td class="px-4 py-4 text-sm text-gray-500 hidden xl:table-cell">
             ${usuario.created_at}
         </td>
-        <td class="px-4 py-4 text-sm font-medium">
-            <div class="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                <button data-action="edit-user"
-                        data-user-id="${usuario.id}"
-                        data-user-name="${usuario.name}"
-                        data-user-email="${usuario.email}"
-                        data-user-role="${usuario.role}"
-                        data-user-active="${usuario.active ? 'true' : 'false'}"
-                        class="text-blue-600 hover:text-blue-900 font-medium text-xs sm:text-sm">
-                    Editar
+        <td class="px-3 py-4 text-sm font-medium">
+            <div class="relative inline-block text-left">
+                <button type="button"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
+                        onclick="toggleDropdown('dropdown-user-${usuario.id}')">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                    </svg>
                 </button>
-                ${toggleButton}
-                ${deleteButton}
+
+                <div id="dropdown-user-${usuario.id}"
+                     class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                     data-dropdown-menu>
+                    <div class="py-1" role="menu">
+                        <!-- Editar -->
+                        <button data-action="edit-user"
+                                data-user-id="${usuario.id}"
+                                data-user-name="${usuario.name}"
+                                data-user-email="${usuario.email}"
+                                data-user-role="${usuario.role}"
+                                data-user-active="${usuario.active ? 'true' : 'false'}"
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                            <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            Editar
+                        </button>
+
+                        ${usuario.id !== currentUserId ? `
+                        <!-- Activar/Desactivar -->
+                        <form action="/admin/usuarios/${usuario.id}/toggle-status"
+                              method="POST"
+                              class="inline w-full"
+                              id="toggle-form-${usuario.id}">
+                            <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
+                            <input type="hidden" name="_method" value="PATCH">
+                            <button type="button"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                                    data-user-name="${usuario.name}"
+                                    data-user-active="${usuario.active ? 'true' : 'false'}"
+                                    data-form-id="toggle-form-${usuario.id}">
+                                <svg class="w-4 h-4 mr-3 ${usuario.active ? 'text-orange-500' : 'text-green-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${usuario.active ? 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z' : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}"/>
+                                </svg>
+                                ${usuario.active ? 'Desactivar' : 'Activar'}
+                            </button>
+                        </form>
+                        ` : ''}
+
+                        ${usuario.id !== currentUserId && usuario.radicados_count === 0 ? `
+                        <!-- Eliminar -->
+                        <form action="/admin/usuarios/${usuario.id}"
+                              method="POST"
+                              class="inline w-full"
+                              id="delete-form-${usuario.id}">
+                            <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="button"
+                                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                                    data-user-name="${usuario.name}"
+                                    data-form-id="delete-form-${usuario.id}">
+                                <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Eliminar
+                            </button>
+                        </form>
+                        ` : ''}
+                    </div>
+                </div>
             </div>
         </td>
     `;

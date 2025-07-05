@@ -20,9 +20,6 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="btn-crear-tipo" class="create-button">
-                    Nuevo Tipo de Solicitud
-                </button>
                 <?php if (isset($component)) { $__componentOriginal891e6c0b8a48d6de15606ccc6221404b = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.hospital-brand','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -262,8 +259,7 @@
                                         </button>
 
                                         <div id="dropdown-tipo-<?php echo e($tipo->id); ?>"
-                                             class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                                             style="z-index: 9999;"
+                                             class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Editar -->
@@ -322,6 +318,14 @@
                 <div class="px-6 py-4 border-t border-gray-200">
                     <?php echo e($tiposSolicitud->links()); ?>
 
+                </div>
+
+                <!-- Botón Agregar -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <button id="btn-crear-tipo"
+                            class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                        Nuevo Tipo de Solicitud
+                    </button>
                 </div>
             </div>
         </div>
@@ -402,20 +406,44 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación -->
-    <div id="modal-confirmacion" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
-            <div class="mt-3 text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+    <!-- Modal de Confirmación Personalizado -->
+    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
+            <!-- Header del Modal -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 id="confirmModalTitle" class="text-lg font-medium text-gray-900">Confirmar Acción</h3>
+                <button data-action="close-confirm-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
+                </button>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="p-4">
+                <div class="flex items-center mb-4">
+                    <div id="confirmModalIcon" class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full">
+                        <!-- Icono se agregará dinámicamente -->
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p id="confirmModalMessage" class="text-sm text-gray-600">
+                            <!-- Mensaje se agregará dinámicamente -->
+                        </p>
+                    </div>
                 </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2" id="confirmacion-titulo">Confirmar Eliminación</h3>
-                <p class="text-sm text-gray-500 mb-4" id="confirmacion-mensaje"></p>
-                <div class="flex justify-center space-x-3">
-                    <button id="btn-cancelar-confirmacion" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue">Cancelar</button>
-                    <button id="btn-confirmar-accion" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Eliminar</button>
+
+                <!-- Botones de Acción -->
+                <div class="flex justify-end space-x-3">
+                    <button type="button"
+                            data-action="close-confirm-modal"
+                            class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            id="confirmModalAction"
+                            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]">
+                        Confirmar
+                    </button>
                 </div>
             </div>
         </div>
@@ -426,20 +454,20 @@
     <?php $__env->stopPush(); ?>
 
     <script>
-        // Función para manejar los menús desplegables
+        // Función simple para manejar los menús desplegables con posicionamiento absoluto
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) {
+                console.error('No se encontró el dropdown con ID:', dropdownId);
+                return;
+            }
+
             const isHidden = dropdown.classList.contains('hidden');
 
             // Cerrar todos los dropdowns abiertos
             document.querySelectorAll('[id^="dropdown-tipo-"]').forEach(d => {
                 if (d.id !== dropdownId) {
                     d.classList.add('hidden');
-                    // Resetear estilos
-                    d.style.top = '';
-                    d.style.bottom = '';
-                    d.classList.remove('origin-bottom-right', 'mb-2');
-                    d.classList.add('origin-top-right', 'mt-2');
                 }
             });
 
@@ -447,47 +475,143 @@
                 // Mostrar dropdown
                 dropdown.classList.remove('hidden');
 
-                // Calcular posición
-                const button = dropdown.previousElementSibling;
-                const rect = button.getBoundingClientRect();
-                const dropdownRect = dropdown.getBoundingClientRect();
-                const viewportHeight = window.innerHeight;
+                // Verificar posicionamiento y ajustar automáticamente
+                setTimeout(() => {
+                    const rect = dropdown.getBoundingClientRect();
+                    const container = dropdown.closest('.relative');
 
-                // Verificar si hay espacio suficiente abajo
-                const spaceBelow = viewportHeight - rect.bottom;
-                const spaceAbove = rect.top;
+                    // Si se sale por la derecha, cambiar a alineación izquierda
+                    if (rect.right > window.innerWidth - 10) {
+                        dropdown.classList.remove('right-0');
+                        dropdown.classList.add('left-0');
+                    }
 
-                if (spaceBelow < 200 && spaceAbove > spaceBelow) {
-                    // Mostrar arriba
-                    dropdown.style.bottom = (viewportHeight - rect.top) + 'px';
-                    dropdown.style.top = 'auto';
-                    dropdown.classList.remove('origin-top-right', 'mt-2');
-                    dropdown.classList.add('origin-bottom-right', 'mb-2');
-                } else {
-                    // Mostrar abajo (comportamiento por defecto)
-                    dropdown.style.top = rect.bottom + 'px';
-                    dropdown.style.bottom = 'auto';
-                    dropdown.classList.remove('origin-bottom-right', 'mb-2');
-                    dropdown.classList.add('origin-top-right', 'mt-2');
-                }
+                    // Detectar si está en las últimas 2 filas de la tabla
+                    const row = container.closest('tr');
+                    const tbody = row.closest('tbody');
+                    const allRows = tbody.querySelectorAll('tr');
+                    const rowIndex = Array.from(allRows).indexOf(row);
+                    const totalRows = allRows.length;
 
-                // Posición horizontal
-                dropdown.style.left = (rect.left - dropdown.offsetWidth + button.offsetWidth) + 'px';
+                    // Si está en las últimas 2 filas, abrir hacia arriba
+                    if (rowIndex >= totalRows - 2) {
+                        dropdown.classList.remove('top-full', 'mt-1');
+                        dropdown.classList.add('bottom-full', 'mb-1');
+                        dropdown.style.transformOrigin = 'bottom right';
+                    } else {
+                        // Filas normales, abrir hacia abajo
+                        dropdown.classList.remove('bottom-full', 'mb-1');
+                        dropdown.classList.add('top-full', 'mt-1');
+                        dropdown.style.transformOrigin = 'top right';
+                    }
+                }, 10);
             } else {
-                // Ocultar dropdown
+                // Ocultar dropdown y resetear clases
                 dropdown.classList.add('hidden');
+                dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
+                dropdown.classList.add('right-0', 'top-full', 'mt-1');
+                dropdown.style.transformOrigin = 'top right';
             }
         }
 
+        // Función para resetear dropdown a estado inicial
+        function resetDropdown(dropdown) {
+            dropdown.classList.add('hidden');
+            dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
+            dropdown.classList.add('right-0', 'top-full', 'mt-1');
+            dropdown.style.transformOrigin = 'top right';
+        }
+
         // Cerrar dropdowns al hacer clic fuera
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('[data-dropdown-menu]') && !e.target.closest('button[onclick*="toggleDropdown"]')) {
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id^="dropdown-tipo-"]')) {
                 document.querySelectorAll('[id^="dropdown-tipo-"]').forEach(dropdown => {
-                    dropdown.classList.add('hidden');
+                    resetDropdown(dropdown);
                 });
             }
         });
+
+        // Cerrar dropdown después de hacer clic en una acción
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('[id^="dropdown-tipo-"] button') || event.target.closest('[id^="dropdown-tipo-"] a')) {
+                setTimeout(() => {
+                    document.querySelectorAll('[id^="dropdown-tipo-"]').forEach(dropdown => {
+                        resetDropdown(dropdown);
+                    });
+                }, 100);
+            }
+        });
+
+        // Cerrar dropdowns al hacer scroll
+        window.addEventListener('scroll', function() {
+            document.querySelectorAll('[id^="dropdown-tipo-"]:not(.hidden)').forEach(dropdown => {
+                resetDropdown(dropdown);
+            });
+        });
     </script>
+
+    <?php $__env->startPush('styles'); ?>
+    <style>
+        /* Estilos para dropdowns con posicionamiento absoluto inteligente */
+        [id^="dropdown-tipo-"] {
+            z-index: 50;
+            min-width: 12rem;
+            transform-origin: top right;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+        }
+
+        /* Animaciones suaves para apertura normal (hacia abajo) */
+        [id^="dropdown-tipo-"]:not(.hidden) {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        [id^="dropdown-tipo-"].hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* Estilos específicos para dropdowns que abren hacia arriba */
+        [id^="dropdown-tipo-"].bottom-full {
+            transform-origin: bottom right;
+        }
+
+        /* Asegurar que los contenedores de la tabla permitan overflow */
+        .overflow-x-auto {
+            overflow: visible !important;
+        }
+
+        /* Mejorar el contenedor de acciones para posicionamiento relativo */
+        .relative.inline-block {
+            position: relative;
+        }
+
+        /* Asegurar que la tabla no interfiera */
+        table {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Mejorar la visibilidad en las últimas filas */
+        tbody tr:nth-last-child(-n+2) [id^="dropdown-tipo-"] {
+            /* Asegurar que los dropdowns de las últimas 2 filas tengan prioridad */
+            z-index: 60;
+        }
+
+        /* Animaciones para modales */
+        #modal-tipo .relative,
+        #confirmStatusModal .relative {
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        /* Backdrop blur para modales */
+        #modal-tipo,
+        #confirmStatusModal {
+            backdrop-filter: blur(4px);
+        }
+    </style>
+    <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
