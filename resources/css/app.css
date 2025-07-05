@@ -93,7 +93,7 @@ a:focus-visible,
 /* Estilos personalizados para UniRadic - Diseño Minimalista */
 @layer base {
     body {
-        font-family: 'Figtree', sans-serif;
+        font-family: 'Figtree', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
     }
 
     html, body {

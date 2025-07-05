@@ -255,7 +255,7 @@ class RadicacionInternaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('radicacion.interna.show', $radicado->id)
+            return redirect()->route('radicacion.index')
                            ->with('success', "Radicado interno {$numeroRadicado} creado exitosamente");
 
         } catch (\Exception $e) {

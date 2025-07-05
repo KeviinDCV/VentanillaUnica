@@ -20,8 +20,60 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Fallback CSS para fuentes locales en caso de error de conexión -->
+        <style>
+            @font-face {
+                font-family: 'Figtree-Fallback';
+                src: local('Inter'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+
+            body {
+                font-family: 'Figtree', 'Figtree-Fallback', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+            }
+        </style>
+
         <!-- Scripts -->
         <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js', 'resources/js/radicacion.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js', 'resources/js/file-upload.js', 'resources/js/modal-file-upload.js']); ?>
+
+        <!-- Script para detectar errores de fuentes y aplicar fallback -->
+        <script>
+            // Detectar errores de carga de fuentes y aplicar fallback
+            document.addEventListener('DOMContentLoaded', function() {
+                // Verificar si la fuente Figtree se cargó correctamente
+                const testElement = document.createElement('div');
+                testElement.style.fontFamily = 'Figtree, monospace';
+                testElement.style.position = 'absolute';
+                testElement.style.visibility = 'hidden';
+                testElement.style.fontSize = '72px';
+                testElement.innerHTML = 'mmmmmmmmmmlli';
+                document.body.appendChild(testElement);
+
+                const figtreeWidth = testElement.offsetWidth;
+
+                testElement.style.fontFamily = 'monospace';
+                const monospaceWidth = testElement.offsetWidth;
+
+                document.body.removeChild(testElement);
+
+                // Si las anchuras son iguales, Figtree no se cargó
+                if (figtreeWidth === monospaceWidth) {
+                    console.warn('Fuente Figtree no disponible, usando fuentes del sistema');
+                    document.documentElement.style.setProperty('--font-family-fallback', 'Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif');
+                    document.body.style.fontFamily = 'Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+                }
+            });
+
+            // Manejar errores de red para fuentes
+            window.addEventListener('error', function(e) {
+                if (e.target && e.target.href && e.target.href.includes('fonts.bunny.net')) {
+                    console.warn('Error cargando fuente externa:', e.target.href);
+                    document.body.style.fontFamily = 'Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+                }
+            }, true);
+        </script>
 
         <!-- Script para evitar parpadeo de sidebar -->
         <script>

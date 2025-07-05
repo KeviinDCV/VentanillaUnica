@@ -441,7 +441,10 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-blue-600">
-                                            {{ $radicado->numero_radicado }}
+                                            <button onclick="verDetallesRadicado({{ $radicado->id }})"
+                                                    class="hover:text-blue-800 hover:underline cursor-pointer">
+                                                {{ $radicado->numero_radicado }}
+                                            </button>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -620,10 +623,10 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-uniradical-blue">
-                                        <a href="{{ route('radicacion.index', ['numero_radicado' => $radicado->numero_radicado]) }}"
-                                           class="hover:text-opacity-80">
+                                        <button onclick="verDetallesRadicado({{ $radicado->id }})"
+                                                class="hover:text-opacity-80 hover:underline cursor-pointer">
                                             {{ $radicado->numero_radicado }}
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

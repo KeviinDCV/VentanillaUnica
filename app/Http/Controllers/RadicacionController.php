@@ -583,7 +583,9 @@ class RadicacionController extends Controller
                     'entidad' => $radicado->remitente->entidad,
                 ],
                 'trd' => [
-                    'codigo' => $radicado->subserie->serie->unidadAdministrativa->codigo ?? 'N/A',
+                    'codigo' => ($radicado->subserie && $radicado->subserie->serie && $radicado->subserie->serie->unidadAdministrativa)
+                        ? $radicado->subserie->serie->unidadAdministrativa->codigo . '.' . $radicado->subserie->serie->numero_serie . '.' . $radicado->subserie->numero_subserie
+                        : 'N/A',
                     'serie' => $radicado->subserie->serie->nombre ?? 'N/A',
                     'subserie' => $radicado->subserie->nombre ?? 'N/A',
                     'descripcion' => $radicado->subserie->descripcion ?? 'Sin descripción',

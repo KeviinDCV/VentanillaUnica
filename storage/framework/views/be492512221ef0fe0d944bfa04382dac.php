@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }} - Acceso al Sistema</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo e(config('app.name', 'Laravel')); ?> - Acceso al Sistema</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/jpg" href="{{ asset('images/LogoHospital.jpg') }}">
-    <link rel="shortcut icon" type="image/jpg" href="{{ asset('images/LogoHospital.jpg') }}">
+    <link rel="icon" type="image/jpg" href="<?php echo e(asset('images/LogoHospital.jpg')); ?>">
+    <link rel="shortcut icon" type="image/jpg" href="<?php echo e(asset('images/LogoHospital.jpg')); ?>">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:300,400,500,600,700&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
 
     <style>
         body {
-            font-family: 'Figtree', 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif;
+            font-family: 'Figtree', sans-serif;
         }
 
         .hospital-bg {
-            background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('{{ asset('images/hospital.jpg') }}');
+            background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('<?php echo e(asset('images/hospital.jpg')); ?>');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -1398,7 +1398,7 @@
                 <!-- Sección del Logo del Hospital -->
                 <div class="hidden lg:flex flex-col items-center justify-center p-8">
                     <div class="container-emergency mb-6">
-                        <img src="{{ asset('images/LogoHospital.jpg') }}"
+                        <img src="<?php echo e(asset('images/LogoHospital.jpg')); ?>"
                              alt="Logo Hospital"
                              class="logo-emergency w-full max-w-md h-auto">
                     </div>
@@ -1416,7 +1416,7 @@
                         <!-- Logo móvil -->
                         <div class="lg:hidden text-center mb-4">
                             <div class="container-emergency inline-block mb-3">
-                                <img src="{{ asset('images/LogoHospital.jpg') }}"
+                                <img src="<?php echo e(asset('images/LogoHospital.jpg')); ?>"
                                      alt="Logo Hospital"
                                      class="logo-emergency w-32 h-auto mx-auto">
                             </div>
@@ -1430,30 +1430,52 @@
                         </div>
 
                         <!-- Session Status -->
-                        <x-auth-session-status class="mb-6" :status="session('status')" />
+                        <?php if (isset($component)) { $__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal7c1bf3a9346f208f66ee83b06b607fb5 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.auth-session-status','data' => ['class' => 'mb-6','status' => session('status')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('auth-session-status'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'mb-6','status' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(session('status'))]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal7c1bf3a9346f208f66ee83b06b607fb5)): ?>
+<?php $attributes = $__attributesOriginal7c1bf3a9346f208f66ee83b06b607fb5; ?>
+<?php unset($__attributesOriginal7c1bf3a9346f208f66ee83b06b607fb5); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5)): ?>
+<?php $component = $__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5; ?>
+<?php unset($__componentOriginal7c1bf3a9346f208f66ee83b06b607fb5); ?>
+<?php endif; ?>
 
                         <!-- Mensajes de error y advertencia -->
-                        @if (session('error'))
+                        <?php if(session('error')): ?>
                             <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-400 text-red-700 text-sm">
-                                {{ session('error') }}
-                            </div>
-                        @endif
+                                <?php echo e(session('error')); ?>
 
-                        @if (session('warning'))
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if(session('warning')): ?>
                             <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 text-sm">
-                                {{ session('warning') }}
-                            </div>
-                        @endif
+                                <?php echo e(session('warning')); ?>
 
-                        @if (session('message'))
-                            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-700 text-sm">
-                                {{ session('message') }}
                             </div>
-                        @endif
+                        <?php endif; ?>
+
+                        <?php if(session('message')): ?>
+                            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-700 text-sm">
+                                <?php echo e(session('message')); ?>
+
+                            </div>
+                        <?php endif; ?>
 
                         <!-- Formulario de Login Mejorado -->
-                        <form method="POST" action="{{ route('login') }}" id="loginForm" class="space-y-6" novalidate>
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('login')); ?>" id="loginForm" class="space-y-6" novalidate>
+                            <?php echo csrf_field(); ?>
 
                             <!-- Email Address -->
                             <div class="form-group">
@@ -1466,7 +1488,7 @@
                                     <input id="email"
                                            type="email"
                                            name="email"
-                                           value="{{ old('email') }}"
+                                           value="<?php echo e(old('email')); ?>"
                                            required
                                            autofocus
                                            autocomplete="username"
@@ -1474,11 +1496,19 @@
                                            placeholder="correo@hospital.com"
                                            aria-describedby="email-error">
                                 </div>
-                                @error('email')
+                                <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <div class="error-message" id="email-error" role="alert">
-                                        {{ $message }}
+                                        <?php echo e($message); ?>
+
                                     </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <!-- Password -->
@@ -1513,11 +1543,19 @@
                                         </svg>
                                     </button>
                                 </div>
-                                @error('password')
+                                <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <div class="error-message" id="password-error" role="alert">
-                                        {{ $message }}
+                                        <?php echo e($message); ?>
+
                                     </div>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <!-- Remember Me -->
@@ -1627,3 +1665,4 @@
     </style>
 </body>
 </html>
+<?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/auth/login.blade.php ENDPATH**/ ?>

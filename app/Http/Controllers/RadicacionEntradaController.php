@@ -219,8 +219,8 @@ class RadicacionEntradaController extends Controller
             DB::commit();
             \Log::info('RadicacionEntrada::store - Transacción confirmada exitosamente');
 
-            return redirect()->route('radicacion.entrada.show', $radicado->id)
-                           ->with('success', "Radicado {$numeroRadicado} creado exitosamente");
+            return redirect()->route('radicacion.index')
+                           ->with('success', "Radicado de entrada {$numeroRadicado} creado exitosamente");
 
         } catch (\Exception $e) {
             DB::rollBack();

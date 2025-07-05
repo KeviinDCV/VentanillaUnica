@@ -241,7 +241,7 @@ class RadicacionSalidaController extends Controller
             DB::commit();
             \Log::info('RadicacionSalida::store - ÉXITO COMPLETO', ['radicado_id' => $radicado->id]);
 
-            return redirect()->route('radicacion.salida.show', $radicado->id)
+            return redirect()->route('radicacion.index')
                            ->with('success', "Radicado de salida {$numeroRadicado} creado exitosamente");
 
         } catch (\Exception $e) {
