@@ -38,7 +38,7 @@ Route::get('/gestion', [App\Http\Controllers\GestionController::class, 'index'])
     ->name('gestion.index');
 
 // Rutas del módulo de gestión (solo para administradores)
-Route::prefix('gestion')->name('gestion.')->middleware(['auth', 'role:administrador'])->group(function () {
+Route::prefix('gestion')->name('gestion.')->middleware(['auth', 'role:administrador', 'admin.security'])->group(function () {
     // Gestión de Series
     Route::get('/series', [App\Http\Controllers\Gestion\SerieController::class, 'index'])->name('series.index');
     Route::post('/series', [App\Http\Controllers\Gestion\SerieController::class, 'store'])->name('series.store');
@@ -101,7 +101,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Rutas del módulo de administración (solo para administradores)
-    Route::prefix('admin')->name('admin.')->middleware('role:administrador')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware(['role:administrador', 'admin.security'])->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'index'])->name('index');
         Route::get('/usuarios', [App\Http\Controllers\Admin\AdminController::class, 'usuarios'])->name('usuarios');
         Route::get('/usuarios/buscar', [App\Http\Controllers\Admin\AdminController::class, 'buscarUsuarios'])->name('usuarios.buscar');

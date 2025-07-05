@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'session.timeout' => \App\Http\Middleware\SessionTimeout::class,
             'login.ratelimit' => \App\Http\Middleware\LoginRateLimit::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
+            'security.logger' => \App\Http\Middleware\SecurityLogger::class,
+            'admin.security' => \App\Http\Middleware\AdminSecurityCheck::class,
             'ensure.session.login' => \App\Http\Middleware\EnsureSessionForLogin::class,
 
         ]);
@@ -34,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Middleware global para todas las rutas web
         $middleware->web(append: [
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\SecurityLogger::class,
             \App\Http\Middleware\SuspenderSistema::class,
         ]);
 

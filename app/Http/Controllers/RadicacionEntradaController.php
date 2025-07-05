@@ -70,7 +70,36 @@ class RadicacionEntradaController extends Controller
             'fecha_limite_respuesta' => 'nullable|date|after:today',
 
             // Documento
-            'documento' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB max
+            'documento' => [
+                'required',
+                'file',
+                'mimes:pdf,doc,docx,jpg,jpeg,png',
+                'max:10240', // 10MB max
+                function ($attribute, $value, $fail) {
+                    if ($value && $value->isValid()) {
+                        // Verificar MIME type real
+                        $realMimeType = mime_content_type($value->getRealPath());
+                        $allowedMimes = [
+                            'application/pdf',
+                            'application/msword',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'image/jpeg',
+                            'image/png'
+                        ];
+
+                        if (!in_array($realMimeType, $allowedMimes)) {
+                            $fail('Tipo de archivo no permitido por seguridad.');
+                            \Log::channel('security')->warning('Intento de subida de archivo con MIME type no permitido', [
+                                'ip' => request()->ip(),
+                                'user_id' => auth()->id(),
+                                'filename' => $value->getClientOriginalName(),
+                                'detected_mime' => $realMimeType,
+                                'timestamp' => now()->toISOString()
+                            ]);
+                        }
+                    }
+                }
+            ]
         ], [
             'tipo_remitente.required' => 'Debe seleccionar el tipo de remitente',
             'tipo_documento.required_if' => 'El tipo de documento es obligatorio para remitentes registrados',
