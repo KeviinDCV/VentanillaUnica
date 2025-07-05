@@ -20,9 +20,6 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-                <button data-action="create-user" class="create-button">
-                    Nuevo Usuario
-                </button>
                 <?php if (isset($component)) { $__componentOriginal891e6c0b8a48d6de15606ccc6221404b = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.hospital-brand','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -277,8 +274,7 @@
                                         </button>
 
                                         <div id="dropdown-user-<?php echo e($usuario->id); ?>"
-                                             class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                                             style="z-index: 9999;"
+                                             class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Editar -->
@@ -385,14 +381,17 @@
                     <?php echo e($usuarios->links()); ?>
 
                 </div>
+
+                <!-- Botón Agregar -->
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <button data-action="create-user"
+                            class="px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition duration-200">
+                        Nuevo Usuario
+                    </button>
+                </div>
             </div>
 
-            <!-- Navegación -->
-            <div class="mt-8 flex justify-center">
-                <a href="<?php echo e(route('gestion.index')); ?>" class="back-button">
-                    ← Volver a Gestión
-                </a>
-            </div>
+
         </div>
     </div>
 
@@ -707,168 +706,152 @@
     </div>
 
     <script>
-        // Función para manejar los menús desplegables
+        // Función simple para manejar los menús desplegables con posicionamiento absoluto
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) {
+                console.error('No se encontró el dropdown con ID:', dropdownId);
+                return;
+            }
+
             const isHidden = dropdown.classList.contains('hidden');
 
             // Cerrar todos los dropdowns abiertos
             document.querySelectorAll('[id^="dropdown-user-"]').forEach(d => {
                 if (d.id !== dropdownId) {
                     d.classList.add('hidden');
-                    // Resetear estilos completamente
-                    d.style.position = '';
-                    d.style.top = '';
-                    d.style.bottom = '';
-                    d.style.left = '';
-                    d.style.right = '';
-                    d.style.transform = '';
-                    d.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
                 }
             });
 
-            // Toggle del dropdown actual
             if (isHidden) {
+                // Mostrar dropdown
                 dropdown.classList.remove('hidden');
-                // Ajustar posición del menú según el espacio disponible
-                adjustDropdownPosition(dropdown);
+
+                // Verificar posicionamiento y ajustar automáticamente
+                setTimeout(() => {
+                    const rect = dropdown.getBoundingClientRect();
+                    const container = dropdown.closest('.relative');
+
+                    // Si se sale por la derecha, cambiar a alineación izquierda
+                    if (rect.right > window.innerWidth - 10) {
+                        dropdown.classList.remove('right-0');
+                        dropdown.classList.add('left-0');
+                    }
+
+                    // Detectar si está en las últimas 2 filas de la tabla
+                    const row = container.closest('tr');
+                    const tbody = row.closest('tbody');
+                    const allRows = tbody.querySelectorAll('tr');
+                    const rowIndex = Array.from(allRows).indexOf(row);
+                    const totalRows = allRows.length;
+
+                    // Si está en las últimas 2 filas, abrir hacia arriba
+                    if (rowIndex >= totalRows - 2) {
+                        dropdown.classList.remove('top-full', 'mt-1');
+                        dropdown.classList.add('bottom-full', 'mb-1');
+                        dropdown.style.transformOrigin = 'bottom right';
+                    } else {
+                        // Filas normales, abrir hacia abajo
+                        dropdown.classList.remove('bottom-full', 'mb-1');
+                        dropdown.classList.add('top-full', 'mt-1');
+                        dropdown.style.transformOrigin = 'top right';
+                    }
+                }, 10);
             } else {
+                // Ocultar dropdown y resetear clases
                 dropdown.classList.add('hidden');
-                // Resetear estilos al cerrar
-                dropdown.style.position = '';
-                dropdown.style.top = '';
-                dropdown.style.bottom = '';
-                dropdown.style.left = '';
-                dropdown.style.right = '';
-                dropdown.style.transform = '';
-                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+                dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
+                dropdown.classList.add('right-0', 'top-full', 'mt-1');
+                dropdown.style.transformOrigin = 'top right';
             }
         }
 
-        // Función para ajustar la posición del dropdown
-        function adjustDropdownPosition(dropdown) {
-            // Encontrar el botón que activa este dropdown
-            const button = dropdown.parentElement.querySelector('button[onclick*="toggleDropdown"]');
-            if (!button) return;
-
-            // Esperar un frame para que el dropdown se renderice completamente
-            requestAnimationFrame(() => {
-                const buttonRect = button.getBoundingClientRect();
-                const viewportHeight = window.innerHeight;
-                const viewportWidth = window.innerWidth;
-                const dropdownWidth = 192; // w-48 = 12rem = 192px
-
-                // Resetear estilos de posicionamiento
-                dropdown.style.top = '';
-                dropdown.style.bottom = '';
-                dropdown.style.left = '';
-                dropdown.style.right = '';
-                dropdown.style.transform = '';
-                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
-
-                // Calcular posición horizontal (alineado a la derecha del botón)
-                let leftPosition = buttonRect.right - dropdownWidth;
-
-                // Asegurar que no se salga del viewport por la izquierda
-                if (leftPosition < 10) {
-                    leftPosition = buttonRect.left;
-                }
-
-                // Asegurar que no se salga del viewport por la derecha
-                if (leftPosition + dropdownWidth > viewportWidth - 10) {
-                    leftPosition = viewportWidth - dropdownWidth - 10;
-                }
-
-                // Calcular posición vertical
-                const dropdownHeight = dropdown.offsetHeight || 200;
-                const spaceBelow = viewportHeight - buttonRect.bottom;
-                const spaceAbove = buttonRect.top;
-
-                let topPosition;
-                if (spaceBelow >= dropdownHeight + 10) {
-                    // Hay espacio suficiente abajo
-                    topPosition = buttonRect.bottom + 8;
-                    dropdown.classList.add('origin-top-right');
-                } else if (spaceAbove >= dropdownHeight + 10) {
-                    // No hay espacio abajo pero sí arriba
-                    topPosition = buttonRect.top - dropdownHeight - 8;
-                    dropdown.classList.add('origin-bottom-right');
-                } else {
-                    // No hay espacio suficiente ni arriba ni abajo, priorizar abajo
-                    topPosition = buttonRect.bottom + 8;
-                    dropdown.classList.add('origin-top-right');
-                }
-
-                // Asegurar que no se salga del viewport por arriba
-                if (topPosition < 10) {
-                    topPosition = 10;
-                }
-
-                // Asegurar que no se salga del viewport por abajo
-                if (topPosition + dropdownHeight > viewportHeight - 10) {
-                    topPosition = viewportHeight - dropdownHeight - 10;
-                }
-
-                // Aplicar posicionamiento fijo
-                dropdown.style.position = 'fixed';
-                dropdown.style.left = leftPosition + 'px';
-                dropdown.style.top = topPosition + 'px';
-                dropdown.style.zIndex = '9999';
-            });
+        // Función para resetear dropdown a estado inicial
+        function resetDropdown(dropdown) {
+            dropdown.classList.add('hidden');
+            dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
+            dropdown.classList.add('right-0', 'top-full', 'mt-1');
+            dropdown.style.transformOrigin = 'top right';
         }
 
         // Cerrar dropdowns al hacer clic fuera
         document.addEventListener('click', function(event) {
             if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id^="dropdown-user-"]')) {
                 document.querySelectorAll('[id^="dropdown-user-"]').forEach(dropdown => {
-                    dropdown.classList.add('hidden');
+                    resetDropdown(dropdown);
                 });
             }
         });
 
         // Cerrar dropdown después de hacer clic en una acción
         document.addEventListener('click', function(event) {
-            if (event.target.closest('[id^="dropdown-user-"] button')) {
-                // Pequeño delay para permitir que la acción se ejecute
+            if (event.target.closest('[id^="dropdown-user-"] button') || event.target.closest('[id^="dropdown-user-"] a')) {
                 setTimeout(() => {
                     document.querySelectorAll('[id^="dropdown-user-"]').forEach(dropdown => {
-                        dropdown.classList.add('hidden');
-                        // Resetear estilos
-                        dropdown.style.position = '';
-                        dropdown.style.top = '';
-                        dropdown.style.bottom = '';
-                        dropdown.style.left = '';
-                        dropdown.style.right = '';
-                        dropdown.style.transform = '';
-                        dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+                        resetDropdown(dropdown);
                     });
                 }, 100);
             }
         });
 
-        // Reposicionar dropdowns al redimensionar la ventana
-        window.addEventListener('resize', function() {
-            document.querySelectorAll('[id^="dropdown-user-"]:not(.hidden)').forEach(dropdown => {
-                adjustDropdownPosition(dropdown);
-            });
-        });
-
         // Cerrar dropdowns al hacer scroll
         window.addEventListener('scroll', function() {
             document.querySelectorAll('[id^="dropdown-user-"]:not(.hidden)').forEach(dropdown => {
-                dropdown.classList.add('hidden');
-                // Resetear estilos
-                dropdown.style.position = '';
-                dropdown.style.top = '';
-                dropdown.style.bottom = '';
-                dropdown.style.left = '';
-                dropdown.style.right = '';
-                dropdown.style.transform = '';
-                dropdown.classList.remove('origin-bottom-right', 'mb-2', 'origin-top-right', 'mt-2');
+                resetDropdown(dropdown);
             });
         });
     </script>
 
+    <?php $__env->startPush('styles'); ?>
+    <style>
+        /* Estilos para dropdowns con posicionamiento absoluto inteligente */
+        [id^="dropdown-user-"] {
+            z-index: 50;
+            min-width: 12rem;
+            transform-origin: top right;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+        }
+
+        /* Animaciones suaves para apertura normal (hacia abajo) */
+        [id^="dropdown-user-"]:not(.hidden) {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        [id^="dropdown-user-"].hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* Estilos específicos para dropdowns que abren hacia arriba */
+        [id^="dropdown-user-"].bottom-full {
+            transform-origin: bottom right;
+        }
+
+        /* Asegurar que los contenedores de la tabla permitan overflow */
+        .overflow-visible {
+            overflow: visible !important;
+        }
+
+        /* Mejorar el contenedor de acciones para posicionamiento relativo */
+        .relative.inline-block {
+            position: relative;
+        }
+
+        /* Asegurar que la tabla no interfiera */
+        table {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Mejorar la visibilidad en las últimas filas */
+        tbody tr:nth-last-child(-n+2) [id^="dropdown-user-"] {
+            /* Asegurar que los dropdowns de las últimas 2 filas tengan prioridad */
+            z-index: 60;
+        }
+    </style>
+    <?php $__env->stopPush(); ?>
 
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>

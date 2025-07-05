@@ -149,9 +149,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (confirm(`¿Estás seguro de que deseas eliminar el tipo de comunicación "${nombre}"?`)) {
-            deleteComunicacion(id);
-        }
+        // Usar modal personalizado para confirmación de eliminación
+        showConfirmModal({
+            title: 'Eliminar Tipo de Comunicación',
+            message: `¿Estás seguro de que deseas eliminar el tipo de comunicación "${nombre}"? Esta acción no se puede deshacer.`,
+            actionText: 'Eliminar',
+            actionClass: 'bg-red-600 hover:bg-red-700',
+            iconClass: 'bg-red-100',
+            iconColor: 'text-red-600',
+            onConfirm: () => {
+                deleteComunicacion(id);
+            }
+        });
     }
 
     function showStatusConfirmation(btn) {
@@ -159,10 +168,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const nombre = btn.dataset.comunicacionName;
         const isActive = btn.dataset.comunicacionActive === 'true';
         const action = isActive ? 'desactivar' : 'activar';
+        const actionCapital = isActive ? 'Desactivar' : 'Activar';
 
-        if (confirm(`¿Estás seguro de que deseas ${action} el tipo de comunicación "${nombre}"?`)) {
-            document.getElementById(formId).submit();
-        }
+        // Usar modal personalizado para confirmación de cambio de estado
+        showConfirmModal({
+            title: `${actionCapital} Tipo de Comunicación`,
+            message: `¿Estás seguro de que deseas ${action} el tipo de comunicación "${nombre}"?`,
+            actionText: actionCapital,
+            actionClass: isActive ? 'bg-orange-600 hover:bg-orange-700' : 'bg-green-600 hover:bg-green-700',
+            iconClass: isActive ? 'bg-orange-100' : 'bg-green-100',
+            iconColor: isActive ? 'text-orange-600' : 'text-green-600',
+            onConfirm: () => {
+                document.getElementById(formId).submit();
+            }
+        });
     }
 
     // Funciones de envío de formularios
@@ -379,6 +398,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (modal) {
             const modalContent = modal.querySelector('.relative');
 
+            // Si es el modal de confirmación, resetear estilos del botón
+            if (modalId === 'confirmStatusModal') {
+                const actionButton = document.getElementById('confirmModalAction');
+                if (actionButton) {
+                    // Resetear a los estilos originales
+                    actionButton.className = 'px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]';
+                    actionButton.style.backgroundColor = '';
+                    actionButton.style.borderColor = '';
+                    actionButton.style.color = '';
+                    actionButton.onclick = null;
+                }
+            }
+
             if (modalContent) {
                 // Animación de salida
                 modalContent.style.opacity = '0';
@@ -470,5 +502,76 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
+    }
+
+    // Función para mostrar modal de confirmación personalizado
+    function showConfirmModal(options) {
+        const modal = document.getElementById('confirmStatusModal');
+        const title = document.getElementById('confirmModalTitle');
+        const message = document.getElementById('confirmModalMessage');
+        const actionButton = document.getElementById('confirmModalAction');
+        const iconContainer = document.getElementById('confirmModalIcon');
+
+        if (!modal || !title || !message || !actionButton || !iconContainer) {
+            console.error('Modal elements not found, falling back to confirm()');
+            if (confirm(options.message)) {
+                options.onConfirm();
+            }
+            return;
+        }
+
+        // Configurar contenido del modal
+        title.textContent = options.title;
+        message.textContent = options.message;
+        actionButton.textContent = options.actionText;
+
+        // Configurar ícono
+        iconContainer.className = `flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full ${options.iconClass}`;
+        iconContainer.innerHTML = `
+            <svg class="w-6 h-6 ${options.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+        `;
+
+        // Limpiar todas las clases del botón y aplicar las nuevas
+        actionButton.className = '';
+        actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
+
+        // Forzar los estilos con !important si es necesario
+        if (options.actionClass.includes('bg-orange-600')) {
+            actionButton.style.backgroundColor = '#ea580c';
+            actionButton.style.borderColor = '#ea580c';
+        } else if (options.actionClass.includes('bg-red-600')) {
+            actionButton.style.backgroundColor = '#dc2626';
+            actionButton.style.borderColor = '#dc2626';
+        } else if (options.actionClass.includes('bg-green-600')) {
+            actionButton.style.backgroundColor = '#16a34a';
+            actionButton.style.borderColor = '#16a34a';
+        }
+
+        // Asegurar que el texto sea blanco
+        actionButton.style.color = '#ffffff';
+
+        // Configurar event listener para el botón de acción
+        actionButton.onclick = function() {
+            if (options.onConfirm) {
+                options.onConfirm();
+            }
+            closeModal('confirmStatusModal');
+        };
+
+        // Mostrar modal con animación
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Animación de entrada
+        const modalContent = modal.querySelector('.relative');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+        setTimeout(() => {
+            modalContent.style.opacity = '1';
+            modalContent.style.transform = 'scale(1) translateY(0)';
+        }, 10);
     }
 });

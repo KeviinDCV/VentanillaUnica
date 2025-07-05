@@ -105,7 +105,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto relative">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -138,8 +138,8 @@
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 rounded-full bg-cyan-100 flex items-center justify-center">
-                                                <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                                                 </svg>
                                             </div>
@@ -188,7 +188,7 @@
                                         </button>
 
                                         <div id="dropdown-{{ $comunicacion->id }}"
-                                             class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                                             class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Editar -->
@@ -507,88 +507,152 @@
     </div>
 
     <script>
-        // Función para manejar los menús desplegables
+        // Función simple para manejar los menús desplegables con posicionamiento absoluto
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
+            if (!dropdown) {
+                console.error('No se encontró el dropdown con ID:', dropdownId);
+                return;
+            }
+
             const isHidden = dropdown.classList.contains('hidden');
 
             // Cerrar todos los dropdowns abiertos
             document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
                 if (d.id !== dropdownId) {
                     d.classList.add('hidden');
-                    // Resetear estilos
-                    d.style.top = '';
-                    d.style.bottom = '';
-                    d.classList.remove('origin-bottom-right', 'mb-2');
-                    d.classList.add('origin-top-right', 'mt-2');
                 }
             });
 
-            // Toggle del dropdown actual
             if (isHidden) {
-                // Resetear posición antes de mostrar
-                dropdown.style.top = '';
-                dropdown.style.bottom = '';
-                dropdown.classList.remove('origin-bottom-right', 'mb-2');
-                dropdown.classList.add('origin-top-right', 'mt-2');
-
+                // Mostrar dropdown
                 dropdown.classList.remove('hidden');
 
-                // Ajustar posición del menú según el espacio disponible
-                adjustDropdownPosition(dropdown);
+                // Verificar posicionamiento y ajustar automáticamente
+                setTimeout(() => {
+                    const rect = dropdown.getBoundingClientRect();
+                    const container = dropdown.closest('.relative');
+                    const buttonRect = container.getBoundingClientRect();
+
+                    // Si se sale por la derecha, cambiar a alineación izquierda
+                    if (rect.right > window.innerWidth - 10) {
+                        dropdown.classList.remove('right-0');
+                        dropdown.classList.add('left-0');
+                    }
+
+                    // Detectar si está en las últimas filas o se sale por abajo
+                    const spaceBelow = window.innerHeight - buttonRect.bottom;
+                    const dropdownHeight = rect.height;
+
+                    // Si no hay suficiente espacio abajo (menos de la altura del dropdown + 20px de margen)
+                    if (spaceBelow < dropdownHeight + 20) {
+                        dropdown.classList.remove('top-full', 'mt-1');
+                        dropdown.classList.add('bottom-full', 'mb-1');
+
+                        // Cambiar el transform-origin para animación hacia arriba
+                        dropdown.style.transformOrigin = 'bottom right';
+                    } else {
+                        // Asegurar que esté hacia abajo si hay espacio
+                        dropdown.classList.remove('bottom-full', 'mb-1');
+                        dropdown.classList.add('top-full', 'mt-1');
+                        dropdown.style.transformOrigin = 'top right';
+                    }
+                }, 10);
             } else {
+                // Ocultar dropdown y resetear clases
                 dropdown.classList.add('hidden');
+                dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
+                dropdown.classList.add('right-0', 'top-full', 'mt-1');
+                dropdown.style.transformOrigin = 'top right';
             }
         }
 
-        // Función para ajustar la posición del dropdown
-        function adjustDropdownPosition(dropdown) {
-            // Encontrar el botón que activa este dropdown
-            const button = dropdown.parentElement.querySelector('button[onclick*="toggleDropdown"]');
-            if (!button) return;
-
-            const buttonRect = button.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const dropdownHeight = 200; // Altura estimada del menú (ajustar si es necesario)
-
-            // Calcular espacio disponible debajo del botón
-            const spaceBelow = viewportHeight - buttonRect.bottom;
-
-            // Si no hay suficiente espacio abajo (con margen de seguridad), abrir hacia arriba
-            if (spaceBelow < dropdownHeight + 50) {
-                dropdown.classList.remove('origin-top-right', 'mt-2');
-                dropdown.classList.add('origin-bottom-right', 'mb-2');
-                dropdown.style.bottom = '100%';
-                dropdown.style.top = 'auto';
-            } else {
-                dropdown.classList.remove('origin-bottom-right', 'mb-2');
-                dropdown.classList.add('origin-top-right', 'mt-2');
-                dropdown.style.top = '100%';
-                dropdown.style.bottom = 'auto';
-            }
+        // Función para resetear dropdown a estado inicial
+        function resetDropdown(dropdown) {
+            dropdown.classList.add('hidden');
+            dropdown.classList.remove('left-0', 'bottom-full', 'mb-1');
+            dropdown.classList.add('right-0', 'top-full', 'mt-1');
+            dropdown.style.transformOrigin = 'top right';
         }
 
         // Cerrar dropdowns al hacer clic fuera
         document.addEventListener('click', function(event) {
             if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id^="dropdown-"]')) {
                 document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-                    dropdown.classList.add('hidden');
+                    resetDropdown(dropdown);
                 });
             }
         });
 
         // Cerrar dropdown después de hacer clic en una acción
         document.addEventListener('click', function(event) {
-            if (event.target.closest('[id^="dropdown-"] button')) {
-                // Pequeño delay para permitir que la acción se ejecute
+            if (event.target.closest('[id^="dropdown-"] button') || event.target.closest('[id^="dropdown-"] a')) {
                 setTimeout(() => {
                     document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
-                        dropdown.classList.add('hidden');
+                        resetDropdown(dropdown);
                     });
                 }, 100);
             }
         });
+
+        // Cerrar dropdowns al hacer scroll (opcional, para mejor UX)
+        window.addEventListener('scroll', function() {
+            document.querySelectorAll('[id^="dropdown-"]:not(.hidden)').forEach(dropdown => {
+                resetDropdown(dropdown);
+            });
+        });
     </script>
+
+    @push('styles')
+    <style>
+        /* Estilos para dropdowns con posicionamiento absoluto inteligente */
+        [id^="dropdown-"] {
+            z-index: 50;
+            min-width: 12rem;
+            transform-origin: top right;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+        }
+
+        /* Animaciones suaves para apertura normal (hacia abajo) */
+        [id^="dropdown-"]:not(.hidden) {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        [id^="dropdown-"].hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* Estilos específicos para dropdowns que abren hacia arriba */
+        [id^="dropdown-"].bottom-full {
+            transform-origin: bottom right;
+        }
+
+        /* Asegurar que los contenedores de la tabla permitan overflow */
+        .overflow-x-auto {
+            overflow: visible !important;
+        }
+
+        /* Mejorar el contenedor de acciones para posicionamiento relativo */
+        .relative.inline-block {
+            position: relative;
+        }
+
+        /* Asegurar que la tabla no interfiera */
+        table {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Mejorar la visibilidad en las últimas filas */
+        tbody tr:nth-last-child(-n+2) [id^="dropdown-"] {
+            /* Asegurar que los dropdowns de las últimas 2 filas tengan prioridad */
+            z-index: 60;
+        }
+    </style>
+    @endpush
 
     @push('scripts')
     @vite(['resources/js/admin-comunicaciones.js'])
