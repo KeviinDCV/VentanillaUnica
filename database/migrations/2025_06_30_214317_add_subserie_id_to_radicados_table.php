@@ -12,12 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('radicados', function (Blueprint $table) {
-            $table->foreignId('subserie_id')
-                  ->nullable()
-                  ->after('remitente_id')
-                  ->constrained('subseries')
-                  ->onDelete('restrict')
-                  ->comment('Subserie del TRD jerárquico');
+            // Verificar si la columna no existe antes de agregarla
+            if (!Schema::hasColumn('radicados', 'subserie_id')) {
+                $table->foreignId('subserie_id')
+                      ->nullable()
+                      ->after('remitente_id')
+                      ->constrained('subseries')
+                      ->onDelete('restrict')
+                      ->comment('Subserie del TRD jerárquico');
+            }
         });
     }
 
@@ -27,8 +30,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('radicados', function (Blueprint $table) {
-            $table->dropForeign(['subserie_id']);
-            $table->dropColumn('subserie_id');
+            // Verificar si la columna existe antes de eliminarla
+            if (Schema::hasColumn('radicados', 'subserie_id')) {
+                $table->dropForeign(['subserie_id']);
+                $table->dropColumn('subserie_id');
+            }
         });
     }
 };
