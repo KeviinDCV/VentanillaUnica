@@ -855,11 +855,143 @@ a:focus-visible,
         transition: margin-left 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Responsive para pantallas medianas (1366x768 y similares) */
+    @media (max-width: 1440px) and (min-width: 1025px) {
+        .sidebar {
+            width: 240px; /* Reducir ancho del sidebar */
+        }
+
+        .main-layout {
+            margin-left: 240px;
+        }
+
+        .main-layout.sidebar-collapsed {
+            margin-left: 70px;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        /* Reducir padding en contenedores */
+        .container-minimal {
+            @apply max-w-5xl mx-auto px-3 sm:px-4 lg:px-6;
+        }
+
+        /* Ajustar tamaños de elementos */
+        .py-8 {
+            @apply py-6;
+        }
+
+        .py-12 {
+            @apply py-8;
+        }
+
+        /* Reducir espaciado en grids */
+        .gap-6 {
+            @apply gap-4;
+        }
+
+        .gap-8 {
+            @apply gap-5;
+        }
+
+        /* Ajustar padding de cards */
+        .p-6 {
+            @apply p-4;
+        }
+
+        .p-8 {
+            @apply p-6;
+        }
+
+        /* Optimizar tablas */
+        .px-6 {
+            @apply px-4;
+        }
+
+        .py-4 {
+            @apply py-3;
+        }
+
+        /* Reducir tamaños de iconos grandes */
+        .w-12.h-12 {
+            @apply w-10 h-10;
+        }
+
+        .w-8.h-8 {
+            @apply w-7 h-7;
+        }
+
+        /* Ajustar texto de headers */
+        .text-2xl {
+            @apply text-xl;
+        }
+
+        .text-xl {
+            @apply text-lg;
+        }
+
+        .text-lg {
+            @apply text-base;
+        }
+    }
+
+    /* Responsive para tablets (768px - 1024px) */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .container-minimal {
+            @apply max-w-full mx-auto px-3 sm:px-4;
+        }
+
+        /* Reducir más el espaciado */
+        .gap-6 {
+            @apply gap-3;
+        }
+
+        .gap-8 {
+            @apply gap-4;
+        }
+
+        .p-6 {
+            @apply p-3;
+        }
+
+        .p-8 {
+            @apply p-4;
+        }
+
+        /* Ajustar grids para tablets */
+        .grid-cols-4 {
+            @apply grid-cols-2;
+        }
+
+        .lg\:grid-cols-4 {
+            @apply lg:grid-cols-2;
+        }
+
+        .lg\:grid-cols-3 {
+            @apply lg:grid-cols-2;
+        }
+
+        /* Optimizar tablas para tablets */
+        .px-6 {
+            @apply px-3;
+        }
+
+        .px-4 {
+            @apply px-3;
+        }
+
+        .py-4 {
+            @apply py-2;
+        }
+    }
+
     /* Responsive para móviles */
-    @media (max-width: 1024px) {
+    @media (max-width: 768px) {
         .sidebar {
             @apply -translate-x-full;
-            width: 280px; /* Forzar ancho completo en móvil */
+            width: 260px; /* Reducir ancho en móvil */
         }
 
         .sidebar.mobile-open {
@@ -2091,14 +2223,110 @@ a:focus-visible,
         /* Sin animación de escala */
     }
 
-    /* Mejoras para la tabla responsive */
-    @media (max-width: 768px) {
+    /* Mejoras para la tabla responsive - Pantallas medianas */
+    @media (max-width: 1440px) and (min-width: 1025px) {
         .results-table {
-            @apply text-sm;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
         }
 
         .table-cell {
-            @apply px-3 py-2;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        /* Reducir padding en celdas de tabla */
+        table td {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        table th {
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        /* Ajustar dropdowns en tablas */
+        .relative.inline-block {
+            position: relative;
+        }
+
+        /* Optimizar espaciado en filas */
+        tbody tr {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+    }
+
+    /* Mejoras para la tabla responsive - Tablets */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        .results-table {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .table-cell {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        table td {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        table th {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Reducir tamaño de botones en tablas */
+        .px-4.py-2 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+    }
+
+    /* Mejoras para la tabla responsive - Móviles */
+    @media (max-width: 768px) {
+        .results-table {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .table-cell {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        table td {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        table th {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
         }
     }
 
@@ -2106,6 +2334,185 @@ a:focus-visible,
         max-width: 100%;
         height: auto;
         object-fit: contain;
+    }
+
+    /* Mejoras específicas para dashboards en pantallas medianas */
+    @media (max-width: 1440px) and (min-width: 1025px) {
+        /* Optimizar cards de estadísticas */
+        .stats-card,
+        .bg-white.border.border-gray-200.rounded-lg {
+            @apply p-4;
+        }
+
+        /* Reducir espaciado en grids de dashboard */
+        .grid.gap-6 {
+            @apply gap-4;
+        }
+
+        .grid.gap-8 {
+            @apply gap-5;
+        }
+
+        /* Ajustar iconos en cards */
+        .stats-icon,
+        .w-12.h-12 {
+            @apply w-10 h-10;
+        }
+
+        /* Optimizar texto en cards */
+        .text-2xl {
+            @apply text-xl;
+        }
+
+        .text-xl {
+            @apply text-lg;
+        }
+
+        /* Reducir padding en headers */
+        .py-8 {
+            @apply py-6;
+        }
+
+        /* Ajustar espaciado en listas */
+        .space-y-4 > * + * {
+            margin-top: 0.75rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1rem;
+        }
+
+        /* Optimizar modales */
+        .modal-content {
+            @apply p-4;
+        }
+
+        /* Reducir padding en formularios */
+        .form-container {
+            @apply p-4;
+        }
+    }
+
+    /* Mejoras específicas para tablets */
+    @media (max-width: 1024px) and (min-width: 769px) {
+        /* Cards más compactas */
+        .stats-card,
+        .bg-white.border.border-gray-200.rounded-lg {
+            @apply p-3;
+        }
+
+        /* Grids más compactos */
+        .grid.gap-6 {
+            @apply gap-3;
+        }
+
+        .grid.gap-8 {
+            @apply gap-4;
+        }
+
+        /* Iconos más pequeños */
+        .stats-icon,
+        .w-12.h-12 {
+            @apply w-8 h-8;
+        }
+
+        .w-8.h-8 {
+            @apply w-7 h-7;
+        }
+
+        /* Texto más compacto */
+        .text-2xl {
+            @apply text-lg;
+        }
+
+        .text-xl {
+            @apply text-base;
+        }
+
+        .text-lg {
+            @apply text-base;
+        }
+
+        /* Headers más compactos */
+        .py-8 {
+            @apply py-4;
+        }
+
+        .py-12 {
+            @apply py-6;
+        }
+    }
+
+    /* Mejoras para formularios y modales en pantallas medianas */
+    @media (max-width: 1440px) and (min-width: 1025px) {
+        /* Optimizar inputs */
+        .form-input,
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        textarea {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Botones más compactos */
+        .btn,
+        .px-4.py-2 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Modales más compactos */
+        .modal-dialog {
+            @apply p-4;
+        }
+
+        /* Reducir espaciado en formularios */
+        .space-y-6 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 0.75rem;
+        }
+
+        /* Ajustar labels */
+        .form-label {
+            @apply text-sm;
+        }
+    }
+
+    /* Mejoras adicionales para navegación en pantallas medianas */
+    @media (max-width: 1440px) and (min-width: 1025px) {
+        /* Breadcrumbs más compactos */
+        .breadcrumb {
+            @apply text-sm;
+        }
+
+        /* Botones de navegación */
+        .nav-button {
+            @apply px-3 py-2;
+        }
+
+        /* Paginación más compacta */
+        .pagination {
+            @apply text-sm;
+        }
+
+        /* Filtros y búsqueda */
+        .search-container {
+            @apply p-3;
+        }
+
+        /* Alertas y mensajes */
+        .alert {
+            @apply p-3;
+        }
     }
 
     /* Efectos avanzados para integración del logo hospitalario */

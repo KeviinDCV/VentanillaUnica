@@ -36,7 +36,7 @@
         </style>
 
         <!-- Scripts -->
-        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js', 'resources/js/radicacion.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js', 'resources/js/file-upload.js', 'resources/js/modal-file-upload.js']); ?>
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/css/responsive-improvements.css', 'resources/js/app.js', 'resources/js/radicacion.js', 'resources/js/session-manager.js', 'resources/js/colombia-time.js', 'resources/js/file-upload.js', 'resources/js/modal-file-upload.js']); ?>
 
         <!-- Script para detectar errores de fuentes y aplicar fallback -->
         <script>

@@ -1,0 +1,261 @@
+/* 
+ * Mejoras de Responsive Design para UniRadic
+ * Optimizado para resoluciones 1366x768 y menores
+ */
+
+/* Breakpoint específico para laptops pequeños y pantallas medianas */
+@media (max-width: 1440px) and (min-width: 1025px) {
+    /* Optimización del layout principal */
+    .main-layout {
+        margin-left: 240px;
+    }
+    
+    .main-layout.sidebar-collapsed {
+        margin-left: 70px;
+    }
+    
+    .sidebar {
+        width: 240px;
+    }
+    
+    .sidebar.collapsed {
+        width: 70px;
+    }
+    
+    /* Contenedores más compactos */
+    .container-minimal {
+        max-width: 1200px;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    /* Reducir espaciado vertical */
+    .py-8 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    .py-12 {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    
+    /* Cards más compactas */
+    .bg-white.border.border-gray-200.rounded-lg.p-6 {
+        padding: 1rem;
+    }
+    
+    .bg-white.border.border-gray-200.rounded-lg.p-8 {
+        padding: 1.5rem;
+    }
+    
+    /* Grids más compactos */
+    .gap-6 {
+        gap: 1rem;
+    }
+    
+    .gap-8 {
+        gap: 1.25rem;
+    }
+    
+    /* Iconos más pequeños */
+    .w-12.h-12 {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .w-8.h-8 {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    
+    /* Texto más compacto */
+    .text-2xl {
+        font-size: 1.5rem;
+        line-height: 2rem;
+    }
+    
+    .text-xl {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+    }
+    
+    .text-lg {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+    
+    /* Tablas optimizadas */
+    table td,
+    table th {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    /* Formularios más compactos */
+    .form-input,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Botones más compactos */
+    .btn,
+    .px-4.py-2 {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Modales optimizados */
+    .modal-dialog {
+        padding: 1rem;
+    }
+    
+    /* Sidebar links más compactos */
+    .sidebar-link {
+        padding: 0.75rem 1rem;
+        margin: 0.25rem 0.75rem;
+    }
+    
+    .sidebar-link-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
+
+/* Breakpoint para tablets */
+@media (max-width: 1024px) and (min-width: 769px) {
+    /* Layout para tablets */
+    .container-minimal {
+        max-width: 100%;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    /* Espaciado reducido */
+    .py-8 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    .py-12 {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    /* Cards muy compactas */
+    .bg-white.border.border-gray-200.rounded-lg.p-6 {
+        padding: 0.75rem;
+    }
+    
+    .bg-white.border.border-gray-200.rounded-lg.p-8 {
+        padding: 1rem;
+    }
+    
+    /* Grids adaptados */
+    .gap-6 {
+        gap: 0.75rem;
+    }
+    
+    .gap-8 {
+        gap: 1rem;
+    }
+    
+    /* Ajustar grids para tablets */
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .lg\:grid-cols-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    /* Iconos más pequeños */
+    .w-12.h-12 {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    .w-8.h-8 {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    /* Texto compacto */
+    .text-2xl {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+    }
+    
+    .text-xl {
+        font-size: 1.125rem;
+        line-height: 1.75rem;
+    }
+    
+    .text-lg {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+    
+    /* Tablas para tablets */
+    table td,
+    table th {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    /* Botones más pequeños */
+    .px-4.py-2 {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+    }
+}
+
+/* Optimizaciones específicas para elementos comunes */
+@media (max-width: 1440px) {
+    /* Breadcrumbs más compactos */
+    .breadcrumb {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+    
+    /* Paginación compacta */
+    .pagination {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+    
+    /* Alertas más compactas */
+    .alert {
+        padding: 0.75rem;
+    }
+    
+    /* Dropdowns optimizados */
+    .dropdown-menu {
+        min-width: 10rem;
+    }
+    
+    /* Headers más compactos */
+    .page-header {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
