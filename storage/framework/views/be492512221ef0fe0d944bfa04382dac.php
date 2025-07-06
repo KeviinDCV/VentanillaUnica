@@ -108,6 +108,64 @@
             appearance: none;
         }
 
+        /* CORRECCIONES ESPECÍFICAS PARA RESOLUCIONES MEDIANAS */
+        @media (max-width: 1440px) and (min-width: 1025px) {
+            .input-modern {
+                padding: 12px 14px 12px 44px !important;
+                font-size: 14px !important;
+                line-height: 1.3 !important;
+            }
+
+            .input-icon {
+                left: 14px !important;
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            .input-icon svg {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            .password-toggle {
+                right: 14px !important;
+                width: 30px !important;
+                height: 30px !important;
+            }
+
+            .input-container.has-toggle .input-modern {
+                padding-right: 52px !important;
+            }
+
+            .login-form-container {
+                max-width: 360px !important;
+                padding: 1.75rem !important;
+            }
+        }
+
+        /* CORRECCIONES PARA TABLETS */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .input-modern {
+                padding: 11px 13px 11px 42px !important;
+                font-size: 14px !important;
+            }
+
+            .input-icon {
+                left: 13px !important;
+                width: 15px !important;
+                height: 15px !important;
+            }
+
+            .input-icon svg {
+                width: 15px !important;
+                height: 15px !important;
+            }
+
+            .input-container.has-toggle .input-modern {
+                padding-right: 48px !important;
+            }
+        }
+
         .input-modern:focus {
             background: rgba(255, 255, 255, 0.95);
             border-color: #052da2;
@@ -1493,7 +1551,7 @@
                                            autofocus
                                            autocomplete="username"
                                            class="input-modern"
-                                           placeholder="correo@hospital.com"
+                                           placeholder="Correo"
                                            aria-describedby="email-error">
                                 </div>
                                 <?php $__errorArgs = ['email'];
