@@ -119,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/dependencias/{id}', [App\Http\Controllers\Admin\AdminController::class, 'eliminarDependencia'])->name('dependencias.eliminar');
 
         Route::get('/reportes', [App\Http\Controllers\Admin\AdminController::class, 'reportes'])->name('reportes');
-        Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');
+        Route::get('/actividad-modal', [App\Http\Controllers\Admin\AdminController::class, 'obtenerActividadModal'])->name('actividad.modal');
 
         // Gestión de Departamentos
         Route::get('/departamentos', [App\Http\Controllers\Admin\DepartamentoController::class, 'index'])->name('departamentos.index');

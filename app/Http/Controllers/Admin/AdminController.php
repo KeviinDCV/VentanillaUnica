@@ -383,19 +383,7 @@ class AdminController extends Controller
 
 
 
-    /**
-     * Logs del sistema
-     */
-    public function logs()
-    {
-        // Actividad reciente del sistema
-        $actividadReciente = Radicado::with(['usuarioRadica', 'dependenciaDestino'])
-                                   ->orderBy('created_at', 'desc')
-                                   ->limit(50)
-                                   ->get();
 
-        return view('admin.logs.index', compact('actividadReciente'));
-    }
 
     /**
      * Mostrar formulario para crear nuevo usuario
@@ -731,5 +719,172 @@ class AdminController extends Controller
 
         // Ordenar por fecha descendente y limitar a 10 elementos
         return $actividades->sortByDesc('fecha')->take(10)->values();
+    }
+
+    /**
+     * Obtener actividad reciente para el modal (AJAX)
+     */
+    public function obtenerActividadModal(Request $request)
+    {
+        $busqueda = $request->get('busqueda', '');
+        $actividades = collect();
+
+        // Obtener actividades de los últimos 30 días para el modal
+        $fechaLimite = Carbon::now()->subDays(30);
+
+        // 1. Usuarios creados
+        $usuarios = User::where('created_at', '>=', $fechaLimite)
+                       ->when($busqueda, function($query, $busqueda) {
+                           return $query->where('name', 'like', "%{$busqueda}%");
+                       })
+                       ->orderBy('created_at', 'desc')
+                       ->limit(20)
+                       ->get();
+
+        foreach ($usuarios as $usuario) {
+            $actividades->push([
+                'tipo' => 'usuario',
+                'accion' => 'creado',
+                'descripcion' => "Usuario '{$usuario->name}' fue creado",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $usuario->created_at,
+                'icono' => 'user',
+                'color' => 'blue'
+            ]);
+        }
+
+        // 2. Dependencias creadas
+        $dependencias = Dependencia::where('created_at', '>=', $fechaLimite)
+                                  ->when($busqueda, function($query, $busqueda) {
+                                      return $query->where('nombre', 'like', "%{$busqueda}%");
+                                  })
+                                  ->orderBy('created_at', 'desc')
+                                  ->limit(20)
+                                  ->get();
+
+        foreach ($dependencias as $dependencia) {
+            $actividades->push([
+                'tipo' => 'dependencia',
+                'accion' => 'creada',
+                'descripcion' => "Dependencia '{$dependencia->nombre}' fue creada",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $dependencia->created_at,
+                'icono' => 'office-building',
+                'color' => 'green'
+            ]);
+        }
+
+        // 3. Comunicaciones creadas
+        $comunicaciones = \App\Models\Comunicacion::where('created_at', '>=', $fechaLimite)
+                                                 ->when($busqueda, function($query, $busqueda) {
+                                                     return $query->where('nombre', 'like', "%{$busqueda}%");
+                                                 })
+                                                 ->orderBy('created_at', 'desc')
+                                                 ->limit(20)
+                                                 ->get();
+
+        foreach ($comunicaciones as $comunicacion) {
+            $actividades->push([
+                'tipo' => 'comunicacion',
+                'accion' => 'creada',
+                'descripcion' => "Tipo de comunicación '{$comunicacion->nombre}' fue creado",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $comunicacion->created_at,
+                'icono' => 'chat',
+                'color' => 'purple'
+            ]);
+        }
+
+        // 4. Tipos de Solicitud creados
+        $tiposSolicitud = TipoSolicitud::where('created_at', '>=', $fechaLimite)
+                                      ->when($busqueda, function($query, $busqueda) {
+                                          return $query->where('nombre', 'like', "%{$busqueda}%");
+                                      })
+                                      ->orderBy('created_at', 'desc')
+                                      ->limit(20)
+                                      ->get();
+
+        foreach ($tiposSolicitud as $tipo) {
+            $actividades->push([
+                'tipo' => 'tipo_solicitud',
+                'accion' => 'creado',
+                'descripcion' => "Tipo de solicitud '{$tipo->nombre}' fue creado",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $tipo->created_at,
+                'icono' => 'clipboard',
+                'color' => 'orange'
+            ]);
+        }
+
+        // 5. Departamentos creados
+        $departamentos = Departamento::where('created_at', '>=', $fechaLimite)
+                                   ->when($busqueda, function($query, $busqueda) {
+                                       return $query->where('nombre', 'like', "%{$busqueda}%");
+                                   })
+                                   ->orderBy('created_at', 'desc')
+                                   ->limit(20)
+                                   ->get();
+
+        foreach ($departamentos as $departamento) {
+            $actividades->push([
+                'tipo' => 'departamento',
+                'accion' => 'creado',
+                'descripcion' => "Departamento '{$departamento->nombre}' fue creado",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $departamento->created_at,
+                'icono' => 'map',
+                'color' => 'indigo'
+            ]);
+        }
+
+        // 6. Ciudades creadas
+        $ciudades = Ciudad::where('created_at', '>=', $fechaLimite)
+                         ->when($busqueda, function($query, $busqueda) {
+                             return $query->where('nombre', 'like', "%{$busqueda}%");
+                         })
+                         ->orderBy('created_at', 'desc')
+                         ->limit(20)
+                         ->get();
+
+        foreach ($ciudades as $ciudad) {
+            $actividades->push([
+                'tipo' => 'ciudad',
+                'accion' => 'creada',
+                'descripcion' => "Ciudad '{$ciudad->nombre}' fue creada",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $ciudad->created_at,
+                'icono' => 'location',
+                'color' => 'teal'
+            ]);
+        }
+
+        // 7. Remitentes creados
+        $remitentes = Remitente::where('created_at', '>=', $fechaLimite)
+                              ->when($busqueda, function($query, $busqueda) {
+                                  return $query->where('nombre_completo', 'like', "%{$busqueda}%");
+                              })
+                              ->orderBy('created_at', 'desc')
+                              ->limit(20)
+                              ->get();
+
+        foreach ($remitentes as $remitente) {
+            $actividades->push([
+                'tipo' => 'remitente',
+                'accion' => 'creado',
+                'descripcion' => "Remitente '{$remitente->nombre_completo}' fue creado",
+                'usuario_responsable' => 'Administrador',
+                'fecha' => $remitente->created_at,
+                'icono' => 'user-plus',
+                'color' => 'pink'
+            ]);
+        }
+
+        // Ordenar por fecha descendente y limitar a 50 elementos para el modal
+        $actividadesFiltradas = $actividades->sortByDesc('fecha')->take(50)->values();
+
+        return response()->json([
+            'success' => true,
+            'actividades' => $actividadesFiltradas
+        ]);
     }
 }

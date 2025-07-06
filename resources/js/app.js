@@ -8,7 +8,6 @@ import './simple-navigation';
 import './colombia-time';
 import './notifications';
 import './form-protection';
-import './admin-logs';
 import './admin-usuarios';
 
 import './admin-dependencias';

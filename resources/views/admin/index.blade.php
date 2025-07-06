@@ -250,10 +250,10 @@
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-medium text-gray-800">Actividad Reciente</h3>
-                        <a href="{{ route('admin.logs') }}"
-                           class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                        <button onclick="abrirModalActividad()"
+                                class="text-sm font-medium text-blue-600 hover:text-blue-500">
                             Ver todos los logs
-                        </a>
+                        </button>
                     </div>
                 </div>
                 <div class="p-6">
@@ -316,4 +316,174 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de Actividad Completa -->
+    <div id="modalActividad" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
+            <!-- Header del Modal -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Actividad Reciente del Sistema</h3>
+                <button onclick="cerrarModalActividad()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="p-4">
+                <!-- Buscador -->
+                <div class="mb-4">
+                    <div class="relative">
+                        <input type="text"
+                               id="busquedaActividad"
+                               placeholder="Buscar en la actividad..."
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Actividad -->
+                <div class="max-h-96 overflow-y-auto">
+                    <div id="contenidoActividad" class="space-y-3">
+                        <!-- El contenido se carga dinámicamente -->
+                        <div class="text-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                            <p class="text-gray-500 mt-2">Cargando actividad...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer del Modal -->
+                <div class="flex justify-end pt-4 border-t border-gray-200 mt-4">
+                    <button onclick="cerrarModalActividad()"
+                            class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timeoutBusqueda;
+
+        function abrirModalActividad() {
+            const modal = document.getElementById('modalActividad');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Animación de entrada
+            const modalContent = modal.querySelector('.relative');
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modalContent.style.opacity = '1';
+                modalContent.style.transform = 'scale(1) translateY(0)';
+            }, 10);
+
+            cargarActividad();
+        }
+
+        function cerrarModalActividad() {
+            const modal = document.getElementById('modalActividad');
+            const modalContent = modal.querySelector('.relative');
+
+            // Animación de salida
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                document.getElementById('busquedaActividad').value = '';
+            }, 200);
+        }
+
+        function cargarActividad(busqueda = '') {
+            fetch(`{{ route('admin.actividad.modal') }}?busqueda=${encodeURIComponent(busqueda)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        mostrarActividades(data.actividades);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('contenidoActividad').innerHTML =
+                        '<p class="text-red-500 text-center py-4">Error al cargar la actividad</p>';
+                });
+        }
+
+        function mostrarActividades(actividades) {
+            const contenido = document.getElementById('contenidoActividad');
+
+            if (actividades.length === 0) {
+                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">No se encontró actividad</p>';
+                return;
+            }
+
+            let html = '';
+            actividades.forEach(actividad => {
+                const icono = obtenerIconoSVG(actividad.icono, actividad.color);
+                const fecha = new Date(actividad.fecha).toLocaleString('es-ES');
+
+                html += `
+                    <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-${actividad.color}-100 rounded-full flex items-center justify-center">
+                                ${icono}
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900">${actividad.descripcion}</p>
+                            <p class="text-sm text-gray-500">Por: ${actividad.usuario_responsable}</p>
+                        </div>
+                        <div class="flex-shrink-0 text-sm text-gray-500">
+                            ${fecha}
+                        </div>
+                    </div>
+                `;
+            });
+
+            contenido.innerHTML = html;
+        }
+
+        function obtenerIconoSVG(icono, color) {
+            const iconos = {
+                'user': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>`,
+                'office-building': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`,
+                'chat': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>`,
+                'clipboard': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>`,
+                'map': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>`,
+                'location': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`,
+                'user-plus': `<svg class="w-4 h-4 text-${color}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>`
+            };
+            return iconos[icono] || iconos['user'];
+        }
+
+        // Búsqueda en tiempo real
+        document.addEventListener('DOMContentLoaded', function() {
+            const busquedaInput = document.getElementById('busquedaActividad');
+
+            busquedaInput.addEventListener('input', function() {
+                clearTimeout(timeoutBusqueda);
+                timeoutBusqueda = setTimeout(() => {
+                    cargarActividad(this.value);
+                }, 300);
+            });
+        });
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalActividad').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalActividad();
+            }
+        });
+    </script>
 </x-app-layout>
