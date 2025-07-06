@@ -154,4 +154,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Radicado::class, 'usuario_responde_id');
     }
+
+    /**
+     * Relación con actividades de login del usuario
+     */
+    public function loginActivities(): HasMany
+    {
+        return $this->hasMany(UserLoginActivity::class);
+    }
 }

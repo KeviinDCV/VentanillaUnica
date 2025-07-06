@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\UserLoginActivity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -58,6 +59,16 @@ class AuthenticatedSessionController extends Controller
 
         // Establecer configuración de sesión segura
         $this->configureSecureSession($request);
+
+        // Registrar actividad de login en la base de datos
+        UserLoginActivity::create([
+            'user_id' => $user->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'remember_me' => $request->boolean('remember'),
+            'session_id' => $request->session()->getId(),
+            'login_at' => now(),
+        ]);
 
         // Log del login exitoso completo
         Log::info('Login completado exitosamente', [

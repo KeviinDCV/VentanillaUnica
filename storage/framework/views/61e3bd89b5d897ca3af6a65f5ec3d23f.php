@@ -1,6 +1,15 @@
-<x-app-layout>
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
     <div data-page="admin-ciudades"></div>
-    <x-slot name="header">
+     <?php $__env->slot('header', null, []); ?> 
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="font-light text-xl text-gray-800 leading-tight">
@@ -11,15 +20,34 @@
                 </p>
             </div>
             <div class="flex items-center space-x-4">
-                <x-hospital-brand />
+                <?php if (isset($component)) { $__componentOriginal891e6c0b8a48d6de15606ccc6221404b = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.hospital-brand','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('hospital-brand'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal891e6c0b8a48d6de15606ccc6221404b)): ?>
+<?php $attributes = $__attributesOriginal891e6c0b8a48d6de15606ccc6221404b; ?>
+<?php unset($__attributesOriginal891e6c0b8a48d6de15606ccc6221404b); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal891e6c0b8a48d6de15606ccc6221404b)): ?>
+<?php $component = $__componentOriginal891e6c0b8a48d6de15606ccc6221404b; ?>
+<?php unset($__componentOriginal891e6c0b8a48d6de15606ccc6221404b); ?>
+<?php endif; ?>
             </div>
         </div>
-    </x-slot>
+     <?php $__env->endSlot(); ?>
 
     <div class="py-12">
         <div class="container-minimal">
             <!-- Mensajes de éxito y error -->
-            @if(session('success'))
+            <?php if(session('success')): ?>
                 <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -28,13 +56,13 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                            <p class="text-sm font-medium text-green-800"><?php echo e(session('success')); ?></p>
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @if(session('error'))
+            <?php if(session('error')): ?>
                 <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
@@ -43,11 +71,11 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
+                            <p class="text-sm font-medium text-red-800"><?php echo e(session('error')); ?></p>
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Estadísticas de Ciudades -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -62,7 +90,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-500">Total Ciudades</p>
-                            <p class="text-lg font-semibold text-gray-900">{{ $ciudades->total() }}</p>
+                            <p class="text-lg font-semibold text-gray-900"><?php echo e($ciudades->total()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -78,7 +106,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-500">Activas</p>
-                            <p class="text-lg font-semibold text-green-600">{{ $ciudades->where('activo', true)->count() }}</p>
+                            <p class="text-lg font-semibold text-green-600"><?php echo e($ciudades->where('activo', true)->count()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -95,7 +123,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-500">Departamentos</p>
-                            <p class="text-lg font-semibold text-blue-600">{{ $departamentos->count() }}</p>
+                            <p class="text-lg font-semibold text-blue-600"><?php echo e($departamentos->count()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -111,7 +139,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-500">Con Código</p>
-                            <p class="text-lg font-semibold text-orange-600">{{ $ciudades->whereNotNull('codigo')->count() }}</p>
+                            <p class="text-lg font-semibold text-orange-600"><?php echo e($ciudades->whereNotNull('codigo')->count()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -138,9 +166,9 @@
                         <div class="ml-4 flex space-x-3">
                             <select id="filtro-departamento" class="border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 <option value="">Todos los departamentos</option>
-                                @foreach($departamentos as $departamento)
-                                <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = $departamentos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $departamento): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($departamento->id); ?>"><?php echo e($departamento->nombre); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                             <select id="filtro-estado" class="border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 <option value="">Todos los estados</option>
@@ -173,13 +201,13 @@
                             </tr>
                         </thead>
                         <tbody id="tabla-ciudades" class="bg-white divide-y divide-gray-200">
-                            @foreach($ciudades as $ciudad)
+                            <?php $__currentLoopData = $ciudades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ciudad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr class="hover:bg-gray-50 ciudad-row"
-                                data-id="{{ $ciudad->id }}"
-                                data-name="{{ strtolower($ciudad->nombre) }}"
-                                data-departamento-id="{{ $ciudad->departamento_id }}"
-                                data-departamento-name="{{ strtolower($ciudad->departamento->nombre) }}"
-                                data-active="{{ $ciudad->activo ? 'true' : 'false' }}">
+                                data-id="<?php echo e($ciudad->id); ?>"
+                                data-name="<?php echo e(strtolower($ciudad->nombre)); ?>"
+                                data-departamento-id="<?php echo e($ciudad->departamento_id); ?>"
+                                data-departamento-name="<?php echo e(strtolower($ciudad->departamento->nombre)); ?>"
+                                data-active="<?php echo e($ciudad->activo ? 'true' : 'false'); ?>">
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-8 w-8">
@@ -190,56 +218,58 @@
                                             </div>
                                         </div>
                                         <div class="ml-3 min-w-0 flex-1">
-                                            <div class="text-sm font-medium text-gray-900 truncate" title="{{ $ciudad->nombre }}">
-                                                {{ $ciudad->nombre }}
+                                            <div class="text-sm font-medium text-gray-900 truncate" title="<?php echo e($ciudad->nombre); ?>">
+                                                <?php echo e($ciudad->nombre); ?>
+
                                             </div>
                                             <div class="text-xs text-gray-500 md:hidden truncate">
-                                                {{ $ciudad->departamento->nombre }} • {{ $ciudad->codigo ?? 'Sin código' }}
+                                                <?php echo e($ciudad->departamento->nombre); ?> • <?php echo e($ciudad->codigo ?? 'Sin código'); ?>
+
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">{{ $ciudad->departamento->nombre }}</div>
+                                    <div class="text-sm text-gray-900"><?php echo e($ciudad->departamento->nombre); ?></div>
                                 </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">{{ $ciudad->codigo ?? 'N/A' }}</div>
+                                    <div class="text-sm text-gray-900"><?php echo e($ciudad->codigo ?? 'N/A'); ?></div>
                                 </td>
                                 <td class="px-3 py-4">
-                                    @if($ciudad->activo)
+                                    <?php if($ciudad->activo): ?>
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <span class="w-1.5 h-1.5 mr-1.5 bg-green-400 rounded-full"></span>
                                             Activo
                                         </span>
-                                    @else
+                                    <?php else: ?>
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             <span class="w-1.5 h-1.5 mr-1.5 bg-red-400 rounded-full"></span>
                                             Inactivo
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
                                 </td>
                                 <td class="px-3 py-4 text-sm font-medium">
                                     <div class="relative inline-block text-left">
                                         <button type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
-                                                onclick="toggleDropdown('dropdown-ciudad-{{ $ciudad->id }}')">
+                                                onclick="toggleDropdown('dropdown-ciudad-<?php echo e($ciudad->id); ?>')">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                             </svg>
                                         </button>
 
-                                        <div id="dropdown-ciudad-{{ $ciudad->id }}"
+                                        <div id="dropdown-ciudad-<?php echo e($ciudad->id); ?>"
                                              class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                                              style="z-index: 9999;"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Editar -->
                                                 <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                                                        data-id="{{ $ciudad->id }}"
-                                                        data-nombre="{{ $ciudad->nombre }}"
-                                                        data-codigo="{{ $ciudad->codigo }}"
-                                                        data-departamento-id="{{ $ciudad->departamento_id }}"
-                                                        data-activo="{{ $ciudad->activo ? 'true' : 'false' }}">
+                                                        data-id="<?php echo e($ciudad->id); ?>"
+                                                        data-nombre="<?php echo e($ciudad->nombre); ?>"
+                                                        data-codigo="<?php echo e($ciudad->codigo); ?>"
+                                                        data-departamento-id="<?php echo e($ciudad->departamento_id); ?>"
+                                                        data-activo="<?php echo e($ciudad->activo ? 'true' : 'false'); ?>">
                                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                     </svg>
@@ -247,19 +277,19 @@
                                                 </button>
 
                                                 <!-- Activar/Desactivar -->
-                                                <button class="btn-toggle-estado w-full text-left px-4 py-2 text-sm {{ $ciudad->activo ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50' }} flex items-center"
-                                                        data-id="{{ $ciudad->id }}">
-                                                    @if($ciudad->activo)
+                                                <button class="btn-toggle-estado w-full text-left px-4 py-2 text-sm <?php echo e($ciudad->activo ? 'text-orange-600 hover:bg-orange-50' : 'text-green-600 hover:bg-green-50'); ?> flex items-center"
+                                                        data-id="<?php echo e($ciudad->id); ?>">
+                                                    <?php if($ciudad->activo): ?>
                                                         <svg class="w-4 h-4 mr-3 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"/>
                                                         </svg>
                                                         Desactivar
-                                                    @else
+                                                    <?php else: ?>
                                                         <svg class="w-4 h-4 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                         </svg>
                                                         Activar
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </button>
 
                                                 <!-- Separador -->
@@ -267,8 +297,8 @@
 
                                                 <!-- Eliminar -->
                                                 <button class="btn-eliminar w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
-                                                        data-id="{{ $ciudad->id }}"
-                                                        data-nombre="{{ $ciudad->nombre }}">
+                                                        data-id="<?php echo e($ciudad->id); ?>"
+                                                        data-nombre="<?php echo e($ciudad->nombre); ?>">
                                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
@@ -279,14 +309,15 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Paginación -->
                 <div class="px-6 py-4 border-t border-gray-200">
-                    {{ $ciudades->links() }}
+                    <?php echo e($ciudades->links()); ?>
+
                 </div>
 
                 <!-- Botón Agregar -->
@@ -325,9 +356,9 @@
                                 required
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                             <option value="">Seleccionar departamento...</option>
-                            @foreach($departamentos as $departamento)
-                            <option value="{{ $departamento->id }}">{{ $departamento->nombre }}</option>
-                            @endforeach
+                            <?php $__currentLoopData = $departamentos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $departamento): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($departamento->id); ?>"><?php echo e($departamento->nombre); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                     
@@ -420,9 +451,9 @@
         </div>
     </div>
 
-    @push('scripts')
-    @vite('resources/js/admin-ciudades.js')
-    @endpush
+    <?php $__env->startPush('scripts'); ?>
+    <?php echo app('Illuminate\Foundation\Vite')('resources/js/admin-ciudades.js'); ?>
+    <?php $__env->stopPush(); ?>
 
     <script>
         // Función para manejar los menús desplegables
@@ -487,4 +518,14 @@
             }
         });
     </script>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/admin/ciudades/index.blade.php ENDPATH**/ ?>

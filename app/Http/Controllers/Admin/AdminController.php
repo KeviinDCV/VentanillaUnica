@@ -13,6 +13,7 @@ use App\Models\Documento;
 use App\Models\Departamento;
 use App\Models\Ciudad;
 use App\Models\TipoSolicitud;
+use App\Models\UserLoginActivity;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -717,6 +718,25 @@ class AdminController extends Controller
             ]);
         }
 
+        // 8. Actividades de login de usuarios
+        $loginActivities = UserLoginActivity::with('user')
+                                           ->where('login_at', '>=', $fechaLimite)
+                                           ->orderBy('login_at', 'desc')
+                                           ->limit(10)
+                                           ->get();
+
+        foreach ($loginActivities as $login) {
+            $actividades->push([
+                'tipo' => 'login',
+                'accion' => 'inicio_sesion',
+                'descripcion' => "Usuario '{$login->user->name}' inició sesión",
+                'usuario_responsable' => $login->user->name,
+                'fecha' => $login->login_at,
+                'icono' => 'login',
+                'color' => 'indigo'
+            ]);
+        }
+
         // Ordenar por fecha descendente y limitar a 10 elementos
         return $actividades->sortByDesc('fecha')->take(10)->values();
     }
@@ -876,6 +896,30 @@ class AdminController extends Controller
                 'fecha' => $remitente->created_at,
                 'icono' => 'user-plus',
                 'color' => 'pink'
+            ]);
+        }
+
+        // 8. Actividades de login de usuarios
+        $loginActivities = UserLoginActivity::with('user')
+                                           ->where('login_at', '>=', $fechaLimite)
+                                           ->when($busqueda, function($query, $busqueda) {
+                                               return $query->whereHas('user', function($q) use ($busqueda) {
+                                                   $q->where('name', 'like', "%{$busqueda}%");
+                                               });
+                                           })
+                                           ->orderBy('login_at', 'desc')
+                                           ->limit(30)
+                                           ->get();
+
+        foreach ($loginActivities as $login) {
+            $actividades->push([
+                'tipo' => 'login',
+                'accion' => 'inicio_sesion',
+                'descripcion' => "Usuario '{$login->user->name}' inició sesión",
+                'usuario_responsable' => $login->user->name,
+                'fecha' => $login->login_at,
+                'icono' => 'login',
+                'color' => 'indigo'
             ]);
         }
 
