@@ -534,8 +534,8 @@ a:focus-visible,
         white-space: nowrap;
         box-sizing: border-box;
         position: relative;
-        background: rgba(255, 255, 255, 0.12);
-        border: 2px solid rgba(255, 255, 255, 0.25);
+        background: transparent;
+        border: 2px solid transparent;
         font-weight: 600;
         font-size: 1rem;
     }
@@ -1079,9 +1079,9 @@ a:focus-visible,
         min-height: 52px;
         border-radius: 10px;
         position: relative;
-        background: rgba(255, 255, 255, 0.2);
-        border: 3px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        background: transparent;
+        border: 3px solid transparent;
+        box-shadow: none;
     }
 
     .sidebar.collapsed .sidebar-link::before {
@@ -1202,10 +1202,8 @@ a:focus-visible,
 
     .sidebar-section-header {
         @apply w-full flex items-center justify-between px-4 py-3 transition-all duration-300;
-        background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.1) 0%,
-            rgba(255, 255, 255, 0.05) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: transparent;
+        border: 1px solid transparent;
         border-radius: 12px;
         margin: 4px 12px;
         cursor: pointer;
@@ -1213,7 +1211,7 @@ a:focus-visible,
         box-sizing: border-box;
         overflow: hidden;
         position: relative;
-        backdrop-filter: blur(10px);
+        backdrop-filter: none;
     }
 
     .sidebar-section-header::before {
@@ -1346,8 +1344,8 @@ a:focus-visible,
         align-items: center;
         position: relative;
         overflow: hidden; /* Prevenir elementos cortados */
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        border: 1px solid transparent;
         border-radius: 8px;
         transition: all 0.3s ease;
         cursor: pointer;
