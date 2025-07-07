@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Dependencia;
-use App\Models\Radicado;
 use App\Models\UnidadAdministrativa;
 use App\Models\Serie;
 use App\Models\Subserie;
@@ -27,12 +24,8 @@ class GestionController extends Controller
             abort(403, 'No tienes permisos para acceder a esta sección.');
         }
 
-        // Estadísticas del sistema
+        // Estadísticas del sistema de gestión
         $estadisticas = [
-            'usuarios' => User::count(),
-            'dependencias' => Dependencia::count(),
-            'radicados' => Radicado::count(),
-            'usuarios_activos' => User::where('active', true)->count(),
             'unidades_administrativas' => UnidadAdministrativa::count(),
             'series' => Serie::count(),
             'subseries' => Subserie::count(),
