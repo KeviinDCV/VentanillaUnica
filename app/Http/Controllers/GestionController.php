@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Dependencia;
-
 use App\Models\Radicado;
 use App\Models\UnidadAdministrativa;
 use App\Models\Serie;
 use App\Models\Subserie;
-use Carbon\Carbon;
 
 class GestionController extends Controller
 {
@@ -35,7 +33,6 @@ class GestionController extends Controller
             'dependencias' => Dependencia::count(),
             'radicados' => Radicado::count(),
             'usuarios_activos' => User::where('active', true)->count(),
-            'radicados_hoy' => Radicado::whereDate('fecha_radicado', Carbon::today())->count(),
             'unidades_administrativas' => UnidadAdministrativa::count(),
             'series' => Serie::count(),
             'subseries' => Subserie::count(),
