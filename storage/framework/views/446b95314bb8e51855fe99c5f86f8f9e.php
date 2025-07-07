@@ -281,6 +281,7 @@
                                                 <button data-action="edit-user"
                                                         data-user-id="<?php echo e($usuario->id); ?>"
                                                         data-user-name="<?php echo e($usuario->name); ?>"
+                                                        data-user-documento-identidad="<?php echo e($usuario->documento_identidad ?? ''); ?>"
                                                         data-user-email="<?php echo e($usuario->email); ?>"
                                                         data-user-role="<?php echo e($usuario->role); ?>"
                                                         data-user-active="<?php echo e($usuario->active ? 'true' : 'false'); ?>"
@@ -443,6 +444,19 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                         </div>
 
+                        <!-- Documento de Identidad -->
+                        <div>
+                            <label for="edit_documento_identidad" class="block text-sm font-medium text-gray-700 mb-2">
+                                Documento de Identidad
+                            </label>
+                            <input type="text"
+                                   id="edit_documento_identidad"
+                                   name="documento_identidad"
+                                   maxlength="20"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                                   placeholder="Número de documento">
+                        </div>
+
                         <!-- Email -->
                         <div>
                             <label for="edit_email" class="block text-sm font-medium text-gray-700 mb-2">
@@ -573,6 +587,19 @@
                                    name="name"
                                    required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                        </div>
+
+                        <!-- Documento de Identidad -->
+                        <div>
+                            <label for="create_documento_identidad" class="block text-sm font-medium text-gray-700 mb-2">
+                                Documento de Identidad
+                            </label>
+                            <input type="text"
+                                   id="create_documento_identidad"
+                                   name="documento_identidad"
+                                   maxlength="20"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                                   placeholder="Número de documento">
                         </div>
 
                         <!-- Email -->

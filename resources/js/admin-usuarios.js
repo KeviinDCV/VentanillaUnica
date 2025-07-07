@@ -17,11 +17,12 @@ function initializeUserManagement() {
         button.addEventListener('click', function() {
             const userId = this.dataset.userId;
             const userName = this.dataset.userName;
+            const userDocumentoIdentidad = this.dataset.userDocumentoIdentidad || '';
             const userEmail = this.dataset.userEmail;
             const userRole = this.dataset.userRole;
             const userActive = this.dataset.userActive === 'true';
 
-            openEditModal(userId, userName, userEmail, userRole, userActive);
+            openEditModal(userId, userName, userDocumentoIdentidad, userEmail, userRole, userActive);
         });
     });
 
@@ -125,11 +126,12 @@ function attachToggleStatusEventListeners() {
     });
 }
 
-function openEditModal(userId, name, email, role, active) {
+function openEditModal(userId, name, documentoIdentidad, email, role, active) {
     currentUserId = userId;
 
     // Llenar el formulario con los datos del usuario
     document.getElementById('edit_name').value = name;
+    document.getElementById('edit_documento_identidad').value = documentoIdentidad;
     document.getElementById('edit_email').value = email;
     document.getElementById('edit_role').value = role;
     document.getElementById('edit_active').checked = active;
@@ -619,11 +621,12 @@ function updateUsersTable(usuarios) {
         button.addEventListener('click', function() {
             const userId = this.dataset.userId;
             const userName = this.dataset.userName;
+            const userDocumentoIdentidad = this.dataset.userDocumentoIdentidad || '';
             const userEmail = this.dataset.userEmail;
             const userRole = this.dataset.userRole;
             const userActive = this.dataset.userActive === 'true';
 
-            openEditModal(userId, userName, userEmail, userRole, userActive);
+            openEditModal(userId, userName, userDocumentoIdentidad, userEmail, userRole, userActive);
         });
     });
 }
@@ -710,6 +713,7 @@ function createUserRow(usuario) {
                         <button data-action="edit-user"
                                 data-user-id="${usuario.id}"
                                 data-user-name="${usuario.name}"
+                                data-user-documento-identidad="${usuario.documento_identidad || ''}"
                                 data-user-email="${usuario.email}"
                                 data-user-role="${usuario.role}"
                                 data-user-active="${usuario.active ? 'true' : 'false'}"

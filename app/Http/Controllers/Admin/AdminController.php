@@ -401,7 +401,7 @@ class AdminController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'documento_identidad' => 'required|string|max:20|unique:users',
+            'documento_identidad' => 'nullable|string|max:20|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:administrador,ventanilla',
@@ -456,6 +456,7 @@ class AdminController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'documento_identidad' => 'nullable|string|max:20|unique:users,documento_identidad,' . $id,
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|in:administrador,ventanilla',
@@ -474,6 +475,7 @@ class AdminController extends Controller
 
         $datos = [
             'name' => $request->name,
+            'documento_identidad' => $request->documento_identidad,
             'email' => $request->email,
             'role' => $request->role,
             'active' => $request->has('active'),
