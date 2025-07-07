@@ -15,19 +15,44 @@ class EnsureSessionForLogin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Si es una petición GET a la página de login, forzar logout de cualquier sesión activa
+        // Si es una petición GET a la página de login, verificar si debe hacer logout
         if ($request->isMethod('GET') && $request->routeIs('login')) {
 
-            // Si hay un usuario autenticado, redirigir a una ruta especial de logout automático
+            // Si hay un usuario autenticado, verificar si es una navegación legítima
             if (Auth::check()) {
                 $user = Auth::user();
 
+                // Verificar si es una navegación reciente (menos de 5 segundos después del login)
+                $loginTime = session('login_time');
+                $currentTime = now()->timestamp;
+                $timeSinceLogin = $loginTime ? ($currentTime - $loginTime) : null;
+
+                // Si el login fue muy reciente, podría ser una redirección incorrecta
+                if ($timeSinceLogin && $timeSinceLogin < 5) {
+                    Log::warning('Acceso a login muy pronto después del login exitoso - Redirigiendo a dashboard', [
+                        'user_id' => $user->id,
+                        'user_email' => $user->email,
+                        'ip' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                        'session_id' => $request->session()->getId(),
+                        'time_since_login' => $timeSinceLogin,
+                        'referer' => $request->header('Referer'),
+                        'timestamp' => now()->toISOString()
+                    ]);
+
+                    // En lugar de logout, redirigir al dashboard
+                    return redirect()->route('dashboard');
+                }
+
+                // Si ha pasado más tiempo, proceder con logout automático
                 Log::info('Logout automático al acceder a página de login', [
                     'user_id' => $user->id,
                     'user_email' => $user->email,
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                     'session_id' => $request->session()->getId(),
+                    'time_since_login' => $timeSinceLogin,
+                    'referer' => $request->header('Referer'),
                     'timestamp' => now()->toISOString()
                 ]);
 

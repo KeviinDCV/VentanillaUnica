@@ -56,17 +56,31 @@ class SessionTimeout
                 return $this->logoutUser($request, 'Sesión invalidada por motivos de seguridad.', 'error');
             }
 
-            // Verificar cambio de User Agent (más tolerante)
+            // Verificar cambio de User Agent (más tolerante en desarrollo)
             $loginUserAgent = session('login_user_agent');
             if ($loginUserAgent && $loginUserAgent !== $request->userAgent() && !$this->isMinorUserAgentChange($loginUserAgent, $request->userAgent())) {
-                Log::warning('Cambio de User Agent detectado en sesión activa', [
-                    'user_id' => $user->id,
-                    'original_user_agent' => $loginUserAgent,
-                    'current_user_agent' => $request->userAgent(),
-                    'ip' => $request->ip()
-                ]);
 
-                return $this->logoutUser($request, 'Sesión invalidada por motivos de seguridad.', 'error');
+                // En entorno local, solo logear pero no hacer logout
+                if ($this->isLocalEnvironment()) {
+                    Log::warning('Cambio de User Agent detectado en sesión activa (entorno local - no se hace logout)', [
+                        'user_id' => $user->id,
+                        'original_user_agent' => $loginUserAgent,
+                        'current_user_agent' => $request->userAgent(),
+                        'ip' => $request->ip()
+                    ]);
+
+                    // Actualizar el User Agent en la sesión para evitar warnings repetidos
+                    session(['login_user_agent' => $request->userAgent()]);
+                } else {
+                    Log::warning('Cambio de User Agent detectado en sesión activa', [
+                        'user_id' => $user->id,
+                        'original_user_agent' => $loginUserAgent,
+                        'current_user_agent' => $request->userAgent(),
+                        'ip' => $request->ip()
+                    ]);
+
+                    return $this->logoutUser($request, 'Sesión invalidada por motivos de seguridad.', 'error');
+                }
             }
 
             // Actualizar última actividad solo en rutas que requieren actividad
