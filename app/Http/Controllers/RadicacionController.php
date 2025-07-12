@@ -512,7 +512,7 @@ class RadicacionController extends Controller
 
                 case 'interno':
                     \Log::info('RadicacionController::cargarFormulario - Renderizando vista interno');
-                    return view('radicacion.forms.interno', compact('dependencias', 'unidadesAdministrativas'));
+                    return view('radicacion.forms.interno', compact('dependencias', 'unidadesAdministrativas', 'tiposSolicitud'));
 
                 case 'salida':
                     return view('radicacion.forms.salida', compact('dependencias', 'unidadesAdministrativas', 'ciudades', 'departamentos', 'tiposSolicitud'));

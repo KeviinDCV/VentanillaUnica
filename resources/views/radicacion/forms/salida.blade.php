@@ -166,10 +166,10 @@
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <!-- Tipo de Comunicación -->
+            <!-- Tipo de Solicitud -->
             <div>
                 <label for="tipo_comunicacion" class="block text-sm font-medium text-gray-700 mb-2">
-                    Tipo de Comunicación <span class="text-red-500">*</span>
+                    Tipo de Solicitud <span class="text-red-500">*</span>
                 </label>
                 <select name="tipo_comunicacion" id="tipo_comunicacion" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">

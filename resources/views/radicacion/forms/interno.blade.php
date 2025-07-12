@@ -81,21 +81,20 @@
         </h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <!-- Tipo de Comunicación Interna -->
+            <!-- Tipo de Solicitud -->
             <div>
                 <label for="tipo_comunicacion" class="block text-sm font-medium text-gray-700 mb-2">
-                    Tipo de Comunicación <span class="text-red-500">*</span>
+                    Tipo de Solicitud <span class="text-red-500">*</span>
                 </label>
                 <select name="tipo_comunicacion" id="tipo_comunicacion" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="memorando" {{ old('tipo_comunicacion') == 'memorando' ? 'selected' : '' }}>Memorando</option>
-                    <option value="circular" {{ old('tipo_comunicacion') == 'circular' ? 'selected' : '' }}>Circular</option>
-                    <option value="informe" {{ old('tipo_comunicacion') == 'informe' ? 'selected' : '' }}>Informe</option>
-                    <option value="acta" {{ old('tipo_comunicacion') == 'acta' ? 'selected' : '' }}>Acta</option>
-                    <option value="resolucion" {{ old('tipo_comunicacion') == 'resolucion' ? 'selected' : '' }}>Resolución</option>
-                    <option value="oficio" {{ old('tipo_comunicacion') == 'oficio' ? 'selected' : '' }}>Oficio</option>
-                    <option value="otro" {{ old('tipo_comunicacion') == 'otro' ? 'selected' : '' }}>Otro</option>
+                    @foreach($tiposSolicitud as $tipo)
+                        <option value="{{ $tipo->codigo }}"
+                                {{ old('tipo_comunicacion') == $tipo->codigo ? 'selected' : '' }}>
+                            {{ $tipo->nombre }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 

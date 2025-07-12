@@ -2275,7 +2275,7 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Comunicación *</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Solicitud *</label>
                                 <select id="edit_tipo_comunicacion" name="tipo_comunicacion" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" required>
                                     ${data.tipos_solicitud.map(tipo =>
                                         `<option value="${tipo.codigo}" ${radicado.tipo_comunicacion === tipo.codigo ? 'selected' : ''}>${tipo.nombre}</option>`
@@ -2312,7 +2312,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Unidad Administrativa</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Proceso</label>
                                 <select id="edit_unidad_administrativa" name="unidad_administrativa_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" onchange="cargarSeriesEdit()">
                                     <option value="">Seleccionar...</option>
                                     ${data.unidades_administrativas.map(unidad =>

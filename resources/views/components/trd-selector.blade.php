@@ -7,15 +7,15 @@
 @endphp
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <!-- Unidad Administrativa -->
+    <!-- Proceso -->
     <div>
         <label for="unidad_administrativa_id" class="block text-sm font-medium text-gray-700 mb-2">
-            Unidad Administrativa{!! $optionalText !!} {!! $asterisk !!}
+            Proceso{!! $optionalText !!} {!! $asterisk !!}
         </label>
         <select name="unidad_administrativa_id" id="unidad_administrativa_id" {{ $requiredAttr }}
                 class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                 onchange="loadSeriesForRadicacion(this.value)">
-            <option value="">Seleccionar unidad...</option>
+            <option value="">Seleccionar proceso...</option>
             @if(isset($unidadesAdministrativas) && count($unidadesAdministrativas) > 0)
                 @foreach($unidadesAdministrativas as $unidad)
                     <option value="{{ $unidad->id ?? '' }}" {{ old('unidad_administrativa_id') == ($unidad->id ?? '') ? 'selected' : '' }}>
@@ -23,7 +23,7 @@
                     </option>
                 @endforeach
             @else
-                <option value="">No hay unidades disponibles</option>
+                <option value="">No hay procesos disponibles</option>
             @endif
         </select>
     </div>
