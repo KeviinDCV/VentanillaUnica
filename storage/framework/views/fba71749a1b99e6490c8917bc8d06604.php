@@ -540,8 +540,7 @@
                                             </button>
 
                                             <div id="dropdown-radicado-<?php echo e($radicado->id); ?>"
-                                                 class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                                                 style="z-index: 9999;"
+                                                 class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                                  data-dropdown-menu>
                                                 <div class="py-1" role="menu">
                                                     <!-- Ver Detalles -->
@@ -720,8 +719,7 @@
                                         </button>
 
                                         <div id="dropdown-radicado-<?php echo e($radicado->id); ?>"
-                                             class="hidden origin-top-right fixed w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                                             style="z-index: 9999;"
+                                             class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">
                                                 <!-- Ver Detalles -->
@@ -1067,6 +1065,9 @@
 
                     // Ejecutar toggle inicial
                     toggleTipoRemitenteModal();
+
+                    // Inicializar cascada departamento-ciudad
+                    initDepartamentoCiudadCascade();
 
                 // Botón previsualizar
                 const btnPreview = document.getElementById('btn-preview');
@@ -1436,7 +1437,7 @@
             }
         }
 
-        // Función para manejar los menús desplegables
+        // Función para manejar los menús desplegables con posicionamiento absoluto
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             if (!dropdown) {
@@ -1450,11 +1451,6 @@
             document.querySelectorAll('[id^="dropdown-radicado-"]').forEach(d => {
                 if (d.id !== dropdownId) {
                     d.classList.add('hidden');
-                    // Resetear estilos
-                    d.style.position = '';
-                    d.style.top = '';
-                    d.style.left = '';
-                    d.style.zIndex = '';
                 }
             });
 
@@ -1462,15 +1458,23 @@
                 // Mostrar dropdown
                 dropdown.classList.remove('hidden');
 
-                // Posicionar el dropdown
-                const button = dropdown.previousElementSibling;
-                if (button) {
-                    const buttonRect = button.getBoundingClientRect();
-                    dropdown.style.position = 'fixed';
-                    dropdown.style.top = (buttonRect.bottom + 5) + 'px';
-                    dropdown.style.left = (buttonRect.left) + 'px';
-                    dropdown.style.zIndex = '9999';
-                }
+                // Verificar posicionamiento y ajustar automáticamente
+                setTimeout(() => {
+                    const rect = dropdown.getBoundingClientRect();
+                    const container = dropdown.closest('.relative');
+
+                    // Si se sale por la derecha, cambiar a alineación izquierda
+                    if (rect.right > window.innerWidth - 10) {
+                        dropdown.classList.remove('right-0');
+                        dropdown.classList.add('left-0');
+                    }
+
+                    // Si se sale por abajo, cambiar a apertura hacia arriba
+                    if (rect.bottom > window.innerHeight - 10) {
+                        dropdown.classList.remove('top-full', 'mt-1');
+                        dropdown.classList.add('bottom-full', 'mb-1');
+                    }
+                }, 10);
             } else {
                 // Ocultar dropdown
                 dropdown.classList.add('hidden');
@@ -2069,6 +2073,10 @@
                                 <input type="number" id="edit_numero_folios" name="numero_folios" value="${radicado.numero_folios}" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" required>
                             </div>
                             <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Número de Anexos</label>
+                                <input type="number" id="edit_numero_anexos" name="numero_anexos" value="${radicado.numero_anexos || 0}" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue">
+                            </div>
+                            <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Anexo *</label>
                                 <select id="edit_tipo_anexo" name="tipo_anexo" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" required>
                                     <option value="original" ${radicado.tipo_anexo === 'original' ? 'selected' : ''}>Original</option>
@@ -2090,8 +2098,8 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Unidad Administrativa *</label>
-                                <select id="edit_unidad_administrativa" name="unidad_administrativa_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" onchange="cargarSeriesEdit()" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Unidad Administrativa</label>
+                                <select id="edit_unidad_administrativa" name="unidad_administrativa_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" onchange="cargarSeriesEdit()">
                                     <option value="">Seleccionar...</option>
                                     ${data.unidades_administrativas.map(unidad =>
                                         `<option value="${unidad.id}" ${radicado.unidad_administrativa_id == unidad.id ? 'selected' : ''}>${unidad.codigo} - ${unidad.nombre}</option>`
@@ -2099,14 +2107,14 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Serie *</label>
-                                <select id="edit_serie" name="serie_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" onchange="cargarSubseriesEdit()" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Serie</label>
+                                <select id="edit_serie" name="serie_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" onchange="cargarSubseriesEdit()">
                                     <option value="">Seleccionar...</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Subserie *</label>
-                                <select id="edit_trd_id" name="trd_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Subserie</label>
+                                <select id="edit_trd_id" name="trd_id" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-uniradical-blue">
                                     <option value="">Seleccionar...</option>
                                 </select>
                             </div>
@@ -2224,10 +2232,12 @@
                     serieSelect.appendChild(option);
                 });
 
-                // Si hay una serie preseleccionada, cargar sus subseries
+                // Si hay una serie preseleccionada, seleccionarla y cargar sus subseries
                 const serieActual = document.querySelector('[data-serie-actual]');
                 if (serieActual) {
-                    serieSelect.value = serieActual.dataset.serieActual;
+                    const serieId = serieActual.dataset.serieActual;
+                    serieSelect.value = serieId;
+                    console.log('Preseleccionando serie ID:', serieId);
                     cargarSubseriesEdit();
                 }
             }
@@ -2256,10 +2266,12 @@
                         subserieSelect.appendChild(option);
                     });
 
-                    // Si hay una subserie preseleccionada
+                    // Si hay una subserie preseleccionada, usar el ID de la subserie
                     const subserieActual = document.querySelector('[data-subserie-actual]');
                     if (subserieActual) {
-                        subserieSelect.value = subserieActual.dataset.subserieActual;
+                        const subserieId = subserieActual.dataset.subserieActual;
+                        subserieSelect.value = subserieId;
+                        console.log('Preseleccionando subserie ID:', subserieId);
                     }
                     break;
                 }
@@ -2405,7 +2417,168 @@
                 cerrarModalEditar();
             }
         });
+
+        // Función para inicializar cascada departamento-ciudad
+        function initDepartamentoCiudadCascade() {
+            console.log('Inicializando cascada departamento-ciudad...');
+
+            const departamentoSelect = document.getElementById('departamento_id');
+            const ciudadSelect = document.getElementById('ciudad_id');
+            const departamentoNombreInput = document.getElementById('departamento_nombre');
+            const ciudadNombreInput = document.getElementById('ciudad_nombre');
+
+            console.log('Elementos encontrados:', {
+                departamento: !!departamentoSelect,
+                ciudad: !!ciudadSelect,
+                deptoNombre: !!departamentoNombreInput,
+                ciudadNombre: !!ciudadNombreInput
+            });
+
+            if (!departamentoSelect || !ciudadSelect) {
+                console.error('Elementos de departamento/ciudad no encontrados');
+                return;
+            }
+
+            // Manejar cambio de departamento
+            departamentoSelect.addEventListener('change', function() {
+                const departamentoId = this.value;
+                const departamentoOption = this.options[this.selectedIndex];
+
+                console.log('Departamento seleccionado:', departamentoId);
+
+                // Actualizar campo oculto con el nombre del departamento
+                if (departamentoNombreInput) {
+                    departamentoNombreInput.value = departamentoOption.dataset.nombre || '';
+                }
+
+                // Limpiar ciudad
+                ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
+                ciudadSelect.disabled = true;
+
+                if (ciudadNombreInput) {
+                    ciudadNombreInput.value = '';
+                }
+
+                if (departamentoId) {
+                    // Cargar ciudades del departamento seleccionado
+                    cargarCiudadesPorDepartamento(departamentoId);
+                } else {
+                    // No hay departamento seleccionado
+                    ciudadSelect.innerHTML = '<option value="">Primero seleccione un departamento...</option>';
+                    ciudadSelect.disabled = true;
+                }
+            });
+
+            // Manejar cambio de ciudad
+            ciudadSelect.addEventListener('change', function() {
+                const ciudadOption = this.options[this.selectedIndex];
+
+                // Actualizar campo oculto con el nombre de la ciudad
+                if (ciudadNombreInput) {
+                    ciudadNombreInput.value = ciudadOption.dataset.nombre || '';
+                }
+            });
+
+            // Función para cargar ciudades por departamento
+            function cargarCiudadesPorDepartamento(departamentoId) {
+                console.log('Cargando ciudades para departamento:', departamentoId);
+
+                // Mostrar estado de carga
+                ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
+                ciudadSelect.disabled = true;
+
+                // Realizar petición AJAX
+                fetch(`/api/ciudades/por-departamento?departamento_id=${departamentoId}`)
+                    .then(response => {
+                        console.log('Respuesta recibida:', response.status);
+                        if (!response.ok) {
+                            throw new Error('Error al cargar ciudades');
+                        }
+                        return response.json();
+                    })
+                    .then(ciudades => {
+                        console.log('Ciudades recibidas:', ciudades);
+
+                        // Limpiar select
+                        ciudadSelect.innerHTML = '<option value="">Seleccionar ciudad...</option>';
+
+                        // Agregar ciudades
+                        ciudades.forEach(ciudad => {
+                            const option = document.createElement('option');
+                            option.value = ciudad.id;
+                            option.textContent = ciudad.nombre;
+                            option.dataset.nombre = ciudad.nombre;
+                            ciudadSelect.appendChild(option);
+                        });
+
+                        // Habilitar select
+                        ciudadSelect.disabled = false;
+
+                        console.log('Ciudades cargadas exitosamente');
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar ciudades:', error);
+                        ciudadSelect.innerHTML = '<option value="">Error al cargar ciudades</option>';
+                        ciudadSelect.disabled = true;
+
+                        // Mostrar alerta al usuario
+                        alert('Error al cargar las ciudades. Por favor, recargue la página.');
+                    });
+            }
+
+            // Cargar ciudades iniciales si hay un departamento preseleccionado
+            if (departamentoSelect.value) {
+                console.log('Departamento preseleccionado:', departamentoSelect.value);
+                cargarCiudadesPorDepartamento(departamentoSelect.value);
+            }
+        }
     </script>
+
+    <?php $__env->startPush('styles'); ?>
+    <style>
+        /* Estilos para dropdowns con posicionamiento absoluto inteligente */
+        [id^="dropdown-radicado-"] {
+            z-index: 50;
+            min-width: 12rem;
+            transform-origin: top right;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+        }
+
+        /* Animaciones suaves para apertura normal (hacia abajo) */
+        [id^="dropdown-radicado-"]:not(.hidden) {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        [id^="dropdown-radicado-"].hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* Estilos específicos para dropdowns que abren hacia arriba */
+        [id^="dropdown-radicado-"].bottom-full {
+            transform-origin: bottom right;
+        }
+
+        /* Asegurar que los contenedores de la tabla permitan overflow */
+        .overflow-x-auto {
+            overflow: visible !important;
+        }
+
+        /* Asegurar que las celdas de la tabla permitan overflow para dropdowns */
+        .table-cell-actions {
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Mejorar el posicionamiento de los dropdowns en tablas */
+        .table-actions-container {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+    <?php $__env->stopPush(); ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>

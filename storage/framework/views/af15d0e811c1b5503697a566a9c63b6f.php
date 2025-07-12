@@ -1,6 +1,6 @@
 <!-- Formulario de Radicación de Entrada para Modal -->
-<form action="{{ route('radicacion.entrada.store') }}" method="POST" enctype="multipart/form-data" id="radicacionEntradaForm">
-    @csrf
+<form action="<?php echo e(route('radicacion.entrada.store')); ?>" method="POST" enctype="multipart/form-data" id="radicacionEntradaForm">
+    <?php echo csrf_field(); ?>
 
     <!-- Sección 1: Información del Remitente -->
     <div class="mb-6">
@@ -17,13 +17,13 @@
                 <label class="flex items-center">
                     <input type="radio" name="tipo_remitente" value="anonimo"
                            class="form-radio text-uniradical-blue"
-                           {{ old('tipo_remitente', 'anonimo') === 'anonimo' ? 'checked' : '' }}>
+                           <?php echo e(old('tipo_remitente', 'anonimo') === 'anonimo' ? 'checked' : ''); ?>>
                     <span class="ml-2 text-sm text-gray-700">Anónimo</span>
                 </label>
                 <label class="flex items-center">
                     <input type="radio" name="tipo_remitente" value="registrado"
                            class="form-radio text-uniradical-blue"
-                           {{ old('tipo_remitente') === 'registrado' ? 'checked' : '' }}>
+                           <?php echo e(old('tipo_remitente') === 'registrado' ? 'checked' : ''); ?>>
                     <span class="ml-2 text-sm text-gray-700">Registrado</span>
                 </label>
             </div>
@@ -39,12 +39,12 @@
                 <select name="tipo_documento" id="tipo_documento"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="CC" {{ old('tipo_documento') == 'CC' ? 'selected' : '' }}>Cédula de Ciudadanía</option>
-                    <option value="CE" {{ old('tipo_documento') == 'CE' ? 'selected' : '' }}>Cédula de Extranjería</option>
-                    <option value="TI" {{ old('tipo_documento') == 'TI' ? 'selected' : '' }}>Tarjeta de Identidad</option>
-                    <option value="PP" {{ old('tipo_documento') == 'PP' ? 'selected' : '' }}>Pasaporte</option>
-                    <option value="NIT" {{ old('tipo_documento') == 'NIT' ? 'selected' : '' }}>NIT</option>
-                    <option value="OTRO" {{ old('tipo_documento') == 'OTRO' ? 'selected' : '' }}>Otro</option>
+                    <option value="CC" <?php echo e(old('tipo_documento') == 'CC' ? 'selected' : ''); ?>>Cédula de Ciudadanía</option>
+                    <option value="CE" <?php echo e(old('tipo_documento') == 'CE' ? 'selected' : ''); ?>>Cédula de Extranjería</option>
+                    <option value="TI" <?php echo e(old('tipo_documento') == 'TI' ? 'selected' : ''); ?>>Tarjeta de Identidad</option>
+                    <option value="PP" <?php echo e(old('tipo_documento') == 'PP' ? 'selected' : ''); ?>>Pasaporte</option>
+                    <option value="NIT" <?php echo e(old('tipo_documento') == 'NIT' ? 'selected' : ''); ?>>NIT</option>
+                    <option value="OTRO" <?php echo e(old('tipo_documento') == 'OTRO' ? 'selected' : ''); ?>>Otro</option>
                 </select>
             </div>
 
@@ -54,7 +54,7 @@
                     Número de Documento <span class="text-red-500">*</span>
                 </label>
                 <input type="text" name="numero_documento" id="numero_documento"
-                       value="{{ old('numero_documento') }}"
+                       value="<?php echo e(old('numero_documento')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Ingrese el número de documento">
                 <button type="button" id="btn-buscar-remitente"
@@ -71,7 +71,7 @@
                     Nombre Completo <span class="text-red-500">*</span>
                 </label>
                 <input type="text" name="nombre_completo" id="nombre_completo" required
-                       value="{{ old('nombre_completo') }}"
+                       value="<?php echo e(old('nombre_completo')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Nombre completo del remitente">
             </div>
@@ -87,7 +87,7 @@
                     Teléfono
                 </label>
                 <input type="tel" name="telefono" id="telefono"
-                       value="{{ old('telefono') }}"
+                       value="<?php echo e(old('telefono')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Número de teléfono">
             </div>
@@ -98,7 +98,7 @@
                     Correo Electrónico
                 </label>
                 <input type="email" name="email" id="email"
-                       value="{{ old('email') }}"
+                       value="<?php echo e(old('email')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="correo@ejemplo.com">
             </div>
@@ -110,7 +110,7 @@
                 Dirección
             </label>
             <input type="text" name="direccion" id="direccion"
-                   value="{{ old('direccion') }}"
+                   value="<?php echo e(old('direccion')); ?>"
                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                    placeholder="Dirección completa">
         </div>
@@ -124,16 +124,17 @@
                 <select name="departamento_id" id="departamento_id"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar departamento...</option>
-                    @foreach($departamentos as $departamento)
-                        <option value="{{ $departamento->id }}"
-                                data-nombre="{{ $departamento->nombre }}"
-                                {{ old('departamento_id') == $departamento->id ? 'selected' : '' }}>
-                            {{ $departamento->nombre }}
+                    <?php $__currentLoopData = $departamentos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $departamento): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($departamento->id); ?>"
+                                data-nombre="<?php echo e($departamento->nombre); ?>"
+                                <?php echo e(old('departamento_id') == $departamento->id ? 'selected' : ''); ?>>
+                            <?php echo e($departamento->nombre); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
                 <!-- Campo oculto para guardar el nombre del departamento -->
-                <input type="hidden" name="departamento" id="departamento_nombre" value="{{ old('departamento') }}">
+                <input type="hidden" name="departamento" id="departamento_nombre" value="<?php echo e(old('departamento')); ?>">
             </div>
 
             <!-- Ciudad -->
@@ -147,7 +148,7 @@
                     <option value="">Primero seleccione un departamento...</option>
                 </select>
                 <!-- Campo oculto para guardar el nombre de la ciudad -->
-                <input type="hidden" name="ciudad" id="ciudad_nombre" value="{{ old('ciudad') }}">
+                <input type="hidden" name="ciudad" id="ciudad_nombre" value="<?php echo e(old('ciudad')); ?>">
             </div>
         </div>
 
@@ -157,7 +158,7 @@
                 Entidad/Empresa
             </label>
             <input type="text" name="entidad" id="entidad"
-                   value="{{ old('entidad') }}"
+                   value="<?php echo e(old('entidad')); ?>"
                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                    placeholder="Nombre de la entidad o empresa">
         </div>
@@ -178,12 +179,12 @@
                 <select name="medio_recepcion" id="medio_recepcion" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="fisico" {{ old('medio_recepcion') == 'fisico' ? 'selected' : '' }}>Físico</option>
-                    <option value="email" {{ old('medio_recepcion') == 'email' ? 'selected' : '' }}>Correo Electrónico</option>
-                    <option value="web" {{ old('medio_recepcion') == 'web' ? 'selected' : '' }}>Página Web</option>
-                    <option value="telefono" {{ old('medio_recepcion') == 'telefono' ? 'selected' : '' }}>Teléfono</option>
-                    <option value="fax" {{ old('medio_recepcion') == 'fax' ? 'selected' : '' }}>Fax</option>
-                    <option value="otro" {{ old('medio_recepcion') == 'otro' ? 'selected' : '' }}>Otro</option>
+                    <option value="fisico" <?php echo e(old('medio_recepcion') == 'fisico' ? 'selected' : ''); ?>>Físico</option>
+                    <option value="email" <?php echo e(old('medio_recepcion') == 'email' ? 'selected' : ''); ?>>Correo Electrónico</option>
+                    <option value="web" <?php echo e(old('medio_recepcion') == 'web' ? 'selected' : ''); ?>>Página Web</option>
+                    <option value="telefono" <?php echo e(old('medio_recepcion') == 'telefono' ? 'selected' : ''); ?>>Teléfono</option>
+                    <option value="fax" <?php echo e(old('medio_recepcion') == 'fax' ? 'selected' : ''); ?>>Fax</option>
+                    <option value="otro" <?php echo e(old('medio_recepcion') == 'otro' ? 'selected' : ''); ?>>Otro</option>
                 </select>
             </div>
 
@@ -195,12 +196,13 @@
                 <select name="tipo_comunicacion" id="tipo_comunicacion" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    @foreach($tiposSolicitud as $tipo)
-                        <option value="{{ $tipo->codigo }}"
-                                {{ old('tipo_comunicacion') == $tipo->codigo ? 'selected' : '' }}>
-                            {{ $tipo->nombre }}
+                    <?php $__currentLoopData = $tiposSolicitud; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($tipo->codigo); ?>"
+                                <?php echo e(old('tipo_comunicacion') == $tipo->codigo ? 'selected' : ''); ?>>
+                            <?php echo e($tipo->nombre); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
         </div>
@@ -212,7 +214,7 @@
                     Número de Folios <span class="text-red-500">*</span>
                 </label>
                 <input type="number" name="numero_folios" id="numero_folios" required min="1"
-                       value="{{ old('numero_folios', 1) }}"
+                       value="<?php echo e(old('numero_folios', 1)); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Cantidad de folios">
             </div>
@@ -223,7 +225,7 @@
                     Número de Anexos
                 </label>
                 <input type="number" name="numero_anexos" id="numero_anexos" min="0"
-                       value="{{ old('numero_anexos', 0) }}"
+                       value="<?php echo e(old('numero_anexos', 0)); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Cantidad de anexos">
             </div>
@@ -236,7 +238,7 @@
             </label>
             <textarea name="observaciones" id="observaciones" rows="3"
                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                      placeholder="Observaciones adicionales">{{ old('observaciones') }}</textarea>
+                      placeholder="Observaciones adicionales"><?php echo e(old('observaciones')); ?></textarea>
         </div>
     </div>
 
@@ -246,7 +248,26 @@
             3. Clasificación Documental (TRD)
         </h3>
 
-        <x-trd-selector :unidadesAdministrativas="$unidadesAdministrativas" :optional="true" />
+        <?php if (isset($component)) { $__componentOriginal99a46d8246fd80cd14c21c1aea288fca = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal99a46d8246fd80cd14c21c1aea288fca = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.trd-selector','data' => ['unidadesAdministrativas' => $unidadesAdministrativas,'optional' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('trd-selector'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['unidadesAdministrativas' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($unidadesAdministrativas),'optional' => true]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal99a46d8246fd80cd14c21c1aea288fca)): ?>
+<?php $attributes = $__attributesOriginal99a46d8246fd80cd14c21c1aea288fca; ?>
+<?php unset($__attributesOriginal99a46d8246fd80cd14c21c1aea288fca); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal99a46d8246fd80cd14c21c1aea288fca)): ?>
+<?php $component = $__componentOriginal99a46d8246fd80cd14c21c1aea288fca; ?>
+<?php unset($__componentOriginal99a46d8246fd80cd14c21c1aea288fca); ?>
+<?php endif; ?>
     </div>
 
     <!-- Sección 4: Documento -->
@@ -320,12 +341,13 @@
                 <select name="dependencia_destino_id" id="dependencia_destino_id" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar dependencia...</option>
-                    @foreach($dependencias as $dependencia)
-                        <option value="{{ $dependencia->id }}"
-                                {{ old('dependencia_destino_id') == $dependencia->id ? 'selected' : '' }}>
-                            {{ $dependencia->nombre_completo }}
+                    <?php $__currentLoopData = $dependencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dependencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($dependencia->id); ?>"
+                                <?php echo e(old('dependencia_destino_id') == $dependencia->id ? 'selected' : ''); ?>>
+                            <?php echo e($dependencia->nombre_completo); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
@@ -337,11 +359,11 @@
                 <select name="medio_respuesta" id="medio_respuesta" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="fisico" {{ old('medio_respuesta') == 'fisico' ? 'selected' : '' }}>Físico</option>
-                    <option value="email" {{ old('medio_respuesta') == 'email' ? 'selected' : '' }}>Correo Electrónico</option>
-                    <option value="telefono" {{ old('medio_respuesta') == 'telefono' ? 'selected' : '' }}>Teléfono</option>
-                    <option value="presencial" {{ old('medio_respuesta') == 'presencial' ? 'selected' : '' }}>Presencial</option>
-                    <option value="no_requiere" {{ old('medio_respuesta') == 'no_requiere' ? 'selected' : '' }}>No Requiere Respuesta</option>
+                    <option value="fisico" <?php echo e(old('medio_respuesta') == 'fisico' ? 'selected' : ''); ?>>Físico</option>
+                    <option value="email" <?php echo e(old('medio_respuesta') == 'email' ? 'selected' : ''); ?>>Correo Electrónico</option>
+                    <option value="telefono" <?php echo e(old('medio_respuesta') == 'telefono' ? 'selected' : ''); ?>>Teléfono</option>
+                    <option value="presencial" <?php echo e(old('medio_respuesta') == 'presencial' ? 'selected' : ''); ?>>Presencial</option>
+                    <option value="no_requiere" <?php echo e(old('medio_respuesta') == 'no_requiere' ? 'selected' : ''); ?>>No Requiere Respuesta</option>
                 </select>
             </div>
         </div>
@@ -355,9 +377,9 @@
                 <select name="tipo_anexo" id="tipo_anexo" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="original" {{ old('tipo_anexo') == 'original' ? 'selected' : '' }}>Original</option>
-                    <option value="copia" {{ old('tipo_anexo') == 'copia' ? 'selected' : '' }}>Copia</option>
-                    <option value="ninguno" {{ old('tipo_anexo') == 'ninguno' ? 'selected' : '' }}>Ninguno</option>
+                    <option value="original" <?php echo e(old('tipo_anexo') == 'original' ? 'selected' : ''); ?>>Original</option>
+                    <option value="copia" <?php echo e(old('tipo_anexo') == 'copia' ? 'selected' : ''); ?>>Copia</option>
+                    <option value="ninguno" <?php echo e(old('tipo_anexo') == 'ninguno' ? 'selected' : ''); ?>>Ninguno</option>
                 </select>
             </div>
 
@@ -367,8 +389,8 @@
                     Fecha Límite de Respuesta
                 </label>
                 <input type="date" name="fecha_limite_respuesta" id="fecha_limite_respuesta"
-                       value="{{ old('fecha_limite_respuesta') }}"
-                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                       value="<?php echo e(old('fecha_limite_respuesta')); ?>"
+                       min="<?php echo e(date('Y-m-d', strtotime('+1 day'))); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
             </div>
         </div>
@@ -390,6 +412,7 @@
     </div>
 </form>
 
-@push('scripts')
-    @vite(['resources/js/trd-selector.js'])
-@endpush
+<?php $__env->startPush('scripts'); ?>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/js/trd-selector.js']); ?>
+<?php $__env->stopPush(); ?>
+<?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/radicacion/forms/entrada.blade.php ENDPATH**/ ?>

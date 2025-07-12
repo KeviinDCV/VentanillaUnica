@@ -24,6 +24,7 @@ class Radicado extends Model
         'medio_recepcion',
         'tipo_comunicacion',
         'numero_folios',
+        'numero_anexos',
         'observaciones',
         'medio_respuesta',
         'tipo_anexo',
@@ -44,6 +45,7 @@ class Radicado extends Model
         'fecha_respuesta' => 'date',
         'fecha_finalizacion' => 'datetime',
         'numero_folios' => 'integer',
+        'numero_anexos' => 'integer',
         'posicion_sello' => 'array',
     ];
 

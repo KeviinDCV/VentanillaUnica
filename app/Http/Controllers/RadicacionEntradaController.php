@@ -50,18 +50,21 @@ class RadicacionEntradaController extends Controller
             'telefono' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'direccion' => 'nullable|string',
-            'ciudad' => 'nullable|string|max:100',
+            'departamento_id' => 'nullable|exists:departamentos,id',
             'departamento' => 'nullable|string|max:100',
+            'ciudad_id' => 'nullable|exists:ciudades,id',
+            'ciudad' => 'nullable|string|max:100',
             'entidad' => 'nullable|string|max:255',
 
             // Datos del radicado
             'medio_recepcion' => 'required|in:fisico,email,web,telefono,fax,otro',
             'tipo_comunicacion' => 'required|exists:tipos_solicitud,codigo',
             'numero_folios' => 'required|integer|min:1',
+            'numero_anexos' => 'nullable|integer|min:0',
             'observaciones' => 'nullable|string',
 
-            // TRD (Subserie)
-            'trd_id' => 'required|exists:subseries,id',
+            // TRD (Subserie) - Opcional
+            'trd_id' => 'nullable|exists:subseries,id',
 
             // Destino
             'dependencia_destino_id' => 'required|exists:dependencias,id',
@@ -109,7 +112,6 @@ class RadicacionEntradaController extends Controller
             'tipo_comunicacion.required' => 'Debe seleccionar el tipo de comunicación',
             'numero_folios.required' => 'El número de folios es obligatorio',
             'numero_folios.min' => 'El número de folios debe ser al menos 1',
-            'trd_id.required' => 'Debe seleccionar un TRD',
             'trd_id.exists' => 'El TRD seleccionado no es válido',
             'dependencia_destino_id.required' => 'Debe seleccionar la dependencia destino',
             'dependencia_destino_id.exists' => 'La dependencia seleccionada no es válida',
@@ -202,6 +204,7 @@ class RadicacionEntradaController extends Controller
                 'medio_recepcion' => $request->medio_recepcion,
                 'tipo_comunicacion' => $request->tipo_comunicacion,
                 'numero_folios' => $request->numero_folios,
+                'numero_anexos' => $request->numero_anexos ?? 0,
                 'observaciones' => $request->observaciones,
                 'medio_respuesta' => $request->medio_respuesta,
                 'tipo_anexo' => $request->tipo_anexo,
