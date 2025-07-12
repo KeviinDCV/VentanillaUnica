@@ -112,7 +112,10 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-500">Estado del sistema</p>
-                            <p class="text-lg font-semibold text-green-600">Activo</p>
+                            <p class="text-lg font-semibold <?php echo e($estadisticas['estado_sistema']['suspendido'] ? 'text-red-600' : 'text-green-600'); ?>">
+                                <?php echo e($estadisticas['estado_sistema']['suspendido'] ? 'Suspendido' : 'Activo'); ?>
+
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -132,7 +135,7 @@
                             <div class="space-y-2 text-sm text-gray-600">
                                 <div class="flex justify-between">
                                     <span>Versión:</span>
-                                    <span class="font-medium">1.0.0</span>
+                                    <span class="font-medium"><?php echo e($estadisticas['version_sistema']); ?></span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span>Entidad:</span>
@@ -144,7 +147,10 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span>Estado:</span>
-                                    <span class="font-medium text-green-600">Operativo</span>
+                                    <span class="font-medium <?php echo e($estadisticas['estado_sistema']['suspendido'] ? 'text-red-600' : 'text-green-600'); ?>">
+                                        <?php echo e($estadisticas['estado_sistema']['suspendido'] ? 'Suspendido' : 'Operativo'); ?>
+
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -156,17 +162,27 @@
                                     <span class="font-medium"><?php echo e($estadisticas['total_usuarios']); ?></span>
                                 </div>
                                 <div class="flex justify-between">
+                                    <span>Usuarios activos:</span>
+                                    <span class="font-medium"><?php echo e($estadisticas['usuarios_activos']); ?></span>
+                                </div>
+                                <div class="flex justify-between">
                                     <span>Radicados totales:</span>
                                     <span class="font-medium"><?php echo e($estadisticas['total_radicados']); ?></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Radicados este mes:</span>
+                                    <span class="font-medium"><?php echo e($estadisticas['radicados_este_mes']); ?></span>
                                 </div>
                                 <div class="flex justify-between">
                                     <span>Última actualización:</span>
                                     <span class="font-medium"><?php echo e(now()->format('d/m/Y H:i')); ?></span>
                                 </div>
+                                <?php if($estadisticas['ultimo_radicado']): ?>
                                 <div class="flex justify-between">
-                                    <span>Tiempo de actividad:</span>
-                                    <span class="font-medium text-green-600">99.9%</span>
+                                    <span>Último radicado:</span>
+                                    <span class="font-medium"><?php echo e($estadisticas['ultimo_radicado']->fecha_radicado->format('d/m/Y')); ?></span>
                                 </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -176,10 +192,10 @@
     </div>
 
     <script>
-        // Calcular tiempo de sesión
+        // Calcular tiempo de sesión real
         document.addEventListener('DOMContentLoaded', function() {
-            // Usar la hora actual como inicio de sesión aproximado
-            const sessionStart = new Date(Date.now() - (Math.random() * 3600000)); // Tiempo aleatorio hasta 1 hora atrás
+            // Usar el tiempo real de inicio de sesión desde el servidor
+            const sessionStart = new Date(<?php echo e($estadisticas['tiempo_inicio_sesion'] * 1000); ?>);
 
             function updateSessionTime() {
                 const now = new Date();

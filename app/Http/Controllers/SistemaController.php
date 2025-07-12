@@ -28,6 +28,18 @@ class SistemaController extends Controller
                                               ->count(),
             'total_usuarios' => User::count(),
             'total_radicados' => Radicado::count(),
+            'radicados_esta_semana' => Radicado::whereBetween('fecha_radicado', [
+                Carbon::now()->startOfWeek(),
+                Carbon::now()->endOfWeek()
+            ])->count(),
+            'radicados_este_mes' => Radicado::whereMonth('fecha_radicado', Carbon::now()->month)
+                                           ->whereYear('fecha_radicado', Carbon::now()->year)
+                                           ->count(),
+            'usuarios_activos' => User::where('active', true)->count(),
+            'ultimo_radicado' => Radicado::latest('fecha_radicado')->first(),
+            'version_sistema' => config('app.version', '1.0.0'),
+            'tiempo_inicio_sesion' => session('login_time', now()->timestamp),
+            'estado_sistema' => SuspenderSistema::estadoSuspension(),
         ];
 
         $view = view('sistema.index', compact('estadisticas'));
