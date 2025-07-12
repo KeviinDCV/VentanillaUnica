@@ -201,7 +201,7 @@
                             <tr class="hover:bg-gray-50 tipo-row"
                                 data-id="<?php echo e($tipo->id); ?>"
                                 data-name="<?php echo e(strtolower($tipo->nombre)); ?>"
-                                data-codigo="<?php echo e(strtolower($tipo->codigo)); ?>"
+                                data-codigo="<?php echo e($tipo->codigo ? strtolower($tipo->codigo) : ''); ?>"
                                 data-active="<?php echo e($tipo->activo ? 'true' : 'false'); ?>">
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
@@ -218,13 +218,13 @@
 
                                             </div>
                                             <div class="text-xs text-gray-500 md:hidden truncate">
-                                                <?php echo e($tipo->codigo); ?> • <?php echo e($tipo->radicados_count); ?> radicados
+                                                <?php echo e($tipo->codigo ?? 'Sin código'); ?> • <?php echo e($tipo->radicados_count); ?> radicados
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900 font-mono"><?php echo e($tipo->codigo); ?></div>
+                                    <div class="text-sm text-gray-900 font-mono"><?php echo e($tipo->codigo ?? 'Sin código'); ?></div>
                                 </td>
                                 <td class="px-3 py-4 hidden lg:table-cell">
                                     <div class="text-sm text-gray-900 truncate" title="<?php echo e($tipo->descripcion); ?>">
@@ -266,7 +266,7 @@
                                                 <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                                                         data-id="<?php echo e($tipo->id); ?>"
                                                         data-nombre="<?php echo e($tipo->nombre); ?>"
-                                                        data-codigo="<?php echo e($tipo->codigo); ?>"
+                                                        data-codigo="<?php echo e($tipo->codigo ?? ''); ?>"
                                                         data-descripcion="<?php echo e($tipo->descripcion); ?>"
                                                         data-activo="<?php echo e($tipo->activo ? 'true' : 'false'); ?>">
                                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

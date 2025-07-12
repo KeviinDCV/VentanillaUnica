@@ -173,7 +173,7 @@
                             <tr class="hover:bg-gray-50 tipo-row"
                                 data-id="{{ $tipo->id }}"
                                 data-name="{{ strtolower($tipo->nombre) }}"
-                                data-codigo="{{ strtolower($tipo->codigo) }}"
+                                data-codigo="{{ $tipo->codigo ? strtolower($tipo->codigo) : '' }}"
                                 data-active="{{ $tipo->activo ? 'true' : 'false' }}">
                                 <td class="px-4 py-4">
                                     <div class="flex items-center">
@@ -189,13 +189,13 @@
                                                 {{ $tipo->nombre }}
                                             </div>
                                             <div class="text-xs text-gray-500 md:hidden truncate">
-                                                {{ $tipo->codigo }} • {{ $tipo->radicados_count }} radicados
+                                                {{ $tipo->codigo ?? 'Sin código' }} • {{ $tipo->radicados_count }} radicados
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
-                                    <div class="text-sm text-gray-900 font-mono">{{ $tipo->codigo }}</div>
+                                    <div class="text-sm text-gray-900 font-mono">{{ $tipo->codigo ?? 'Sin código' }}</div>
                                 </td>
                                 <td class="px-3 py-4 hidden lg:table-cell">
                                     <div class="text-sm text-gray-900 truncate" title="{{ $tipo->descripcion }}">
@@ -236,7 +236,7 @@
                                                 <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
                                                         data-id="{{ $tipo->id }}"
                                                         data-nombre="{{ $tipo->nombre }}"
-                                                        data-codigo="{{ $tipo->codigo }}"
+                                                        data-codigo="{{ $tipo->codigo ?? '' }}"
                                                         data-descripcion="{{ $tipo->descripcion }}"
                                                         data-activo="{{ $tipo->activo ? 'true' : 'false' }}">
                                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

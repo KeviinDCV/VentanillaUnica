@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tr.className = 'hover:bg-gray-50 tipo-row';
         tr.dataset.id = tipo.id;
         tr.dataset.name = tipo.nombre.toLowerCase();
-        tr.dataset.codigo = tipo.codigo.toLowerCase();
+        tr.dataset.codigo = tipo.codigo ? tipo.codigo.toLowerCase() : '';
         tr.dataset.active = tipo.activo ? 'true' : 'false';
 
         const estadoBadge = tipo.activo ? 
@@ -358,13 +358,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             ${tipo.nombre}
                         </div>
                         <div class="text-xs text-gray-500 md:hidden truncate">
-                            ${tipo.codigo} • ${tipo.radicados_count} radicados
+                            ${tipo.codigo || 'Sin código'} • ${tipo.radicados_count} radicados
                         </div>
                     </div>
                 </div>
             </td>
             <td class="px-3 py-4 hidden md:table-cell">
-                <div class="text-sm text-gray-900 font-mono">${tipo.codigo}</div>
+                <div class="text-sm text-gray-900 font-mono">${tipo.codigo || 'Sin código'}</div>
             </td>
             <td class="px-3 py-4 hidden lg:table-cell">
                 <div class="text-sm text-gray-900 truncate" title="${tipo.descripcion || ''}">
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </button>
                     <div id="dropdown-tipo-${tipo.id}" class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50" data-dropdown-menu>
                         <div class="py-1" role="menu">
-                            <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" data-id="${tipo.id}" data-nombre="${tipo.nombre}" data-codigo="${tipo.codigo}" data-descripcion="${tipo.descripcion || ''}" data-activo="${tipo.activo}">
+                            <button class="btn-editar w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center" data-id="${tipo.id}" data-nombre="${tipo.nombre}" data-codigo="${tipo.codigo || ''}" data-descripcion="${tipo.descripcion || ''}" data-activo="${tipo.activo}">
                                 <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
