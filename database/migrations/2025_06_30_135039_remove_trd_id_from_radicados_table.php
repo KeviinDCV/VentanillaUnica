@@ -12,17 +12,26 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('radicados', function (Blueprint $table) {
-            // Eliminar la columna trd_id ya que se migra al sistema jerárquico
-            $table->dropForeign(['trd_id']);
-            $table->dropColumn('trd_id');
+            // Solo intentar eliminar si la columna trd_id existe
+            if (Schema::hasColumn('radicados', 'trd_id')) {
+                // Verificar si existe la clave foránea antes de eliminarla
+                try {
+                    $table->dropForeign(['trd_id']);
+                } catch (\Exception $e) {
+                    // Ignorar si la clave foránea no existe
+                }
+                $table->dropColumn('trd_id');
+            }
 
-            // Agregar la nueva columna subserie_id
-            $table->foreignId('subserie_id')
-                  ->nullable()
-                  ->after('remitente_id')
-                  ->constrained('subseries')
-                  ->onDelete('restrict')
-                  ->comment('Subserie del TRD jerárquico');
+            // Agregar la nueva columna subserie_id solo si no existe
+            if (!Schema::hasColumn('radicados', 'subserie_id')) {
+                $table->foreignId('subserie_id')
+                      ->nullable()
+                      ->after('remitente_id')
+                      ->constrained('subseries')
+                      ->onDelete('restrict')
+                      ->comment('Subserie del TRD jerárquico');
+            }
         });
     }
 

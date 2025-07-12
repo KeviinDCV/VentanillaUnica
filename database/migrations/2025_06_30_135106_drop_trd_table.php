@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Eliminar completamente la tabla trd
+        // Eliminar completamente la tabla trd (solo si existe)
+        // dropIfExists no falla si la tabla no existe
         Schema::dropIfExists('trd');
     }
 
