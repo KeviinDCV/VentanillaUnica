@@ -1399,42 +1399,157 @@
 
         // Función para eliminar radicado (solo administradores)
         function eliminarRadicado(id, numeroRadicado) {
-            if (confirm(`¿Está seguro de que desea eliminar el radicado ${numeroRadicado}?\n\nEsta acción no se puede deshacer.`)) {
-                // Mostrar loading
-                const button = event.target.closest('button');
-                const originalContent = button.innerHTML;
-                button.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-                button.disabled = true;
+            showConfirmModal({
+                title: 'Eliminar Radicado',
+                message: `¿Está seguro de que desea eliminar el radicado ${numeroRadicado}?\n\nEsta acción no se puede deshacer.`,
+                actionText: 'Eliminar',
+                actionClass: 'bg-red-600 hover:bg-red-700',
+                iconClass: 'bg-red-100',
+                iconColor: 'text-red-600',
+                onConfirm: () => {
+                    // Mostrar loading
+                    const button = event.target.closest('button');
+                    const originalContent = button.innerHTML;
+                    button.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+                    button.disabled = true;
 
-                // Realizar petición AJAX
-                fetch(`/radicacion/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error('Error al eliminar el radicado');
-                })
-                .then(data => {
-                    // Mostrar mensaje de éxito
-                    alert('Radicado eliminado exitosamente');
-                    // Recargar la página para actualizar la lista
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al eliminar el radicado. Por favor, inténtelo de nuevo.');
-                    // Restaurar botón
-                    button.innerHTML = originalContent;
-                    button.disabled = false;
-                });
+                    // Realizar petición AJAX
+                    fetch(`/radicacion/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Error al eliminar el radicado');
+                    })
+                    .then(data => {
+                        // Mostrar mensaje de éxito con modal personalizado
+                        showConfirmModal({
+                            title: 'Éxito',
+                            message: 'Radicado eliminado exitosamente',
+                            actionText: 'Aceptar',
+                            actionClass: 'bg-green-600 hover:bg-green-700',
+                            iconClass: 'bg-green-100',
+                            iconColor: 'text-green-600',
+                            onConfirm: () => {
+                                // Recargar la página para actualizar la lista
+                                window.location.reload();
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Mostrar error con modal personalizado
+                        showConfirmModal({
+                            title: 'Error',
+                            message: 'Error al eliminar el radicado. Por favor, inténtelo de nuevo.',
+                            actionText: 'Aceptar',
+                            actionClass: 'bg-red-600 hover:bg-red-700',
+                            iconClass: 'bg-red-100',
+                            iconColor: 'text-red-600',
+                            onConfirm: () => {
+                                // Restaurar botón
+                                button.innerHTML = originalContent;
+                                button.disabled = false;
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        // Función para mostrar modal de confirmación personalizado
+        function showConfirmModal(options) {
+            const modal = document.getElementById('confirmStatusModal');
+            const title = document.getElementById('confirmModalTitle');
+            const message = document.getElementById('confirmModalMessage');
+            const actionButton = document.getElementById('confirmModalAction');
+            const iconContainer = document.getElementById('confirmModalIcon');
+
+            if (!modal || !title || !message || !actionButton || !iconContainer) {
+                console.error('Modal elements not found, falling back to confirm()');
+                if (confirm(options.message)) {
+                    options.onConfirm();
+                }
+                return;
             }
+
+            // Configurar contenido del modal
+            title.textContent = options.title;
+            message.textContent = options.message;
+            actionButton.textContent = options.actionText;
+
+            // Aplicar clases CSS completas
+            actionButton.className = `px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors min-w-[100px] ${options.actionClass}`;
+
+            // Como respaldo, aplicar estilos inline también
+            if (options.actionClass.includes('bg-orange-600')) {
+                actionButton.style.backgroundColor = '#ea580c';
+                actionButton.style.borderColor = '#ea580c';
+            } else if (options.actionClass.includes('bg-green-600')) {
+                actionButton.style.backgroundColor = '#16a34a';
+                actionButton.style.borderColor = '#16a34a';
+            } else if (options.actionClass.includes('bg-red-600')) {
+                actionButton.style.backgroundColor = '#dc2626';
+                actionButton.style.borderColor = '#dc2626';
+            }
+
+            // Configurar icono
+            iconContainer.className = `flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full ${options.iconClass}`;
+            iconContainer.innerHTML = `
+                <svg class="w-6 h-6 ${options.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                </svg>
+            `;
+
+            // Guardar la función de confirmación globalmente
+            window.currentConfirmAction = options.onConfirm;
+
+            // Configurar acción del botón
+            actionButton.onclick = function() {
+                if (window.currentConfirmAction) {
+                    window.currentConfirmAction();
+                }
+                closeConfirmModal();
+            };
+
+            // Mostrar modal con animación
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Animación de entrada
+            const modalContent = modal.querySelector('.relative');
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modalContent.style.opacity = '1';
+                modalContent.style.transform = 'scale(1) translateY(0)';
+            }, 10);
+        }
+
+        // Función para cerrar modal de confirmación
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmStatusModal');
+            if (!modal) return;
+
+            const modalContent = modal.querySelector('.relative');
+
+            // Animación de salida
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                window.currentConfirmAction = null;
+            }, 200);
         }
 
         // Función para manejar los menús desplegables con posicionamiento absoluto
@@ -2532,6 +2647,31 @@
                 cargarCiudadesPorDepartamento(departamentoSelect.value);
             }
         }
+
+        // Event listeners para el modal de confirmación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cerrar modal al hacer clic fuera de él
+            const confirmModal = document.getElementById('confirmStatusModal');
+            if (confirmModal) {
+                confirmModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeConfirmModal();
+                    }
+                });
+            }
+
+            // Cerrar modal con tecla Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && confirmModal && !confirmModal.classList.contains('hidden')) {
+                    closeConfirmModal();
+                }
+            });
+
+            // Botones de cerrar modal
+            document.querySelectorAll('[data-action="close-confirm-modal"]').forEach(button => {
+                button.addEventListener('click', closeConfirmModal);
+            });
+        });
     </script>
 
     <?php $__env->startPush('styles'); ?>
@@ -2579,6 +2719,49 @@
         }
     </style>
     <?php $__env->stopPush(); ?>
+
+    <!-- Modal de Confirmación Personalizado -->
+    <div id="confirmStatusModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out">
+            <!-- Header del Modal -->
+            <div class="flex justify-between items-center pb-4 border-b border-gray-200">
+                <h3 id="confirmModalTitle" class="text-lg font-medium text-gray-800">Confirmar Acción</h3>
+                <button data-action="close-confirm-modal" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="mt-4">
+                <div class="flex items-center mb-4">
+                    <div id="confirmModalIcon" class="flex-shrink-0 w-10 h-10 mx-auto flex items-center justify-center rounded-full">
+                        <!-- Icono se agregará dinámicamente -->
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <p id="confirmModalMessage" class="text-sm text-gray-600">
+                            <!-- Mensaje se agregará dinámicamente -->
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
+                    <button type="button"
+                            data-action="close-confirm-modal"
+                            class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button"
+                            id="confirmModalAction"
+                            class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors min-w-[100px]">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
