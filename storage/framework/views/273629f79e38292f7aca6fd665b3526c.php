@@ -7,17 +7,17 @@
 ?>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <!-- Unidad Administrativa -->
+    <!-- Proceso -->
     <div>
         <label for="unidad_administrativa_id" class="block text-sm font-medium text-gray-700 mb-2">
-            Unidad Administrativa<?php echo $optionalText; ?> <?php echo $asterisk; ?>
+            Proceso<?php echo $optionalText; ?> <?php echo $asterisk; ?>
 
         </label>
         <select name="unidad_administrativa_id" id="unidad_administrativa_id" <?php echo e($requiredAttr); ?>
 
                 class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                 onchange="loadSeriesForRadicacion(this.value)">
-            <option value="">Seleccionar unidad...</option>
+            <option value="">Seleccionar proceso...</option>
             <?php if(isset($unidadesAdministrativas) && count($unidadesAdministrativas) > 0): ?>
                 <?php $__currentLoopData = $unidadesAdministrativas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $unidad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($unidad->id ?? ''); ?>" <?php echo e(old('unidad_administrativa_id') == ($unidad->id ?? '') ? 'selected' : ''); ?>>
@@ -26,7 +26,7 @@
                     </option>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             <?php else: ?>
-                <option value="">No hay unidades disponibles</option>
+                <option value="">No hay procesos disponibles</option>
             <?php endif; ?>
         </select>
     </div>

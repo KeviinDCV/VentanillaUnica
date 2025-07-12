@@ -56,8 +56,8 @@ class RadicacionSalidaController extends Controller
             'asunto' => 'required|string|max:500',
             'numero_folios' => 'nullable|integer|min:1',
 
-            // TRD
-            'trd_id' => 'required|exists:subseries,id',
+            // TRD - Opcional
+            'trd_id' => 'nullable|exists:subseries,id',
 
             // Envío
             'dependencia_origen_id' => 'required|exists:dependencias,id',
@@ -88,7 +88,7 @@ class RadicacionSalidaController extends Controller
             'ciudad_destinatario.required' => 'Debe seleccionar la ciudad',
             'asunto.required' => 'El asunto es obligatorio',
             'numero_folios.min' => 'El número de folios debe ser al menos 1',
-            'trd_id.required' => 'Debe seleccionar la serie/subserie TRD',
+            'trd_id.exists' => 'El TRD seleccionado no es válido',
             'dependencia_origen_id.required' => 'Debe seleccionar la dependencia de origen',
             'funcionario_remitente.required' => 'El nombre del funcionario remitente es obligatorio',
             'tipo_anexo.required' => 'Debe seleccionar el tipo de anexo',

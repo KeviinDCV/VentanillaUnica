@@ -82,8 +82,8 @@ class RadicacionInternaController extends Controller
             'observaciones' => 'nullable|string',
             'prioridad' => 'required|in:baja,normal,alta,urgente',
 
-            // TRD (Subserie)
-            'trd_id' => 'required|exists:subseries,id',
+            // TRD (Subserie) - Opcional
+            'trd_id' => 'nullable|exists:subseries,id',
 
             // Respuesta a documento (opcional) - Funcionalidad pendiente de implementar
             'es_respuesta' => 'nullable|boolean',

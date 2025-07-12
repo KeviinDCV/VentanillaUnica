@@ -1,6 +1,6 @@
 <!-- Formulario de Radicación Interna para Modal -->
-<form action="{{ route('radicacion.interna.store') }}" method="POST" enctype="multipart/form-data" id="radicacionInternaForm" data-protect="true">
-    @csrf
+<form action="<?php echo e(route('radicacion.interna.store')); ?>" method="POST" enctype="multipart/form-data" id="radicacionInternaForm" data-protect="true">
+    <?php echo csrf_field(); ?>
 
     <!-- Sección 1: Información del Remitente Interno -->
     <div class="mb-6">
@@ -17,12 +17,13 @@
                 <select name="dependencia_origen_id" id="dependencia_origen_id" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar dependencia...</option>
-                    @foreach($dependencias as $dependencia)
-                        <option value="{{ $dependencia->id }}"
-                                {{ old('dependencia_origen_id') == $dependencia->id ? 'selected' : '' }}>
-                            {{ $dependencia->nombre_completo }}
+                    <?php $__currentLoopData = $dependencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dependencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($dependencia->id); ?>"
+                                <?php echo e(old('dependencia_origen_id') == $dependencia->id ? 'selected' : ''); ?>>
+                            <?php echo e($dependencia->nombre_completo); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
@@ -32,7 +33,7 @@
                     Funcionario Remitente <span class="text-red-500">*</span>
                 </label>
                 <input type="text" name="funcionario_remitente" id="funcionario_remitente" required
-                       value="{{ old('funcionario_remitente') }}"
+                       value="<?php echo e(old('funcionario_remitente')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Nombre del funcionario">
             </div>
@@ -45,7 +46,7 @@
                     Cargo
                 </label>
                 <input type="text" name="cargo_remitente" id="cargo_remitente"
-                       value="{{ old('cargo_remitente') }}"
+                       value="<?php echo e(old('cargo_remitente')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Cargo del funcionario">
             </div>
@@ -56,7 +57,7 @@
                     Teléfono
                 </label>
                 <input type="tel" name="telefono_remitente" id="telefono_remitente"
-                       value="{{ old('telefono_remitente') }}"
+                       value="<?php echo e(old('telefono_remitente')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Número de teléfono">
             </div>
@@ -68,7 +69,7 @@
                 Correo Electrónico
             </label>
             <input type="email" name="email_remitente" id="email_remitente"
-                   value="{{ old('email_remitente') }}"
+                   value="<?php echo e(old('email_remitente')); ?>"
                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                    placeholder="correo@hospital.gov.co">
         </div>
@@ -89,12 +90,13 @@
                 <select name="tipo_comunicacion" id="tipo_comunicacion" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    @foreach($tiposSolicitud as $tipo)
-                        <option value="{{ $tipo->codigo }}"
-                                {{ old('tipo_comunicacion') == $tipo->codigo ? 'selected' : '' }}>
-                            {{ $tipo->nombre }}
+                    <?php $__currentLoopData = $tiposSolicitud; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($tipo->codigo); ?>"
+                                <?php echo e(old('tipo_comunicacion') == $tipo->codigo ? 'selected' : ''); ?>>
+                            <?php echo e($tipo->nombre); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
@@ -106,10 +108,10 @@
                 <select name="prioridad" id="prioridad" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="baja" {{ old('prioridad') == 'baja' ? 'selected' : '' }}>Baja</option>
-                    <option value="normal" {{ old('prioridad') == 'normal' ? 'selected' : '' }}>Normal</option>
-                    <option value="alta" {{ old('prioridad') == 'alta' ? 'selected' : '' }}>Alta</option>
-                    <option value="urgente" {{ old('prioridad') == 'urgente' ? 'selected' : '' }}>Urgente</option>
+                    <option value="baja" <?php echo e(old('prioridad') == 'baja' ? 'selected' : ''); ?>>Baja</option>
+                    <option value="normal" <?php echo e(old('prioridad') == 'normal' ? 'selected' : ''); ?>>Normal</option>
+                    <option value="alta" <?php echo e(old('prioridad') == 'alta' ? 'selected' : ''); ?>>Alta</option>
+                    <option value="urgente" <?php echo e(old('prioridad') == 'urgente' ? 'selected' : ''); ?>>Urgente</option>
                 </select>
             </div>
         </div>
@@ -121,7 +123,7 @@
                     Asunto <span class="text-red-500">*</span>
                 </label>
                 <input type="text" name="asunto" id="asunto" required
-                       value="{{ old('asunto') }}"
+                       value="<?php echo e(old('asunto')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Asunto del documento">
             </div>
@@ -134,7 +136,7 @@
                     Número de Folios <span class="text-red-500">*</span>
                 </label>
                 <input type="number" name="numero_folios" id="numero_folios" required min="1"
-                       value="{{ old('numero_folios', 1) }}"
+                       value="<?php echo e(old('numero_folios', 1)); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Cantidad de folios">
             </div>
@@ -145,7 +147,7 @@
                     Número de Anexos
                 </label>
                 <input type="number" name="numero_anexos" id="numero_anexos" min="0"
-                       value="{{ old('numero_anexos', 0) }}"
+                       value="<?php echo e(old('numero_anexos', 0)); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Cantidad de anexos">
             </div>
@@ -158,7 +160,7 @@
             </label>
             <textarea name="observaciones" id="observaciones" rows="3"
                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                      placeholder="Observaciones adicionales">{{ old('observaciones') }}</textarea>
+                      placeholder="Observaciones adicionales"><?php echo e(old('observaciones')); ?></textarea>
         </div>
     </div>
 
@@ -168,7 +170,26 @@
             3. Clasificación Documental (TRD)
         </h3>
 
-        <x-trd-selector :unidadesAdministrativas="$unidadesAdministrativas" :optional="true" />
+        <?php if (isset($component)) { $__componentOriginal99a46d8246fd80cd14c21c1aea288fca = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal99a46d8246fd80cd14c21c1aea288fca = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.trd-selector','data' => ['unidadesAdministrativas' => $unidadesAdministrativas,'optional' => true]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('trd-selector'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['unidadesAdministrativas' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($unidadesAdministrativas),'optional' => true]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal99a46d8246fd80cd14c21c1aea288fca)): ?>
+<?php $attributes = $__attributesOriginal99a46d8246fd80cd14c21c1aea288fca; ?>
+<?php unset($__attributesOriginal99a46d8246fd80cd14c21c1aea288fca); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal99a46d8246fd80cd14c21c1aea288fca)): ?>
+<?php $component = $__componentOriginal99a46d8246fd80cd14c21c1aea288fca; ?>
+<?php unset($__componentOriginal99a46d8246fd80cd14c21c1aea288fca); ?>
+<?php endif; ?>
     </div>
 
     <!-- Sección 4: Destino -->
@@ -186,12 +207,13 @@
                 <select name="dependencia_destino_id" id="dependencia_destino_id" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar dependencia...</option>
-                    @foreach($dependencias as $dependencia)
-                        <option value="{{ $dependencia->id }}"
-                                {{ old('dependencia_destino_id') == $dependencia->id ? 'selected' : '' }}>
-                            {{ $dependencia->nombre_completo }}
+                    <?php $__currentLoopData = $dependencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dependencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($dependencia->id); ?>"
+                                <?php echo e(old('dependencia_destino_id') == $dependencia->id ? 'selected' : ''); ?>>
+                            <?php echo e($dependencia->nombre_completo); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
 
@@ -201,7 +223,7 @@
                     Funcionario Destino
                 </label>
                 <input type="text" name="funcionario_destino" id="funcionario_destino"
-                       value="{{ old('funcionario_destino') }}"
+                       value="<?php echo e(old('funcionario_destino')); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                        placeholder="Nombre del funcionario destino">
             </div>
@@ -216,8 +238,8 @@
                 <select name="requiere_respuesta" id="requiere_respuesta" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                     <option value="">Seleccionar...</option>
-                    <option value="si" {{ old('requiere_respuesta') == 'si' ? 'selected' : '' }}>Sí</option>
-                    <option value="no" {{ old('requiere_respuesta') == 'no' ? 'selected' : '' }}>No</option>
+                    <option value="si" <?php echo e(old('requiere_respuesta') == 'si' ? 'selected' : ''); ?>>Sí</option>
+                    <option value="no" <?php echo e(old('requiere_respuesta') == 'no' ? 'selected' : ''); ?>>No</option>
                 </select>
             </div>
 
@@ -227,8 +249,8 @@
                     Fecha Límite de Respuesta <span class="text-red-500">*</span>
                 </label>
                 <input type="date" name="fecha_limite_respuesta" id="fecha_limite_respuesta"
-                       value="{{ old('fecha_limite_respuesta') }}"
-                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
+                       value="<?php echo e(old('fecha_limite_respuesta')); ?>"
+                       min="<?php echo e(date('Y-m-d', strtotime('+1 day'))); ?>"
                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                 <p class="text-sm text-gray-500 mt-1">Solo requerido si se selecciona "Requiere respuesta: Sí"</p>
             </div>
@@ -241,7 +263,7 @@
             </label>
             <textarea name="instrucciones" id="instrucciones" rows="3"
                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                      placeholder="Instrucciones especiales para el destinatario">{{ old('instrucciones') }}</textarea>
+                      placeholder="Instrucciones especiales para el destinatario"><?php echo e(old('instrucciones')); ?></textarea>
         </div>
 
         <!-- Tipo de Anexo -->
@@ -252,9 +274,9 @@
             <select name="tipo_anexo" id="tipo_anexo" required
                     class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                 <option value="">Seleccionar...</option>
-                <option value="original" {{ old('tipo_anexo') == 'original' ? 'selected' : '' }}>Original</option>
-                <option value="copia" {{ old('tipo_anexo') == 'copia' ? 'selected' : '' }}>Copia</option>
-                <option value="ninguno" {{ old('tipo_anexo') == 'ninguno' ? 'selected' : '' }}>Ninguno</option>
+                <option value="original" <?php echo e(old('tipo_anexo') == 'original' ? 'selected' : ''); ?>>Original</option>
+                <option value="copia" <?php echo e(old('tipo_anexo') == 'copia' ? 'selected' : ''); ?>>Copia</option>
+                <option value="ninguno" <?php echo e(old('tipo_anexo') == 'ninguno' ? 'selected' : ''); ?>>Ninguno</option>
             </select>
         </div>
     </div>
@@ -332,3 +354,4 @@
 </form>
 
 <!-- JavaScript movido a radicacion.js para funcionar correctamente en modales -->
+<?php /**PATH E:\Hospital\Ventanilla\UniRadic\resources\views/radicacion/forms/interno.blade.php ENDPATH**/ ?>
