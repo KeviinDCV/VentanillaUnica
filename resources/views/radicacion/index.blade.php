@@ -409,29 +409,29 @@
                             @endif
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full divide-y divide-gray-200">
+                    <div class="table-container overflow-x-auto">
+                        <table class="table-responsive min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                                         Número
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                         Tipo
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Remitente
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Dependencia
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                         Estado
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                         Fecha
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                         Acciones
                                     </th>
                                 </tr>
@@ -439,7 +439,7 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach($radicadosConsulta as $radicado)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-3 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-blue-600">
                                             <button onclick="verDetallesRadicado({{ $radicado->id }})"
                                                     class="hover:text-blue-800 hover:underline cursor-pointer">
@@ -447,8 +447,8 @@
                                             </button>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    <td class="px-3 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                             @if($radicado->tipo === 'entrada') bg-blue-100 text-blue-800
                                             @elseif($radicado->tipo === 'interno') bg-green-100 text-green-800
                                             @elseif($radicado->tipo === 'salida') bg-orange-100 text-orange-800
@@ -456,21 +456,21 @@
                                             {{ ucfirst($radicado->tipo) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-900 truncate max-w-xs" title="{{ $radicado->remitente->nombre_completo }}">
+                                    <td class="px-3 py-4">
+                                        <div class="text-sm text-gray-900 truncate max-w-48" title="{{ $radicado->remitente->nombre_completo }}">
                                             {{ $radicado->remitente->nombre_completo }}
                                         </div>
-                                        <div class="text-xs text-gray-500">
+                                        <div class="text-xs text-gray-500 truncate max-w-48">
                                             {{ $radicado->remitente->identificacion_completa }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-900 truncate max-w-xs" title="{{ $radicado->dependenciaDestino->nombre }}">
+                                    <td class="px-3 py-4">
+                                        <div class="text-sm text-gray-900 truncate max-w-48" title="{{ $radicado->dependenciaDestino->nombre }}">
                                             {{ $radicado->dependenciaDestino->nombre }}
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    <td class="px-3 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                             {{ $radicado->estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                             {{ $radicado->estado === 'en_proceso' ? 'bg-blue-100 text-blue-800' : '' }}
                                             {{ $radicado->estado === 'respondido' ? 'bg-green-100 text-green-800' : '' }}
@@ -485,10 +485,10 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $radicado->fecha_radicado->format('d/m/Y') }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="relative">
                                             <button type="button"
                                                     class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
@@ -554,7 +554,7 @@
 
                     <!-- Paginación -->
                     @if($radicadosConsulta->hasPages())
-                        <div class="px-6 py-4 border-t border-gray-200">
+                        <div class="pagination-container px-6 py-4 border-t border-gray-200">
                             {{ $radicadosConsulta->links() }}
                         </div>
                     @endif
@@ -590,29 +590,29 @@
                         </button>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full divide-y divide-gray-200">
+                <div class="table-container overflow-x-auto">
+                    <table class="table-responsive min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                                     Número
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                     Tipo
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Remitente/Destinatario
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Dependencia
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                     Estado
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                                     Fecha
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
                                     Acciones
                                 </th>
                             </tr>
@@ -620,7 +620,7 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($radicadosRecientes as $radicado)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-uniradical-blue">
                                         <button onclick="verDetallesRadicado({{ $radicado->id }})"
                                                 class="hover:text-opacity-80 hover:underline cursor-pointer">
@@ -628,8 +628,8 @@
                                         </button>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                <td class="px-3 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                         @if($radicado->tipo === 'entrada') bg-blue-100 text-blue-800
                                         @elseif($radicado->tipo === 'interno') bg-green-100 text-green-800
                                         @elseif($radicado->tipo === 'salida') bg-orange-100 text-orange-800
@@ -637,18 +637,18 @@
                                         {{ ucfirst($radicado->tipo) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-900 truncate max-w-xs" title="{{ $radicado->remitente->nombre_completo }}">
+                                <td class="px-3 py-4">
+                                    <div class="text-sm text-gray-900 truncate max-w-48" title="{{ $radicado->remitente->nombre_completo }}">
                                         {{ $radicado->remitente->nombre_completo }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-900 truncate max-w-xs" title="{{ $radicado->dependenciaDestino->nombre }}">
+                                <td class="px-3 py-4">
+                                    <div class="text-sm text-gray-900 truncate max-w-48" title="{{ $radicado->dependenciaDestino->nombre }}">
                                         {{ $radicado->dependenciaDestino->nombre }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                <td class="px-3 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                         @if($radicado->estado === 'pendiente') bg-yellow-100 text-yellow-800
                                         @elseif($radicado->estado === 'en_proceso') bg-blue-100 text-blue-800
                                         @elseif($radicado->estado === 'respondido') bg-green-100 text-green-800
@@ -657,10 +657,10 @@
                                         {{ ucfirst(str_replace('_', ' ', $radicado->estado)) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $radicado->fecha_radicado->format('d/m/Y') }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="relative">
                                         <button type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
@@ -738,7 +738,7 @@
 
                 <!-- Paginación -->
                 @if($radicadosRecientes->hasPages())
-                    <div class="px-6 py-4 border-t border-gray-200">
+                    <div class="pagination-container px-6 py-4 border-t border-gray-200">
                         {{ $radicadosRecientes->links() }}
                     </div>
                 @endif
@@ -1360,6 +1360,18 @@
                     });
                 });
             }
+
+            // Manejar indicador de scroll en móviles
+            const tableContainers = document.querySelectorAll('.table-container');
+            tableContainers.forEach(container => {
+                container.addEventListener('scroll', function() {
+                    if (this.scrollLeft > 0) {
+                        this.classList.add('scrolled');
+                    } else {
+                        this.classList.remove('scrolled');
+                    }
+                });
+            });
         });
 
         // Función global para mostrar la sección de consulta
@@ -2751,9 +2763,24 @@
             transform-origin: bottom right;
         }
 
-        /* Asegurar que los contenedores de la tabla permitan overflow */
-        .overflow-x-auto {
-            overflow: visible !important;
+        /* Asegurar que los contenedores de la tabla permitan overflow para dropdowns */
+        .table-container {
+            position: relative;
+        }
+
+        /* Solo en desktop permitir overflow visible para dropdowns */
+        @media (min-width: 769px) {
+            .table-container.overflow-x-auto {
+                overflow: visible !important;
+            }
+        }
+
+        /* En móviles asegurar scroll horizontal */
+        @media (max-width: 768px) {
+            .table-container.overflow-x-auto {
+                overflow-x: auto !important;
+                overflow-y: visible !important;
+            }
         }
 
         /* Asegurar que las celdas de la tabla permitan overflow para dropdowns */
@@ -2766,6 +2793,178 @@
         .table-actions-container {
             position: relative;
             display: inline-block;
+        }
+
+        /* Optimizaciones para tablas responsivas */
+        .table-container {
+            width: 100%;
+            position: relative;
+        }
+
+        /* Configuración base de la tabla */
+        .table-responsive {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            min-width: 900px; /* Ancho mínimo para asegurar que todas las columnas sean visibles */
+        }
+
+        /* Optimizar el ancho de las columnas */
+        .table-responsive th,
+        .table-responsive td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-wrap: break-word;
+        }
+
+        /* Anchos específicos para columnas */
+        .table-responsive th:nth-child(1),
+        .table-responsive td:nth-child(1) { width: 140px; } /* Número */
+        .table-responsive th:nth-child(2),
+        .table-responsive td:nth-child(2) { width: 80px; }  /* Tipo */
+        .table-responsive th:nth-child(3),
+        .table-responsive td:nth-child(3) { width: 200px; } /* Remitente */
+        .table-responsive th:nth-child(4),
+        .table-responsive td:nth-child(4) { width: 180px; } /* Dependencia */
+        .table-responsive th:nth-child(5),
+        .table-responsive td:nth-child(5) { width: 100px; } /* Estado */
+        .table-responsive th:nth-child(6),
+        .table-responsive td:nth-child(6) { width: 90px; }  /* Fecha */
+        .table-responsive th:nth-child(7),
+        .table-responsive td:nth-child(7) { width: 80px; }  /* Acciones */
+
+        /* Mejorar la paginación para que no cause overflow */
+        .pagination-container {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Responsive para pantallas pequeñas */
+        @media (max-width: 1400px) {
+            .table-responsive th:nth-child(3),
+            .table-responsive td:nth-child(3) { width: 160px; } /* Remitente */
+            .table-responsive th:nth-child(4),
+            .table-responsive td:nth-child(4) { width: 140px; } /* Dependencia */
+        }
+
+        @media (max-width: 1200px) {
+            .table-responsive {
+                font-size: 0.875rem;
+                table-layout: fixed;
+                min-width: 800px; /* Reducir ancho mínimo para tablets */
+            }
+
+            .table-responsive th,
+            .table-responsive td {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .table-responsive th:nth-child(3),
+            .table-responsive td:nth-child(3) { width: 140px; } /* Remitente */
+            .table-responsive th:nth-child(4),
+            .table-responsive td:nth-child(4) { width: 120px; } /* Dependencia */
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto !important; /* Forzar scroll horizontal en móviles */
+                overflow-y: visible !important;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+            }
+
+            .table-container.overflow-x-auto {
+                overflow-x: auto !important;
+                overflow-y: visible !important;
+            }
+
+            .table-responsive {
+                font-size: 0.8rem;
+                table-layout: fixed;
+                min-width: 750px; /* Ancho mínimo para móviles que permita scroll */
+                width: 750px; /* Ancho fijo para forzar scroll */
+            }
+
+            .table-responsive th,
+            .table-responsive td {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+            }
+
+            .table-responsive .truncate,
+            .table-responsive .max-w-48 {
+                max-width: 80px;
+            }
+
+            /* Anchos optimizados para móviles */
+            .table-responsive th:nth-child(1),
+            .table-responsive td:nth-child(1) { width: 100px; } /* Número */
+            .table-responsive th:nth-child(2),
+            .table-responsive td:nth-child(2) { width: 60px; }  /* Tipo */
+            .table-responsive th:nth-child(3),
+            .table-responsive td:nth-child(3) { width: 120px; } /* Remitente */
+            .table-responsive th:nth-child(4),
+            .table-responsive td:nth-child(4) { width: 100px; } /* Dependencia */
+            .table-responsive th:nth-child(5),
+            .table-responsive td:nth-child(5) { width: 80px; }  /* Estado */
+            .table-responsive th:nth-child(6),
+            .table-responsive td:nth-child(6) { width: 70px; }  /* Fecha */
+            .table-responsive th:nth-child(7),
+            .table-responsive td:nth-child(7) { width: 60px; }  /* Acciones */
+        }
+
+        /* Indicador visual de scroll en móviles */
+        @media (max-width: 768px) {
+            /* Forzar scroll horizontal en todos los contenedores de tabla en móviles */
+            .table-container,
+            .table-container.overflow-x-auto,
+            .overflow-x-auto {
+                overflow-x: auto !important;
+                overflow-y: visible !important;
+                -webkit-overflow-scrolling: touch !important;
+                scrollbar-width: thin;
+            }
+
+            .table-container::after {
+                content: "← Desliza para ver más →";
+                position: absolute;
+                bottom: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 0.75rem;
+                color: #6b7280;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 2px 8px;
+                border-radius: 4px;
+                white-space: nowrap;
+                pointer-events: none;
+                z-index: 10;
+            }
+
+            /* Ocultar el indicador cuando se hace scroll */
+            .table-container.scrolled::after {
+                display: none;
+            }
+
+            /* Mejorar la apariencia del scroll en móviles */
+            .table-container::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .table-container::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 3px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb {
+                background: #cbd5e1;
+                border-radius: 3px;
+            }
+
+            .table-container::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
         }
     </style>
     @endpush
