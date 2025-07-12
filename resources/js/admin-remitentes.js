@@ -44,9 +44,9 @@ document.addEventListener('DOMContentLoaded', function() {
     btnCancelar?.addEventListener('click', cerrarModal);
     formRemitente?.addEventListener('submit', guardarRemitente);
 
-    // Event listeners para búsqueda
+    // Event listeners para búsqueda en tiempo real
     if (buscarInput) {
-        buscarInput.addEventListener('input', filtrarRemitentes);
+        initializeRealTimeSearch();
     }
 
     // Configurar event listeners para el modal de confirmación
@@ -486,49 +486,102 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Función para filtrar remitentes
-    function filtrarRemitentes() {
-        const busqueda = buscarInput ? buscarInput.value.toLowerCase() : '';
-        const filas = document.querySelectorAll('.remitente-row');
+    // Funciones para búsqueda en tiempo real del lado del servidor
+    function initializeRealTimeSearch() {
+        const searchInput = document.getElementById('buscar-remitente');
+        if (!searchInput) return;
 
-        filas.forEach(fila => {
-            const nombre = fila.dataset.name || '';
-            const email = fila.dataset.email || '';
-            const documento = fila.dataset.documento || '';
-            const entidad = fila.dataset.entidad || '';
-            const telefono = fila.dataset.telefono || '';
+        let searchTimeout;
 
-            // Verificar coincidencia en búsqueda (nombre, email, documento, entidad, teléfono)
-            const coincideBusqueda = busqueda === '' ||
-                nombre.includes(busqueda) ||
-                email.includes(busqueda) ||
-                documento.includes(busqueda) ||
-                entidad.includes(busqueda) ||
-                telefono.includes(busqueda);
+        // Event listener para el campo de búsqueda
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const termino = this.value.trim();
 
-            // Mostrar u ocultar fila según coincidencia de búsqueda
-            if (coincideBusqueda) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
+            // Debounce para evitar demasiadas peticiones
+            searchTimeout = setTimeout(() => {
+                if (termino.length >= 2 || termino.length === 0) {
+                    // Buscar si hay al menos 2 caracteres o mostrar todos si está vacío
+                    searchRemitentes(termino);
+                }
+            }, 300);
+        });
+    }
+
+    function searchRemitentes(termino) {
+        // Mostrar indicador de carga
+        const tableContainer = document.querySelector('.table-container');
+        if (tableContainer) {
+            tableContainer.style.opacity = '0.6';
+        }
+
+        // Construir URL con parámetro de búsqueda
+        const url = new URL(window.location.href);
+        if (termino) {
+            url.searchParams.set('buscar', termino);
+        } else {
+            url.searchParams.delete('buscar');
+        }
+        url.searchParams.delete('page'); // Resetear paginación
+
+        fetch(url.toString(), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Crear un documento temporal para extraer el contenido
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // Extraer la tabla actualizada
+            const newTableContainer = tempDiv.querySelector('.bg-white.border.border-gray-200.rounded-lg.shadow-sm');
+            const currentTableContainer = document.querySelector('.bg-white.border.border-gray-200.rounded-lg.shadow-sm');
+
+            if (newTableContainer && currentTableContainer) {
+                currentTableContainer.innerHTML = newTableContainer.innerHTML;
+
+                // Reinicializar event listeners para los nuevos elementos
+                initializeTableEventListeners();
+            }
+
+            // Actualizar URL sin recargar la página
+            window.history.pushState({}, '', url.toString());
+        })
+        .catch(error => {
+            console.error('Error en la búsqueda:', error);
+            showConfirmModal({
+                title: 'Error de Búsqueda',
+                message: 'No se pudo realizar la búsqueda. Verifique su conexión a internet.',
+                actionText: 'Aceptar',
+                actionClass: 'bg-red-600 hover:bg-red-700',
+                iconClass: 'bg-red-100',
+                iconColor: 'text-red-600',
+                onConfirm: () => {}
+            });
+        })
+        .finally(() => {
+            // Quitar indicador de carga
+            if (tableContainer) {
+                tableContainer.style.opacity = '1';
             }
         });
-
-        // Actualizar contador de resultados
-        actualizarContadorResultados();
     }
 
-    // Función para actualizar contador de resultados
-    function actualizarContadorResultados() {
-        const filasVisibles = document.querySelectorAll('.remitente-row:not([style*="display: none"])');
-        const totalFilas = document.querySelectorAll('.remitente-row');
-
-        // Si hay un elemento contador, actualizarlo
-        const contador = document.getElementById('contador-resultados');
-        if (contador) {
-            contador.textContent = `Mostrando ${filasVisibles.length} de ${totalFilas.length} remitentes`;
+    // Función para reinicializar event listeners después de actualizar la tabla
+    function initializeTableEventListeners() {
+        // Reinicializar tooltips si existen
+        if (typeof initializeTooltips === 'function') {
+            initializeTooltips();
         }
+
+        // Reinicializar otros event listeners específicos de la tabla
+        // (agregar aquí cualquier otro event listener que necesite reinicializarse)
     }
+
+
 
     // Función para cargar ciudades por departamento (retorna promesa)
     function cargarCiudadesPorDepartamento(departamentoId) {

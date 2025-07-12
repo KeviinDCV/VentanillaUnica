@@ -145,7 +145,7 @@
             </div>
 
             <!-- Tabla de Remitentes -->
-            <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm table-container">
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <div>
@@ -156,6 +156,7 @@
                             <div class="relative">
                                 <input type="text"
                                        id="buscar-remitente"
+                                       value="<?php echo e(request('buscar')); ?>"
                                        placeholder="Buscar remitentes..."
                                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md text-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

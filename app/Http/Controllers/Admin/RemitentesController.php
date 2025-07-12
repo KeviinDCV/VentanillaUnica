@@ -29,6 +29,9 @@ class RemitentesController extends Controller
 
         $remitentes = $query->orderBy('nombre_completo')->paginate(15);
 
+        // Mantener parámetros de búsqueda en la paginación
+        $remitentes->appends($request->query());
+
         // Obtener departamentos y ciudades para los selects
         $departamentos = \App\Models\Departamento::activo()->ordenado()->get();
         $ciudades = \App\Models\Ciudad::with('departamento')->activo()->ordenado()->get();
