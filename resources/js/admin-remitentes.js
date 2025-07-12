@@ -38,20 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnCerrarModal = document.getElementById('btn-cerrar-modal');
     const btnCancelar = document.getElementById('btn-cancelar');
     const buscarInput = document.getElementById('buscar-remitente');
-    const filtroTipo = document.getElementById('filtro-tipo');
 
     // Event Listeners
     btnCerrarModal?.addEventListener('click', cerrarModal);
     btnCancelar?.addEventListener('click', cerrarModal);
     formRemitente?.addEventListener('submit', guardarRemitente);
 
-    // Event listeners para búsqueda y filtros
+    // Event listeners para búsqueda
     if (buscarInput) {
         buscarInput.addEventListener('input', filtrarRemitentes);
-    }
-
-    if (filtroTipo) {
-        filtroTipo.addEventListener('change', filtrarRemitentes);
     }
 
     // Configurar event listeners para el modal de confirmación
@@ -157,15 +152,54 @@ document.addEventListener('DOMContentLoaded', function() {
         // Llenar el formulario
         document.getElementById('remitente-id').value = remitenteActual.id;
         document.getElementById('nombre_completo').value = remitenteActual.nombre_completo;
-        document.getElementById('tipo').value = remitenteActual.tipo;
         document.getElementById('tipo_documento').value = remitenteActual.tipo_documento || '';
         document.getElementById('numero_documento').value = remitenteActual.numero_documento || '';
         document.getElementById('email').value = remitenteActual.email || '';
         document.getElementById('telefono').value = remitenteActual.telefono || '';
         document.getElementById('direccion').value = remitenteActual.direccion || '';
-        document.getElementById('ciudad').value = remitenteActual.ciudad || '';
-        document.getElementById('departamento').value = remitenteActual.departamento || '';
         document.getElementById('entidad').value = remitenteActual.entidad || '';
+
+        // Manejar departamento y ciudad
+        const departamentoNombre = remitenteActual.departamento || '';
+        const ciudadNombre = remitenteActual.ciudad || '';
+
+        // Buscar departamento por nombre y seleccionarlo
+        const departamentoSelect = document.getElementById('departamento_id');
+        const departamentoNombreInput = document.getElementById('departamento_nombre');
+
+        if (departamentoSelect && departamentoNombre) {
+            const departamentoOption = Array.from(departamentoSelect.options).find(option =>
+                option.dataset.nombre === departamentoNombre
+            );
+
+            if (departamentoOption) {
+                departamentoSelect.value = departamentoOption.value;
+                if (departamentoNombreInput) {
+                    departamentoNombreInput.value = departamentoNombre;
+                }
+
+                // Cargar ciudades y seleccionar la ciudad correspondiente
+                if (ciudadNombre) {
+                    cargarCiudadesPorDepartamento(departamentoOption.value).then(() => {
+                        const ciudadSelect = document.getElementById('ciudad_id');
+                        const ciudadNombreInput = document.getElementById('ciudad_nombre');
+
+                        if (ciudadSelect) {
+                            const ciudadOption = Array.from(ciudadSelect.options).find(option =>
+                                option.dataset.nombre === ciudadNombre
+                            );
+
+                            if (ciudadOption) {
+                                ciudadSelect.value = ciudadOption.value;
+                                if (ciudadNombreInput) {
+                                    ciudadNombreInput.value = ciudadNombre;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
 
         // Mostrar modal
         modalRemitente.classList.remove('hidden');
@@ -455,7 +489,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para filtrar remitentes
     function filtrarRemitentes() {
         const busqueda = buscarInput ? buscarInput.value.toLowerCase() : '';
-        const tipo = filtroTipo ? filtroTipo.value : '';
         const filas = document.querySelectorAll('.remitente-row');
 
         filas.forEach(fila => {
@@ -464,7 +497,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const documento = fila.dataset.documento || '';
             const entidad = fila.dataset.entidad || '';
             const telefono = fila.dataset.telefono || '';
-            const tipoRemitente = fila.dataset.tipo;
 
             // Verificar coincidencia en búsqueda (nombre, email, documento, entidad, teléfono)
             const coincideBusqueda = busqueda === '' ||
@@ -474,14 +506,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 entidad.includes(busqueda) ||
                 telefono.includes(busqueda);
 
-            // Verificar coincidencia en filtro de tipo
-            let coincideTipo = true;
-            if (tipo !== '') {
-                coincideTipo = tipoRemitente === tipo;
-            }
-
-            // Mostrar u ocultar fila según coincidencias
-            if (coincideBusqueda && coincideTipo) {
+            // Mostrar u ocultar fila según coincidencia de búsqueda
+            if (coincideBusqueda) {
                 fila.style.display = '';
             } else {
                 fila.style.display = 'none';
@@ -504,6 +530,54 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Función para cargar ciudades por departamento (retorna promesa)
+    function cargarCiudadesPorDepartamento(departamentoId) {
+        const ciudadSelect = document.getElementById('ciudad_id');
+        const ciudadNombreInput = document.getElementById('ciudad_nombre');
+
+        if (!ciudadSelect) return Promise.resolve();
+
+        // Mostrar estado de carga
+        ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
+        ciudadSelect.disabled = true;
+        ciudadSelect.classList.add('bg-gray-100');
+
+        // Realizar petición AJAX
+        return fetch(`/api/ciudades/por-departamento?departamento_id=${departamentoId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al cargar ciudades');
+                }
+                return response.json();
+            })
+            .then(ciudades => {
+                // Limpiar select
+                ciudadSelect.innerHTML = '<option value="">Seleccionar ciudad...</option>';
+
+                // Agregar ciudades
+                ciudades.forEach(ciudad => {
+                    const option = document.createElement('option');
+                    option.value = ciudad.id;
+                    option.textContent = ciudad.nombre;
+                    option.dataset.nombre = ciudad.nombre;
+                    ciudadSelect.appendChild(option);
+                });
+
+                // Habilitar select
+                ciudadSelect.disabled = false;
+                ciudadSelect.classList.remove('bg-gray-100');
+
+                return ciudades;
+            })
+            .catch(error => {
+                console.error('Error al cargar ciudades:', error);
+                ciudadSelect.innerHTML = '<option value="">Error al cargar ciudades</option>';
+                ciudadSelect.disabled = true;
+                ciudadSelect.classList.add('bg-gray-100');
+                throw error;
+            });
+    }
+
 
 
 
@@ -515,4 +589,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hacer las funciones globales para que puedan ser llamadas desde el HTML
     window.showConfirmModal = showConfirmModal;
     window.closeConfirmModal = closeConfirmModal;
+    window.cargarCiudadesPorDepartamento = cargarCiudadesPorDepartamento;
 });

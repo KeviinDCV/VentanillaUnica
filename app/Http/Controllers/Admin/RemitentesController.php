@@ -25,26 +25,28 @@ class RemitentesController extends Controller
             });
         }
 
-        // Filtro por tipo
-        if ($request->filled('tipo')) {
-            $query->where('tipo', $request->tipo);
-        }
+
 
         $remitentes = $query->orderBy('nombre_completo')->paginate(15);
 
-        return view('admin.remitentes.index', compact('remitentes'));
+        // Obtener departamentos y ciudades para los selects
+        $departamentos = \App\Models\Departamento::activo()->ordenado()->get();
+        $ciudades = \App\Models\Ciudad::with('departamento')->activo()->ordenado()->get();
+
+        return view('admin.remitentes.index', compact('remitentes', 'departamentos', 'ciudades'));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'nombre_completo' => 'required|string|max:255',
-            'tipo' => 'required|in:anonimo,registrado',
             'tipo_documento' => 'required|in:CC,CE,TI,PP,NIT,OTRO',
             'numero_documento' => 'required|string|max:20|unique:remitentes,numero_documento',
             'email' => 'nullable|email|max:255',
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string',
+            'departamento_id' => 'nullable|exists:departamentos,id',
+            'ciudad_id' => 'nullable|exists:ciudades,id',
             'ciudad' => 'nullable|string|max:100',
             'departamento' => 'nullable|string|max:100',
             'entidad' => 'nullable|string|max:255',
@@ -60,15 +62,15 @@ class RemitentesController extends Controller
 
         try {
             $remitente = Remitente::create([
-                'tipo' => $request->tipo,
+                'tipo' => 'registrado', // Siempre registrado en el admin
                 'tipo_documento' => $request->tipo_documento,
                 'numero_documento' => $request->numero_documento,
                 'nombre_completo' => $request->nombre_completo,
                 'telefono' => $request->telefono,
                 'email' => $request->email,
                 'direccion' => $request->direccion,
-                'ciudad' => $request->ciudad,
-                'departamento' => $request->departamento,
+                'ciudad' => $request->ciudad, // Nombre de la ciudad
+                'departamento' => $request->departamento, // Nombre del departamento
                 'entidad' => $request->entidad,
             ]);
 
@@ -91,12 +93,13 @@ class RemitentesController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nombre_completo' => 'required|string|max:255',
-            'tipo' => 'required|in:anonimo,registrado',
             'tipo_documento' => 'required|in:CC,CE,TI,PP,NIT,OTRO',
             'numero_documento' => 'required|string|max:20|unique:remitentes,numero_documento,' . $id,
             'email' => 'nullable|email|max:255',
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string',
+            'departamento_id' => 'nullable|exists:departamentos,id',
+            'ciudad_id' => 'nullable|exists:ciudades,id',
             'ciudad' => 'nullable|string|max:100',
             'departamento' => 'nullable|string|max:100',
             'entidad' => 'nullable|string|max:255',
@@ -112,15 +115,15 @@ class RemitentesController extends Controller
 
         try {
             $remitente->update([
-                'tipo' => $request->tipo,
+                'tipo' => 'registrado', // Siempre registrado en el admin
                 'tipo_documento' => $request->tipo_documento,
                 'numero_documento' => $request->numero_documento,
                 'nombre_completo' => $request->nombre_completo,
                 'telefono' => $request->telefono,
                 'email' => $request->email,
                 'direccion' => $request->direccion,
-                'ciudad' => $request->ciudad,
-                'departamento' => $request->departamento,
+                'ciudad' => $request->ciudad, // Nombre de la ciudad
+                'departamento' => $request->departamento, // Nombre del departamento
                 'entidad' => $request->entidad,
             ]);
 

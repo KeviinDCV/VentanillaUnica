@@ -1161,9 +1161,108 @@
             }
 
             // Función para buscar remitente existente
-            function buscarRemitente(numeroDocumento) {
-                // Esta función se puede implementar más adelante para buscar remitentes existentes
-                console.log('Buscando remitente:', numeroDocumento);
+            async function buscarRemitente(numeroDocumento) {
+                if (!numeroDocumento || numeroDocumento.trim() === '') {
+                    showConfirmModal({
+                        title: 'Campo Requerido',
+                        message: 'Por favor, ingrese un número de documento para buscar.',
+                        actionText: 'Aceptar',
+                        actionClass: 'bg-blue-600 hover:bg-blue-700',
+                        iconClass: 'bg-blue-100',
+                        iconColor: 'text-blue-600',
+                        onConfirm: () => {
+                            // Solo cerrar el modal
+                        }
+                    });
+                    return;
+                }
+
+                // Mostrar indicador de carga
+                const btnBuscar = document.getElementById('btn-buscar-remitente');
+                const originalText = btnBuscar.textContent;
+                btnBuscar.textContent = 'Buscando...';
+                btnBuscar.disabled = true;
+
+                try {
+                    const response = await fetch(`/radicacion/entrada/buscar-remitente?numero_documento=${encodeURIComponent(numeroDocumento)}`);
+                    const data = await response.json();
+
+                    if (data.found) {
+                        // Llenar los campos con los datos encontrados
+                        const tipoDocumento = document.getElementById('tipo_documento');
+                        const nombreCompleto = document.getElementById('nombre_completo');
+                        const telefono = document.getElementById('telefono');
+                        const email = document.getElementById('email');
+                        const direccion = document.getElementById('direccion');
+                        const departamento = document.getElementById('departamento_id');
+                        const ciudad = document.getElementById('ciudad_id');
+                        const entidad = document.getElementById('entidad');
+
+                        if (tipoDocumento) tipoDocumento.value = data.data.tipo_documento || '';
+                        if (nombreCompleto) nombreCompleto.value = data.data.nombre_completo || '';
+                        if (telefono) telefono.value = data.data.telefono || '';
+                        if (email) email.value = data.data.email || '';
+                        if (direccion) direccion.value = data.data.direccion || '';
+                        if (entidad) entidad.value = data.data.entidad || '';
+
+                        // Manejar departamento y ciudad
+                        if (departamento && data.data.departamento_id) {
+                            departamento.value = data.data.departamento_id;
+                            // Disparar evento change para cargar ciudades
+                            departamento.dispatchEvent(new Event('change'));
+
+                            // Esperar un poco para que se carguen las ciudades y luego seleccionar
+                            setTimeout(() => {
+                                if (ciudad && data.data.ciudad_id) {
+                                    ciudad.value = data.data.ciudad_id;
+                                }
+                            }, 500);
+                        }
+
+                        // Mostrar mensaje de éxito
+                        showConfirmModal({
+                            title: 'Remitente Encontrado',
+                            message: 'Los datos del remitente han sido cargados automáticamente desde registros anteriores.',
+                            actionText: 'Aceptar',
+                            actionClass: 'bg-green-600 hover:bg-green-700',
+                            iconClass: 'bg-green-100',
+                            iconColor: 'text-green-600',
+                            onConfirm: () => {
+                                // Solo cerrar el modal
+                            }
+                        });
+                    } else {
+                        // No se encontró el remitente
+                        showConfirmModal({
+                            title: 'Remitente No Encontrado',
+                            message: 'No se encontró un remitente registrado con el número de documento ingresado. Puede continuar llenando los datos manualmente.',
+                            actionText: 'Aceptar',
+                            actionClass: 'bg-orange-600 hover:bg-orange-700',
+                            iconClass: 'bg-orange-100',
+                            iconColor: 'text-orange-600',
+                            onConfirm: () => {
+                                // Solo cerrar el modal
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error al buscar remitente:', error);
+                    showConfirmModal({
+                        title: 'Error de Conexión',
+                        message: 'No se pudo verificar la información del remitente. Verifique su conexión a internet.',
+                        actionText: 'Aceptar',
+                        actionClass: 'bg-red-600 hover:bg-red-700',
+                        iconClass: 'bg-red-100',
+                        iconColor: 'text-red-600',
+                        onConfirm: () => {
+                            // Solo cerrar el modal
+                        }
+                    });
+                } finally {
+                    // Restaurar botón
+                    btnBuscar.textContent = originalText;
+                    btnBuscar.disabled = false;
+                }
             }
 
             // Funcionalidades específicas del formulario interno
