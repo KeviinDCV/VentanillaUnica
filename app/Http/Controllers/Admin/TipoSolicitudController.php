@@ -28,14 +28,14 @@ class TipoSolicitudController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'codigo' => 'required|string|max:20|unique:tipos_solicitud,codigo',
+            'codigo' => 'nullable|string|max:20|unique:tipos_solicitud,codigo',
             'descripcion' => 'nullable|string|max:500',
         ]);
 
         try {
             $tipoSolicitud = TipoSolicitud::create([
                 'nombre' => $request->nombre,
-                'codigo' => strtolower($request->codigo),
+                'codigo' => $request->codigo ? strtolower($request->codigo) : null,
                 'descripcion' => $request->descripcion,
                 'activo' => true,
             ]);
@@ -62,14 +62,14 @@ class TipoSolicitudController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
-            'codigo' => 'required|string|max:20|unique:tipos_solicitud,codigo,' . $tipoSolicitud->id,
+            'codigo' => 'nullable|string|max:20|unique:tipos_solicitud,codigo,' . $tipoSolicitud->id,
             'descripcion' => 'nullable|string|max:500',
         ]);
 
         try {
             $tipoSolicitud->update([
                 'nombre' => $request->nombre,
-                'codigo' => strtolower($request->codigo),
+                'codigo' => $request->codigo ? strtolower($request->codigo) : null,
                 'descripcion' => $request->descripcion,
             ]);
 
