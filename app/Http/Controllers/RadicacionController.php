@@ -883,4 +883,514 @@ class RadicacionController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Obtener documentos de un radicado
+     */
+    public function obtenerDocumentos($id)
+    {
+        try {
+            $radicado = Radicado::with('documentos')->findOrFail($id);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $radicado->usuario_radica_id !== $user->id) {
+                return response()->json([
+                    'error' => 'No tiene permisos para ver los documentos de este radicado'
+                ], 403);
+            }
+
+            $documentos = $radicado->documentos->map(function ($documento) {
+                return [
+                    'id' => $documento->id,
+                    'nombre_archivo' => $documento->nombre_archivo,
+                    'tipo_archivo' => $documento->tipo_archivo,
+                    'tamaño_legible' => $documento->tamaño_legible,
+                    'descripcion' => $documento->descripcion,
+                    'es_principal' => $documento->es_principal,
+                    'es_digitalizado' => $documento->es_digitalizado,
+                    'url_archivo' => $documento->url_archivo,
+                    'created_at' => $documento->created_at->format('d/m/Y H:i'),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'numero_radicado' => $radicado->numero_radicado,
+                'documentos' => $documentos
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al cargar los documentos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Subir múltiples documentos a un radicado
+     */
+    public function subirDocumentos(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'radicado_id' => 'required|exists:radicados,id',
+            'documentos' => 'required|array|min:1|max:10', // Máximo 10 archivos por vez
+            'documentos.*' => [
+                'required',
+                'file',
+                'mimes:pdf,doc,docx,jpg,jpeg,png',
+                'max:10240', // 10MB máximo por archivo
+            ]
+        ], [
+            'documentos.required' => 'Debe seleccionar al menos un documento',
+            'documentos.*.mimes' => 'Solo se permiten archivos PDF, Word, JPG y PNG',
+            'documentos.*.max' => 'Cada archivo no puede superar los 10MB',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $radicado = Radicado::findOrFail($request->radicado_id);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $radicado->usuario_radica_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No tiene permisos para subir documentos a este radicado'
+                ], 403);
+            }
+
+            DB::beginTransaction();
+
+            $documentosSubidos = [];
+            $errores = [];
+
+            foreach ($request->file('documentos') as $index => $archivo) {
+                try {
+                    // Generar nombre único para el archivo
+                    $nombreOriginal = $archivo->getClientOriginalName();
+                    $extension = $archivo->getClientOriginalExtension();
+                    $nombreArchivo = $radicado->numero_radicado . '_adicional_' . time() . '_' . $index . '.' . $extension;
+
+                    // Determinar directorio según el tipo de radicado
+                    $directorio = match($radicado->tipo) {
+                        'entrada' => 'documentos/entrada',
+                        'interno' => 'documentos/interno',
+                        'salida' => 'documentos/salida',
+                        default => 'documentos/otros'
+                    };
+
+                    // Guardar archivo
+                    $rutaArchivo = $archivo->storeAs($directorio, $nombreArchivo, 'public');
+
+                    // Calcular hash para integridad
+                    $contenido = file_get_contents($archivo->getPathname());
+                    $hashArchivo = hash('sha256', $contenido);
+
+                    // Crear registro de documento
+                    $documento = Documento::create([
+                        'radicado_id' => $radicado->id,
+                        'nombre_archivo' => $nombreOriginal,
+                        'ruta_archivo' => $rutaArchivo,
+                        'tipo_mime' => $archivo->getMimeType(),
+                        'tamaño_archivo' => $archivo->getSize(),
+                        'hash_archivo' => $hashArchivo,
+                        'descripcion' => 'Documento adicional subido posteriormente',
+                        'es_principal' => false,
+                        'es_digitalizado' => false,
+                    ]);
+
+                    $documentosSubidos[] = [
+                        'nombre' => $nombreOriginal,
+                        'tamaño' => $documento->tamaño_legible,
+                        'id' => $documento->id
+                    ];
+
+                } catch (\Exception $e) {
+                    $errores[] = "Error al subir {$nombreOriginal}: " . $e->getMessage();
+                    Log::error('Error al subir documento individual', [
+                        'archivo' => $nombreOriginal,
+                        'radicado_id' => $radicado->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            if (empty($documentosSubidos) && !empty($errores)) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo subir ningún documento',
+                    'errors' => $errores
+                ], 500);
+            }
+
+            DB::commit();
+
+            $mensaje = count($documentosSubidos) . ' documento(s) subido(s) exitosamente';
+            if (!empty($errores)) {
+                $mensaje .= '. Algunos archivos presentaron errores.';
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $mensaje,
+                'documentos_subidos' => $documentosSubidos,
+                'errores' => $errores
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al subir documentos', [
+                'radicado_id' => $request->radicado_id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al subir documentos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener información de un documento específico
+     */
+    public function obtenerDocumento($documentoId)
+    {
+        try {
+            $documento = Documento::with('radicado')->findOrFail($documentoId);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $documento->radicado->usuario_radica_id !== $user->id) {
+                return response()->json([
+                    'error' => 'No tiene permisos para ver este documento'
+                ], 403);
+            }
+
+            // Verificar que el archivo existe
+            if (!$documento->archivoExiste()) {
+                Log::error('Archivo no encontrado', [
+                    'documento_id' => $documentoId,
+                    'ruta_archivo' => $documento->ruta_archivo,
+                    'archivo_existe' => $documento->archivoExiste()
+                ]);
+
+                return response()->json([
+                    'error' => 'El archivo no se encuentra disponible'
+                ], 404);
+            }
+
+            Log::info('Documento obtenido exitosamente', [
+                'documento_id' => $documentoId,
+                'nombre_archivo' => $documento->nombre_archivo,
+                'url_archivo' => $documento->url_archivo,
+                'ruta_archivo' => $documento->ruta_archivo
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'id' => $documento->id,
+                'nombre_archivo' => $documento->nombre_archivo,
+                'tipo_archivo' => $documento->tipo_archivo,
+                'tipo_mime' => $documento->tipo_mime,
+                'tamaño_legible' => $documento->tamaño_legible,
+                'descripcion' => $documento->descripcion,
+                'es_principal' => $documento->es_principal,
+                'url_archivo' => $documento->url_archivo,
+                'radicado_numero' => $documento->radicado->numero_radicado,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener documento', [
+                'documento_id' => $documentoId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'error' => 'Error al cargar el documento: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Descargar un documento específico con headers apropiados
+     */
+    public function descargarDocumento($documentoId)
+    {
+        try {
+            $documento = Documento::with('radicado')->findOrFail($documentoId);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $documento->radicado->usuario_radica_id !== $user->id) {
+                abort(403, 'No tiene permisos para descargar este documento');
+            }
+
+            // Verificar que el archivo existe
+            if (!$documento->archivoExiste()) {
+                Log::error('Archivo no encontrado para descarga', [
+                    'documento_id' => $documentoId,
+                    'ruta_archivo' => $documento->ruta_archivo,
+                    'archivo_existe' => $documento->archivoExiste()
+                ]);
+
+                abort(404, 'El archivo no se encuentra disponible');
+            }
+
+            // Obtener la ruta completa del archivo
+            $rutaCompleta = Storage::disk('public')->path($documento->ruta_archivo);
+
+            Log::info('Descarga de documento iniciada', [
+                'documento_id' => $documentoId,
+                'nombre_archivo' => $documento->nombre_archivo,
+                'usuario_id' => $user->id,
+                'ruta_archivo' => $documento->ruta_archivo
+            ]);
+
+            // Retornar el archivo con headers apropiados para forzar descarga
+            return response()->download($rutaCompleta, $documento->nombre_archivo, [
+                'Content-Type' => $documento->tipo_mime,
+                'Content-Disposition' => 'attachment; filename="' . $documento->nombre_archivo . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al descargar documento', [
+                'documento_id' => $documentoId,
+                'error' => $e->getMessage(),
+                'usuario_id' => auth()->id()
+            ]);
+
+            abort(500, 'Error al descargar el documento: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Ver un documento específico en el navegador (para iframe y nueva pestaña)
+     */
+    public function verDocumento($documentoId)
+    {
+        try {
+            Log::info('Iniciando visualización de documento', [
+                'documento_id' => $documentoId,
+                'authenticated' => auth()->check(),
+                'user_id' => auth()->id()
+            ]);
+
+            // Verificar autenticación
+            if (!auth()->check()) {
+                Log::warning('Usuario no autenticado intentando ver documento', [
+                    'documento_id' => $documentoId,
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent()
+                ]);
+                return response('Usuario no autenticado', 401);
+            }
+
+            $documento = Documento::with('radicado')->findOrFail($documentoId);
+            Log::info('Documento encontrado', [
+                'documento_id' => $documentoId,
+                'nombre_archivo' => $documento->nombre_archivo,
+                'ruta_archivo' => $documento->ruta_archivo
+            ]);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $documento->radicado->usuario_radica_id !== $user->id) {
+                Log::warning('Usuario sin permisos intentando ver documento', [
+                    'documento_id' => $documentoId,
+                    'usuario_id' => $user->id,
+                    'radicado_usuario_id' => $documento->radicado->usuario_radica_id
+                ]);
+                return response('No tiene permisos para ver este documento', 403);
+            }
+
+            // Verificar que el archivo existe
+            if (!$documento->archivoExiste()) {
+                Log::error('Archivo no encontrado para visualización', [
+                    'documento_id' => $documentoId,
+                    'ruta_archivo' => $documento->ruta_archivo,
+                    'archivo_existe' => $documento->archivoExiste()
+                ]);
+
+                return response('El archivo no se encuentra disponible', 404);
+            }
+
+            // Obtener la ruta completa del archivo
+            $rutaCompleta = Storage::disk('public')->path($documento->ruta_archivo);
+            Log::info('Ruta completa del archivo', [
+                'ruta_completa' => $rutaCompleta,
+                'existe_archivo' => file_exists($rutaCompleta)
+            ]);
+
+            if (!file_exists($rutaCompleta)) {
+                Log::error('Archivo físico no existe', [
+                    'ruta_completa' => $rutaCompleta
+                ]);
+                return response('Archivo físico no encontrado', 404);
+            }
+
+            Log::info('Visualización de documento exitosa', [
+                'documento_id' => $documentoId,
+                'nombre_archivo' => $documento->nombre_archivo,
+                'usuario_id' => $user->id
+            ]);
+
+            // Retornar el archivo con headers apropiados para visualización
+            return response()->file($rutaCompleta, [
+                'Content-Type' => $documento->tipo_mime,
+                'Content-Disposition' => 'inline; filename="' . $documento->nombre_archivo . '"',
+                'Cache-Control' => 'public, max-age=3600',
+                'X-Frame-Options' => 'SAMEORIGIN'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al visualizar documento', [
+                'documento_id' => $documentoId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'usuario_id' => auth()->id()
+            ]);
+
+            return response('Error interno del servidor: ' . $e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Generar token temporal para visualización de documento
+     */
+    public function generarTokenVisualizacion($documentoId)
+    {
+        try {
+            // Verificar autenticación
+            if (!auth()->check()) {
+                return response()->json(['error' => 'Usuario no autenticado'], 401);
+            }
+
+            $documento = Documento::with('radicado')->findOrFail($documentoId);
+
+            // Verificar permisos de acceso
+            $user = auth()->user();
+            if ($user->isVentanilla() && $documento->radicado->usuario_radica_id !== $user->id) {
+                return response()->json(['error' => 'No tiene permisos para ver este documento'], 403);
+            }
+
+            // Verificar que el archivo existe
+            if (!$documento->archivoExiste()) {
+                return response()->json(['error' => 'El archivo no se encuentra disponible'], 404);
+            }
+
+            // Generar token temporal (válido por 1 hora)
+            $token = base64_encode(json_encode([
+                'documento_id' => $documentoId,
+                'usuario_id' => $user->id,
+                'expires_at' => now()->addHour()->timestamp,
+                'hash' => hash('sha256', $documentoId . $user->id . config('app.key'))
+            ]));
+
+            Log::info('Token de visualización generado', [
+                'documento_id' => $documentoId,
+                'usuario_id' => $user->id,
+                'token' => substr($token, 0, 20) . '...'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'token' => $token,
+                'url' => route('documento.ver-con-token', $token)
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al generar token de visualización', [
+                'documento_id' => $documentoId,
+                'error' => $e->getMessage(),
+                'usuario_id' => auth()->id()
+            ]);
+
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
+    }
+
+    /**
+     * Ver documento con token temporal
+     */
+    public function verDocumentoConToken($token)
+    {
+        try {
+            // Decodificar token
+            $tokenData = json_decode(base64_decode($token), true);
+
+            if (!$tokenData || !isset($tokenData['documento_id'], $tokenData['usuario_id'], $tokenData['expires_at'], $tokenData['hash'])) {
+                Log::warning('Token de visualización inválido', ['token' => substr($token, 0, 20) . '...']);
+                abort(403, 'Token inválido');
+            }
+
+            // Verificar expiración
+            if ($tokenData['expires_at'] < now()->timestamp) {
+                Log::warning('Token de visualización expirado', [
+                    'documento_id' => $tokenData['documento_id'],
+                    'expires_at' => $tokenData['expires_at']
+                ]);
+                abort(403, 'Token expirado');
+            }
+
+            // Verificar hash
+            $expectedHash = hash('sha256', $tokenData['documento_id'] . $tokenData['usuario_id'] . config('app.key'));
+            if ($tokenData['hash'] !== $expectedHash) {
+                Log::warning('Token de visualización con hash inválido', [
+                    'documento_id' => $tokenData['documento_id']
+                ]);
+                abort(403, 'Token inválido');
+            }
+
+            $documento = Documento::findOrFail($tokenData['documento_id']);
+
+            // Verificar que el archivo existe
+            if (!$documento->archivoExiste()) {
+                Log::error('Archivo no encontrado para token', [
+                    'documento_id' => $tokenData['documento_id'],
+                    'ruta_archivo' => $documento->ruta_archivo
+                ]);
+                abort(404, 'El archivo no se encuentra disponible');
+            }
+
+            // Obtener la ruta completa del archivo
+            $rutaCompleta = Storage::disk('public')->path($documento->ruta_archivo);
+
+            Log::info('Visualización con token exitosa', [
+                'documento_id' => $tokenData['documento_id'],
+                'usuario_id' => $tokenData['usuario_id'],
+                'nombre_archivo' => $documento->nombre_archivo
+            ]);
+
+            // Retornar el archivo con headers apropiados para visualización
+            return response()->file($rutaCompleta, [
+                'Content-Type' => $documento->tipo_mime,
+                'Content-Disposition' => 'inline; filename="' . $documento->nombre_archivo . '"',
+                'Cache-Control' => 'public, max-age=3600',
+                'X-Frame-Options' => 'SAMEORIGIN'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al visualizar documento con token', [
+                'token' => substr($token, 0, 20) . '...',
+                'error' => $e->getMessage()
+            ]);
+
+            abort(500, 'Error al visualizar el documento');
+        }
+    }
 }

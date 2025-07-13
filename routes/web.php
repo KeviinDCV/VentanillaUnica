@@ -94,6 +94,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/editar', [App\Http\Controllers\RadicacionController::class, 'editar'])->name('editar');
         Route::put('/{id}', [App\Http\Controllers\RadicacionController::class, 'actualizar'])->name('actualizar');
 
+        // Rutas para gestión de documentos
+        Route::get('/{id}/documentos', [App\Http\Controllers\RadicacionController::class, 'obtenerDocumentos'])->name('documentos.obtener');
+        Route::post('/documentos/subir', [App\Http\Controllers\RadicacionController::class, 'subirDocumentos'])->name('documentos.subir');
+        Route::get('/documentos/{documentoId}', [App\Http\Controllers\RadicacionController::class, 'obtenerDocumento'])->name('documentos.obtener-uno');
+        Route::get('/documentos/{documentoId}/descargar', [App\Http\Controllers\RadicacionController::class, 'descargarDocumento'])->name('documentos.descargar');
+        Route::get('/documentos/{documentoId}/ver', [App\Http\Controllers\RadicacionController::class, 'verDocumento'])->name('documentos.ver');
+        Route::post('/documentos/{documentoId}/token-visualizacion', [App\Http\Controllers\RadicacionController::class, 'generarTokenVisualizacion'])->name('documentos.token-visualizacion');
+
         // Ruta para eliminar radicados (solo administradores)
         Route::delete('/{id}', [App\Http\Controllers\RadicacionController::class, 'destroy'])->name('destroy')->middleware('role:administrador');
     });
@@ -190,6 +198,9 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/api/ciudades/por-departamento', [App\Http\Controllers\Admin\CiudadController::class, 'porDepartamento'])->name('api.ciudades.por-departamento');
 });
+
+// Ruta pública para visualizar documentos con token temporal
+Route::get('/documento/ver/{token}', [App\Http\Controllers\RadicacionController::class, 'verDocumentoConToken'])->name('documento.ver-con-token');
 
 // Rutas del sistema de suspensión (fuera del middleware de autenticación)
 Route::prefix('sistema')->name('sistema.')->group(function () {

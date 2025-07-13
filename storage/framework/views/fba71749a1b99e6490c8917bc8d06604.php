@@ -553,6 +553,15 @@
                                                         Ver Detalles
                                                     </button>
 
+                                                    <!-- Documentos -->
+                                                    <button onclick="gestionarDocumentos(<?php echo e($radicado->id); ?>)"
+                                                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <svg class="w-4 h-4 mr-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                        Documentos
+                                                    </button>
+
                                                     <!-- Editar -->
                                                     <?php
                                                         $puedeEditar = auth()->user()->isAdmin() ||
@@ -732,6 +741,15 @@
                                                     Ver Detalles
                                                 </button>
 
+                                                <!-- Documentos -->
+                                                <button onclick="gestionarDocumentos(<?php echo e($radicado->id); ?>)"
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <svg class="w-4 h-4 mr-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                    Documentos
+                                                </button>
+
                                                 <!-- Editar -->
                                                 <?php
                                                     $puedeEditar = auth()->user()->isAdmin() ||
@@ -851,6 +869,123 @@
                 <button type="button" id="btn-guardar-edicion" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-uniradical-blue hover:bg-opacity-90 transition-colors">
                     Guardar Cambios
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Documentos -->
+    <div id="modalGestionDocumentos" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50 backdrop-blur-sm">
+        <div class="relative mx-auto mt-4 mb-4 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out max-h-[95vh] overflow-hidden flex flex-col">
+            <!-- Header del Modal -->
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-white flex-shrink-0">
+                <h3 class="text-lg font-medium text-gray-800">Gestión de Documentos</h3>
+                <div class="flex items-center space-x-3">
+                    <span id="radicado-info-documentos" class="text-sm text-gray-600"></span>
+                    <button onclick="cerrarModalDocumentos()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <!-- Sección de subir documentos -->
+                <div class="mb-6 p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <div class="text-center">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="mt-4">
+                            <label for="nuevos-documentos" class="cursor-pointer">
+                                <span class="mt-2 block text-sm font-medium text-gray-900">
+                                    Subir nuevos documentos
+                                </span>
+                                <span class="mt-1 block text-sm text-gray-500">
+                                    Arrastra archivos aquí o haz clic para seleccionar
+                                </span>
+                                <span class="mt-1 block text-xs text-gray-400">
+                                    PDF, Word, JPG, PNG (máx. 10MB cada uno)
+                                </span>
+                            </label>
+                            <input id="nuevos-documentos" name="nuevos-documentos" type="file" class="sr-only" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        </div>
+                        <div class="mt-4">
+                            <button type="button" onclick="document.getElementById('nuevos-documentos').click()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-uniradical-blue hover:bg-opacity-90 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                Seleccionar Archivos
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lista de archivos seleccionados para subir -->
+                    <div id="archivos-seleccionados" class="mt-4 hidden">
+                        <h4 class="text-sm font-medium text-gray-900 mb-2">Archivos seleccionados:</h4>
+                        <div id="lista-archivos-seleccionados" class="space-y-2"></div>
+                        <div class="mt-4 flex justify-end space-x-2">
+                            <button type="button" onclick="cancelarSubida()" class="px-3 py-1.5 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                Cancelar
+                            </button>
+                            <button type="button" onclick="subirDocumentos()" class="px-3 py-1.5 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">
+                                Subir Documentos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de documentos existentes -->
+                <div>
+                    <h4 class="text-lg font-medium text-gray-900 mb-4">Documentos del Radicado</h4>
+                    <div id="lista-documentos-existentes" class="space-y-3">
+                        <!-- Los documentos se cargarán dinámicamente aquí -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer del Modal -->
+            <div class="flex justify-end space-x-3 p-4 border-t border-gray-200 bg-white flex-shrink-0">
+                <button type="button" onclick="cerrarModalDocumentos()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualización de Documentos -->
+    <div id="modalVisualizarDocumento" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden backdrop-blur-sm" style="z-index: 9999;">
+        <div class="relative mx-auto mt-2 mb-2 border w-[95vw] md:w-[90vw] lg:w-[85vw] xl:w-[80vw] shadow-2xl rounded-lg bg-white transform transition-all duration-300 ease-in-out h-[96vh] overflow-hidden flex flex-col">
+            <!-- Header del Modal -->
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-white flex-shrink-0">
+                <h3 id="titulo-documento-visualizar" class="text-lg font-medium text-gray-800">Visualizar Documento</h3>
+                <div class="flex items-center space-x-3">
+                    <button onclick="volverADocumentos()" class="inline-flex items-center px-3 py-1.5 bg-uniradical-blue text-white text-sm font-medium rounded-md hover:bg-opacity-90 transition duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Volver a Documentos
+                    </button>
+                    <button id="btn-descargar-documento" onclick="" class="inline-flex items-center px-3 py-1.5 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700 transition duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Descargar
+                    </button>
+                    <button onclick="cerrarModalVisualizarDocumento()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="flex-1 overflow-hidden">
+                <div id="contenido-documento-visualizar" class="h-full">
+                    <!-- El contenido del documento se cargará aquí -->
+                </div>
             </div>
         </div>
     </div>
@@ -2623,17 +2758,58 @@
         function mostrarMensaje(mensaje, tipo) {
             // Crear elemento de mensaje
             const messageDiv = document.createElement('div');
-            messageDiv.className = `fixed top-4 right-4 z-50 px-4 py-2 rounded-md shadow-lg ${
-                tipo === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-            }`;
-            messageDiv.textContent = mensaje;
+
+            let bgColor, textColor, icon;
+            switch(tipo) {
+                case 'success':
+                    bgColor = 'bg-green-500';
+                    textColor = 'text-white';
+                    icon = '✓';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-500';
+                    textColor = 'text-white';
+                    icon = '✗';
+                    break;
+                case 'info':
+                    bgColor = 'bg-blue-500';
+                    textColor = 'text-white';
+                    icon = 'ℹ';
+                    break;
+                default:
+                    bgColor = 'bg-gray-500';
+                    textColor = 'text-white';
+                    icon = '';
+            }
+
+            messageDiv.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-md shadow-lg ${bgColor} ${textColor} flex items-center space-x-2 transform transition-all duration-300 ease-in-out`;
+            messageDiv.innerHTML = `
+                ${icon ? `<span class="font-bold">${icon}</span>` : ''}
+                <span>${mensaje}</span>
+            `;
+
+            // Animación de entrada
+            messageDiv.style.transform = 'translateX(100%)';
+            messageDiv.style.opacity = '0';
 
             document.body.appendChild(messageDiv);
 
-            // Remover después de 3 segundos
+            // Mostrar con animación
             setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
+                messageDiv.style.transform = 'translateX(0)';
+                messageDiv.style.opacity = '1';
+            }, 10);
+
+            // Remover después de 4 segundos con animación
+            setTimeout(() => {
+                messageDiv.style.transform = 'translateX(100%)';
+                messageDiv.style.opacity = '0';
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 300);
+            }, 4000);
         }
 
         // Cerrar modal de edición al hacer clic fuera
@@ -2643,6 +2819,608 @@
                 cerrarModalEditar();
             }
         });
+
+        // ==================== FUNCIONES PARA GESTIÓN DE DOCUMENTOS ====================
+
+        // Variable global para almacenar el ID del radicado actual
+        let radicadoActualDocumentos = null;
+        let archivosSeleccionados = [];
+
+        // Función para abrir el modal de gestión de documentos
+        function gestionarDocumentos(radicadoId) {
+            radicadoActualDocumentos = radicadoId;
+
+            // Mostrar loading en el modal
+            const modal = document.getElementById('modalGestionDocumentos');
+            const listaDocumentos = document.getElementById('lista-documentos-existentes');
+            const radicadoInfo = document.getElementById('radicado-info-documentos');
+
+            listaDocumentos.innerHTML = `
+                <div class="flex justify-center items-center py-8">
+                    <svg class="animate-spin h-8 w-8 text-uniradical-blue" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-3 text-gray-600">Cargando documentos...</span>
+                </div>
+            `;
+
+            // Mostrar modal con animación
+            mostrarModalDocumentos();
+
+            // Cargar documentos del radicado
+            fetch(`/radicacion/${radicadoId}/documentos`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al cargar los documentos');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    radicadoInfo.textContent = `Radicado: ${data.numero_radicado}`;
+                    mostrarDocumentosExistentes(data.documentos);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    listaDocumentos.innerHTML = `
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">Error al cargar documentos</h3>
+                            <p class="mt-1 text-sm text-gray-500">${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Función para mostrar el modal de documentos
+        function mostrarModalDocumentos() {
+            const modal = document.getElementById('modalGestionDocumentos');
+            const modalContent = modal.querySelector('.relative');
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Animación de entrada
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modalContent.style.opacity = '1';
+                modalContent.style.transform = 'scale(1) translateY(0)';
+            }, 10);
+        }
+
+        // Función para cerrar el modal de documentos
+        function cerrarModalDocumentos() {
+            const modal = document.getElementById('modalGestionDocumentos');
+            const modalContent = modal.querySelector('.relative');
+
+            // Limpiar archivos seleccionados
+            archivosSeleccionados = [];
+            document.getElementById('archivos-seleccionados').classList.add('hidden');
+            document.getElementById('nuevos-documentos').value = '';
+
+            // Animación de salida
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                radicadoActualDocumentos = null;
+            }, 200);
+        }
+
+        // Función para mostrar documentos existentes
+        function mostrarDocumentosExistentes(documentos) {
+            const listaDocumentos = document.getElementById('lista-documentos-existentes');
+
+            if (documentos.length === 0) {
+                listaDocumentos.innerHTML = `
+                    <div class="text-center py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay documentos</h3>
+                        <p class="mt-1 text-sm text-gray-500">Este radicado no tiene documentos adjuntos.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const documentosHtml = documentos.map(documento => {
+                const tipoIcono = obtenerIconoTipoArchivo(documento.tipo_archivo);
+                const esPrincipal = documento.es_principal ? '<span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Principal</span>' : '';
+
+                return `
+                    <div class="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center space-x-3">
+                            ${tipoIcono}
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">${documento.nombre_archivo}${esPrincipal}</p>
+                                <p class="text-xs text-gray-500">${documento.tamaño_legible} • ${documento.tipo_archivo}</p>
+                                ${documento.descripcion ? `<p class="text-xs text-gray-600 mt-1">${documento.descripcion}</p>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="visualizarDocumento(${documento.id})"
+                                    class="px-3 py-1.5 text-xs bg-uniradical-blue text-white rounded hover:bg-opacity-90 transition duration-200">
+                                Ver
+                            </button>
+                            <button onclick="descargarDocumento('${documento.url_archivo}', '${documento.nombre_archivo}', ${documento.id})"
+                                    class="px-3 py-1.5 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition duration-200">
+                                Descargar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            listaDocumentos.innerHTML = documentosHtml;
+        }
+
+        // Función para obtener el ícono según el tipo de archivo
+        function obtenerIconoTipoArchivo(tipoArchivo) {
+            const iconos = {
+                'PDF': '<svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>',
+                'Word': '<svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>',
+                'Excel': '<svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>',
+                'Imagen': '<svg class="w-8 h-8 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>',
+                'Otro': '<svg class="w-8 h-8 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>'
+            };
+            return iconos[tipoArchivo] || iconos['Otro'];
+        }
+
+        // Event listeners para el modal de documentos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener para selección de archivos
+            const inputArchivos = document.getElementById('nuevos-documentos');
+            if (inputArchivos) {
+                inputArchivos.addEventListener('change', function(e) {
+                    manejarSeleccionArchivos(e.target.files);
+                });
+            }
+
+            // Event listener para drag and drop
+            const dropZone = document.querySelector('#modalGestionDocumentos .border-dashed');
+            if (dropZone) {
+                dropZone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.add('border-uniradical-blue', 'bg-blue-50');
+                });
+
+                dropZone.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.remove('border-uniradical-blue', 'bg-blue-50');
+                });
+
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.remove('border-uniradical-blue', 'bg-blue-50');
+                    manejarSeleccionArchivos(e.dataTransfer.files);
+                });
+            }
+
+            // Cerrar modal de documentos al hacer clic fuera
+            document.addEventListener('click', function(event) {
+                const modal = document.getElementById('modalGestionDocumentos');
+                if (event.target === modal) {
+                    cerrarModalDocumentos();
+                }
+            });
+
+            // Cerrar modal de visualización al hacer clic fuera
+            document.addEventListener('click', function(event) {
+                const modal = document.getElementById('modalVisualizarDocumento');
+                if (event.target === modal) {
+                    cerrarModalVisualizarDocumento();
+                }
+            });
+        });
+
+        // Función para manejar la selección de archivos
+        function manejarSeleccionArchivos(files) {
+            archivosSeleccionados = Array.from(files);
+            mostrarArchivosSeleccionados();
+        }
+
+        // Función para mostrar archivos seleccionados
+        function mostrarArchivosSeleccionados() {
+            const contenedor = document.getElementById('archivos-seleccionados');
+            const lista = document.getElementById('lista-archivos-seleccionados');
+
+            if (archivosSeleccionados.length === 0) {
+                contenedor.classList.add('hidden');
+                return;
+            }
+
+            contenedor.classList.remove('hidden');
+
+            const archivosHtml = archivosSeleccionados.map((archivo, index) => {
+                const tamaño = (archivo.size / 1024 / 1024).toFixed(2);
+                const tipoIcono = obtenerIconoTipoArchivoPorExtension(archivo.name);
+
+                return `
+                    <div class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded">
+                        <div class="flex items-center space-x-2">
+                            ${tipoIcono}
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">${archivo.name}</p>
+                                <p class="text-xs text-gray-500">${tamaño} MB</p>
+                            </div>
+                        </div>
+                        <button onclick="eliminarArchivoSeleccionado(${index})" class="text-red-500 hover:text-red-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            lista.innerHTML = archivosHtml;
+        }
+
+        // Función para obtener ícono por extensión de archivo
+        function obtenerIconoTipoArchivoPorExtension(nombreArchivo) {
+            const extension = nombreArchivo.split('.').pop().toLowerCase();
+            const iconos = {
+                'pdf': '<svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>',
+                'doc': '<svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>',
+                'docx': '<svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>',
+                'jpg': '<svg class="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>',
+                'jpeg': '<svg class="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>',
+                'png': '<svg class="w-6 h-6 text-purple-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z" /></svg>'
+            };
+            return iconos[extension] || '<svg class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" /></svg>';
+        }
+
+        // Función para eliminar archivo seleccionado
+        function eliminarArchivoSeleccionado(index) {
+            archivosSeleccionados.splice(index, 1);
+            mostrarArchivosSeleccionados();
+        }
+
+        // Función para cancelar subida
+        function cancelarSubida() {
+            archivosSeleccionados = [];
+            document.getElementById('nuevos-documentos').value = '';
+            document.getElementById('archivos-seleccionados').classList.add('hidden');
+        }
+
+        // Función para subir documentos
+        function subirDocumentos() {
+            if (archivosSeleccionados.length === 0) {
+                mostrarMensaje('No hay archivos seleccionados', 'error');
+                return;
+            }
+
+            if (!radicadoActualDocumentos) {
+                mostrarMensaje('Error: No se ha seleccionado un radicado', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('radicado_id', radicadoActualDocumentos);
+
+            archivosSeleccionados.forEach((archivo, index) => {
+                formData.append(`documentos[${index}]`, archivo);
+            });
+
+            // Mostrar indicador de carga
+            const btnSubir = document.querySelector('button[onclick="subirDocumentos()"]');
+            const textoOriginal = btnSubir.innerHTML;
+            btnSubir.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Subiendo...
+            `;
+            btnSubir.disabled = true;
+
+            fetch('/radicacion/documentos/subir', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarMensaje('Documentos subidos exitosamente', 'success');
+                    cancelarSubida();
+                    // Recargar la lista de documentos
+                    gestionarDocumentos(radicadoActualDocumentos);
+                } else {
+                    mostrarMensaje(data.message || 'Error al subir documentos', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                mostrarMensaje('Error al subir documentos', 'error');
+            })
+            .finally(() => {
+                btnSubir.innerHTML = textoOriginal;
+                btnSubir.disabled = false;
+            });
+        }
+
+        // Función para visualizar documento
+        function visualizarDocumento(documentoId) {
+            // Cerrar el modal de documentos primero
+            cerrarModalDocumentos();
+
+            const modal = document.getElementById('modalVisualizarDocumento');
+            const titulo = document.getElementById('titulo-documento-visualizar');
+            const contenido = document.getElementById('contenido-documento-visualizar');
+            const btnDescargar = document.getElementById('btn-descargar-documento');
+
+            // Mostrar loading
+            titulo.textContent = 'Cargando documento...';
+            contenido.innerHTML = `
+                <div class="flex justify-center items-center h-full">
+                    <svg class="animate-spin h-8 w-8 text-uniradical-blue" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-3 text-gray-600">Cargando documento...</span>
+                </div>
+            `;
+
+            mostrarModalVisualizarDocumento();
+
+            // Cargar información del documento
+            fetch(`/radicacion/documentos/${documentoId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    titulo.textContent = data.nombre_archivo;
+                    btnDescargar.onclick = () => descargarDocumento(data.url_archivo, data.nombre_archivo, data.id);
+
+                    // Mostrar contenido según el tipo
+                    if (data.tipo_mime.startsWith('image/')) {
+                        contenido.innerHTML = `
+                            <div class="flex justify-center items-center h-full p-4">
+                                <img src="${data.url_archivo}" alt="${data.nombre_archivo}" class="max-w-full max-h-full object-contain">
+                            </div>
+                        `;
+                    } else if (data.tipo_mime === 'application/pdf') {
+                        // Para PDFs, generar token y mostrar en iframe
+                        contenido.innerHTML = `
+                            <div class="h-full flex flex-col">
+                                <div class="flex-1 bg-gray-100 relative">
+                                    <div id="pdf-loading-${data.id}" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+                                        <div class="text-center">
+                                            <svg class="animate-spin h-8 w-8 text-uniradical-blue mx-auto mb-3" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <p class="text-gray-600">Preparando visualización del PDF...</p>
+                                        </div>
+                                    </div>
+                                    <div id="pdf-container-${data.id}" class="w-full h-full" style="display: none;">
+                                        <!-- El iframe se insertará aquí -->
+                                    </div>
+                                    <div id="pdf-error-${data.id}" class="absolute inset-0 flex flex-col justify-center items-center p-8 text-center bg-gray-100" style="display: none;">
+                                        <svg class="w-16 h-16 text-red-500 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                        </svg>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-2">${data.nombre_archivo}</h3>
+                                        <p class="text-sm text-gray-500 mb-6">No se pudo cargar el PDF en el visor integrado</p>
+                                        <div class="space-y-3">
+                                            <a href="${data.url_archivo}" target="_blank"
+                                               class="inline-flex items-center px-6 py-3 bg-uniradical-blue text-white text-lg font-medium rounded-md hover:bg-opacity-90 transition-colors">
+                                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                Ver en Nueva Pestaña
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        // Generar token para visualización
+                        generarTokenVisualizacion(data.id);
+                    } else {
+                        contenido.innerHTML = `
+                            <div class="flex flex-col justify-center items-center h-full p-8 text-center">
+                                <svg class="w-16 h-16 text-gray-400 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">${data.nombre_archivo}</h3>
+                                <p class="text-sm text-gray-500 mb-4">Este tipo de archivo no se puede previsualizar</p>
+                                <button onclick="descargarDocumento('${data.url_archivo}', '${data.nombre_archivo}', ${data.id})"
+                                        class="inline-flex items-center px-4 py-2 bg-uniradical-blue text-white rounded-md hover:bg-opacity-90 transition-colors">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Descargar Archivo
+                                </button>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    titulo.textContent = 'Error al cargar documento';
+                    contenido.innerHTML = `
+                        <div class="flex flex-col justify-center items-center h-full p-8 text-center">
+                            <svg class="w-16 h-16 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Error al cargar documento</h3>
+                            <p class="text-sm text-gray-500">${error.message}</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Función para mostrar modal de visualización
+        function mostrarModalVisualizarDocumento() {
+            const modal = document.getElementById('modalVisualizarDocumento');
+            const modalContent = modal.querySelector('.relative');
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modalContent.style.opacity = '1';
+                modalContent.style.transform = 'scale(1) translateY(0)';
+            }, 10);
+        }
+
+        // Función para cerrar modal de visualización
+        function cerrarModalVisualizarDocumento() {
+            const modal = document.getElementById('modalVisualizarDocumento');
+            const modalContent = modal.querySelector('.relative');
+
+            modalContent.style.opacity = '0';
+            modalContent.style.transform = 'scale(0.95) translateY(-20px)';
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 200);
+        }
+
+        // Función para volver al modal de documentos desde el modal de visualización
+        function volverADocumentos() {
+            cerrarModalVisualizarDocumento();
+            setTimeout(() => {
+                if (radicadoActualDocumentos) {
+                    gestionarDocumentos(radicadoActualDocumentos);
+                }
+            }, 250);
+        }
+
+        // Función para mostrar error cuando el PDF no se puede cargar en iframe
+        function mostrarErrorPDF(iframe, url, nombre) {
+            const container = iframe.parentElement;
+
+            // Extraer el ID del documento de la URL si es posible
+            const documentoIdMatch = url.match(/\/documentos\/(\d+)\/ver/);
+            const documentoId = documentoIdMatch ? documentoIdMatch[1] : null;
+
+            container.innerHTML = `
+                <div class="absolute inset-0 flex flex-col justify-center items-center p-8 text-center bg-gray-100">
+                    <svg class="w-16 h-16 text-red-500 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">${nombre}</h3>
+                    <p class="text-sm text-gray-500 mb-6">No se pudo cargar el PDF en el visor integrado</p>
+                    <div class="space-y-3">
+                        <a href="${url}" target="_blank"
+                           class="inline-flex items-center px-6 py-3 bg-uniradical-blue text-white text-lg font-medium rounded-md hover:bg-opacity-90 transition-colors">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            Abrir en Nueva Pestaña
+                        </a>
+                        <div class="flex space-x-3 justify-center">
+                            <button onclick="descargarDocumento('${url}', '${nombre}', ${documentoId})"
+                                   class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Descargar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Función mejorada para descargar documentos
+        function descargarDocumento(url, nombre, documentoId = null) {
+            try {
+                let downloadUrl = url;
+
+                // Si tenemos el ID del documento, usar la ruta específica de descarga
+                if (documentoId) {
+                    downloadUrl = `/radicacion/documentos/${documentoId}/descargar`;
+                }
+
+                // Crear un enlace temporal para forzar la descarga
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = nombre;
+                link.style.display = 'none';
+
+                // Agregar al DOM, hacer clic y remover
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error al descargar:', error);
+                // Fallback: abrir en nueva pestaña
+                window.open(url, '_blank');
+                mostrarMensaje('Se abrió el archivo en una nueva pestaña', 'info');
+            }
+        }
+
+        // Función para abrir PDF en ventana modal optimizada (mantener para compatibilidad)
+        function abrirPDFEnModal(url, nombre) {
+            // Cerrar el modal actual
+            cerrarModalVisualizarDocumento();
+
+            // Abrir PDF en ventana popup optimizada para visualización
+            const width = Math.min(1200, window.screen.width * 0.9);
+            const height = Math.min(800, window.screen.height * 0.9);
+            const left = (window.screen.width - width) / 2;
+            const top = (window.screen.height - height) / 2;
+
+            const features = `
+                width=${width},
+                height=${height},
+                left=${left},
+                top=${top},
+                scrollbars=yes,
+                resizable=yes,
+                toolbar=no,
+                menubar=no,
+                location=no,
+                status=no
+            `.replace(/\s+/g, '');
+
+            const pdfWindow = window.open(url, `pdf_${Date.now()}`, features);
+
+            if (pdfWindow) {
+                pdfWindow.focus();
+
+                // Configurar el título de la ventana cuando se cargue
+                pdfWindow.onload = function() {
+                    try {
+                        pdfWindow.document.title = `PDF: ${nombre}`;
+                    } catch (e) {
+                        // Ignorar errores de cross-origin
+                    }
+                };
+            } else {
+                // Si no se puede abrir popup, mostrar mensaje
+                mostrarMensaje('No se pudo abrir el visor de PDF. Por favor, permite ventanas emergentes o usa "Nueva Pestaña".', 'error');
+            }
+        }
 
         // Función para inicializar cascada departamento-ciudad
         function initDepartamentoCiudadCascade() {
@@ -2783,6 +3561,80 @@
                 button.addEventListener('click', closeConfirmModal);
             });
         });
+
+        // Función para generar token de visualización y mostrar PDF en iframe
+        function generarTokenVisualizacion(documentoId) {
+            fetch(`/radicacion/documentos/${documentoId}/token-visualizacion`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Token generado exitosamente:', data.url);
+
+                    // Crear iframe con la URL del token
+                    const iframe = document.createElement('iframe');
+                    iframe.src = data.url + '#toolbar=1&navpanes=1&scrollbar=1';
+                    iframe.className = 'w-full h-full border-0';
+                    iframe.style.opacity = '0';
+                    iframe.style.transition = 'opacity 0.3s ease';
+                    iframe.style.minHeight = '600px'; // Altura mínima para asegurar buena visualización
+
+                    console.log('Iframe creado con URL:', iframe.src);
+
+                    iframe.onload = function() {
+                        // Ocultar loading y mostrar iframe
+                        const loadingDiv = document.getElementById(`pdf-loading-${documentoId}`);
+                        const containerDiv = document.getElementById(`pdf-container-${documentoId}`);
+
+                        if (loadingDiv && containerDiv) {
+                            loadingDiv.style.display = 'none';
+                            containerDiv.style.display = 'block';
+                            iframe.style.opacity = '1';
+                        }
+                    };
+
+                    iframe.onerror = function() {
+                        mostrarErrorPDF(documentoId);
+                    };
+
+                    // Agregar iframe al contenedor
+                    const container = document.getElementById(`pdf-container-${documentoId}`);
+                    if (container) {
+                        container.appendChild(iframe);
+                    }
+
+                    // Timeout para mostrar error si no carga en 10 segundos
+                    setTimeout(() => {
+                        const loadingDiv = document.getElementById(`pdf-loading-${documentoId}`);
+                        if (loadingDiv && loadingDiv.style.display !== 'none') {
+                            mostrarErrorPDF(documentoId);
+                        }
+                    }, 10000);
+
+                } else {
+                    console.error('Error al generar token:', data.error);
+                    mostrarErrorPDF(documentoId);
+                }
+            })
+            .catch(error => {
+                console.error('Error al generar token de visualización:', error);
+                mostrarErrorPDF(documentoId);
+            });
+        }
+
+        // Función para mostrar error de PDF
+        function mostrarErrorPDF(documentoId) {
+            const loadingDiv = document.getElementById(`pdf-loading-${documentoId}`);
+            const errorDiv = document.getElementById(`pdf-error-${documentoId}`);
+
+            if (loadingDiv) loadingDiv.style.display = 'none';
+            if (errorDiv) errorDiv.style.display = 'flex';
+        }
     </script>
 
     <?php $__env->startPush('styles'); ?>

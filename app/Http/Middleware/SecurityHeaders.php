@@ -77,11 +77,11 @@ class SecurityHeaders
                 "font-src 'self' https://fonts.bunny.net",
                 "img-src 'self' data: https: http: blob:",
                 "connect-src 'self' http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*",
-                "frame-src 'none'",
+                "frame-src 'self'",
                 "object-src 'none'",
                 "base-uri 'self'",
                 "form-action 'self'",
-                "frame-ancestors 'none'"
+                "frame-ancestors 'self'"
             ];
         } else {
             $policies = [
@@ -91,11 +91,11 @@ class SecurityHeaders
                 "font-src 'self' https://fonts.bunny.net",
                 "img-src 'self' data: https:",
                 "connect-src 'self'",
-                "frame-src 'none'",
+                "frame-src 'self'",
                 "object-src 'none'",
                 "base-uri 'self'",
                 "form-action 'self'",
-                "frame-ancestors 'none'"
+                "frame-ancestors 'self'"
             ];
 
             if ($request->secure()) {
