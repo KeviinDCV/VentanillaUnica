@@ -94,8 +94,8 @@ class RadicacionInternaController extends Controller
             'fecha_limite_respuesta' => 'nullable|date|after:today|required_if:requiere_respuesta,si',
             'tipo_anexo' => 'required|in:original,copia,ninguno',
 
-            // Documento
-            'documento' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB max
+            // Documento (opcional)
+            'documento' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240', // 10MB max
         ], [
             'dependencia_origen_id.required' => 'Debe seleccionar la dependencia de origen',
             'dependencia_origen_id.exists' => 'La dependencia de origen no es válida',
@@ -115,7 +115,6 @@ class RadicacionInternaController extends Controller
             'fecha_limite_respuesta.after' => 'La fecha límite debe ser posterior a hoy',
             'fecha_limite_respuesta.required_if' => 'La fecha límite es obligatoria cuando se requiere respuesta',
             'tipo_anexo.required' => 'Debe seleccionar el tipo de anexo',
-            'documento.required' => 'Debe adjuntar un documento',
             'documento.mimes' => 'El documento debe ser PDF, Word o imagen',
             'documento.max' => 'El documento no puede superar los 10MB',
         ]);

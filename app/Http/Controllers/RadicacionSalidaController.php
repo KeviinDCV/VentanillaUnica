@@ -65,8 +65,8 @@ class RadicacionSalidaController extends Controller
             'tipo_anexo' => 'required|in:original,copia,ninguno',
             'requiere_acuse_recibo' => 'required|boolean',
 
-            // Archivo
-            'documento' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            // Archivo (opcional)
+            'documento' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ];
 
         // Validaciones condicionales según el tipo de destinatario
@@ -93,7 +93,6 @@ class RadicacionSalidaController extends Controller
             'funcionario_remitente.required' => 'El nombre del funcionario remitente es obligatorio',
             'tipo_anexo.required' => 'Debe seleccionar el tipo de anexo',
             'requiere_acuse_recibo.required' => 'Debe indicar si requiere acuse de recibo',
-            'documento.required' => 'Debe adjuntar un documento',
             'documento.mimes' => 'El documento debe ser PDF, Word o imagen',
             'documento.max' => 'El documento no puede superar los 10MB',
         ];
