@@ -344,7 +344,7 @@
                                                 <?php endif; ?>
                                             </div>
                                         </div>
-                                        <div class="table-container overflow-x-auto max-h-96">
+                                        <div class="table-container overflow-x-auto max-h-96 min-h-80">
                                             <table class="table-responsive min-w-full divide-y divide-gray-200">
                                                 <thead class="bg-gray-50 sticky top-0">
                                                     <tr>
@@ -673,7 +673,7 @@
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="table-container overflow-x-auto">
+                    <div class="table-container overflow-x-auto min-h-80">
                         <table class="table-responsive min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -874,7 +874,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="table-container overflow-x-auto">
+                <div class="table-container overflow-x-auto min-h-80">
                     <table class="table-responsive min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -3911,6 +3911,34 @@
             min-width: 900px; /* Ancho mínimo para asegurar que todas las columnas sean visibles */
         }
 
+        /* Altura mínima para contenedores de tabla */
+        .table-container.min-h-80 {
+            min-height: 20rem; /* 320px - altura estándar para tablas con pocos datos */
+            position: relative;
+        }
+
+        /* Asegurar que la tabla ocupe toda la altura disponible cuando hay pocos datos */
+        .table-container.min-h-80 .table-responsive {
+            height: 100%;
+        }
+
+        /* Centrar contenido verticalmente cuando hay pocas filas */
+        .table-container.min-h-80 tbody {
+            vertical-align: middle;
+        }
+
+        /* Mejorar el espaciado de filas cuando hay pocos datos */
+        .table-container.min-h-80 tbody tr {
+            height: auto;
+            min-height: 3.5rem; /* Altura mínima por fila para mejor espaciado */
+        }
+
+        /* Asegurar que los dropdowns tengan suficiente espacio */
+        .table-container.min-h-80 .table-cell-actions {
+            position: relative;
+            z-index: 10;
+        }
+
         /* Optimizar el ancho de las columnas */
         .table-responsive th,
         .table-responsive td {
@@ -3968,12 +3996,27 @@
             .table-responsive td:nth-child(4) { width: 120px; } /* Dependencia */
         }
 
+        /* Ajustes responsivos para altura mínima de tablas */
+        @media (max-width: 1024px) {
+            .table-container.min-h-80 {
+                min-height: 16rem; /* Reducir altura en tablets */
+            }
+        }
+
         @media (max-width: 768px) {
             .table-container {
                 overflow-x: auto !important; /* Forzar scroll horizontal en móviles */
                 overflow-y: visible !important;
                 -webkit-overflow-scrolling: touch;
                 width: 100%;
+            }
+
+            .table-container.min-h-80 {
+                min-height: 14rem; /* Altura más pequeña en móviles */
+            }
+
+            .table-container.min-h-80 tbody tr {
+                min-height: 3rem; /* Filas más compactas en móviles */
             }
 
             .table-container.overflow-x-auto {
