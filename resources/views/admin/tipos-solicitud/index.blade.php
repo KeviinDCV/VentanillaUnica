@@ -157,6 +157,9 @@
                                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3 hidden lg:table-cell">
                                     Descripción
                                 </th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 hidden xl:table-cell">
+                                    Días Límite
+                                </th>
                                 <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20 hidden md:table-cell">
                                     Uso
                                 </th>
@@ -202,6 +205,17 @@
                                         {{ $tipo->descripcion ?: 'Sin descripción' }}
                                     </div>
                                 </td>
+                                <td class="px-3 py-4 hidden xl:table-cell">
+                                    <div class="text-sm text-gray-900 text-center">
+                                        @if($tipo->fecha_limite_respuesta)
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{ $tipo->fecha_limite_respuesta }} días
+                                            </span>
+                                        @else
+                                            <span class="text-gray-400">Sin límite</span>
+                                        @endif
+                                    </div>
+                                </td>
                                 <td class="px-3 py-4 hidden md:table-cell">
                                     <div class="text-sm text-gray-900">{{ $tipo->radicados_count }}</div>
                                 </td>
@@ -238,6 +252,7 @@
                                                         data-nombre="{{ $tipo->nombre }}"
                                                         data-codigo="{{ $tipo->codigo ?? '' }}"
                                                         data-descripcion="{{ $tipo->descripcion }}"
+                                                        data-fecha-limite="{{ $tipo->fecha_limite_respuesta ?? '' }}"
                                                         data-activo="{{ $tipo->activo ? 'true' : 'false' }}">
                                                     <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -349,6 +364,20 @@
                                   rows="3"
                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
                                   placeholder="Descripción del tipo de solicitud..."></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="tipo-fecha-limite" class="block text-sm font-medium text-gray-700 mb-2">
+                            Fecha Límite de Respuesta (días)
+                        </label>
+                        <input type="number"
+                               id="tipo-fecha-limite"
+                               name="fecha_limite_respuesta"
+                               min="1"
+                               max="365"
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                               placeholder="Ej: 15">
+                        <p class="mt-1 text-sm text-gray-500">Número de días calendario para responder este tipo de solicitud</p>
                     </div>
 
                     <div class="mb-6" id="campo-activo" style="display: none;">

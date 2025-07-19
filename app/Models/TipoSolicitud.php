@@ -17,6 +17,7 @@ class TipoSolicitud extends Model
         'descripcion',
         'codigo',
         'activo',
+        'fecha_limite_respuesta',
     ];
 
     protected $casts = [

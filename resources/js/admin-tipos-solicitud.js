@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('tipo-nombre').value = btn.dataset.nombre;
         document.getElementById('tipo-codigo').value = btn.dataset.codigo;
         document.getElementById('tipo-descripcion').value = btn.dataset.descripcion || '';
+        document.getElementById('tipo-fecha-limite').value = btn.dataset.fechaLimite || '';
         document.getElementById('tipo-activo').checked = btn.dataset.activo === 'true';
 
         // Mostrar modal con animación

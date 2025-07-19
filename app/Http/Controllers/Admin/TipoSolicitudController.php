@@ -30,6 +30,7 @@ class TipoSolicitudController extends Controller
             'nombre' => 'required|string|max:100',
             'codigo' => 'nullable|string|max:20|unique:tipos_solicitud,codigo',
             'descripcion' => 'nullable|string|max:500',
+            'fecha_limite_respuesta' => 'nullable|integer|min:1|max:365',
         ]);
 
         try {
@@ -37,6 +38,7 @@ class TipoSolicitudController extends Controller
                 'nombre' => $request->nombre,
                 'codigo' => $request->codigo ? strtolower($request->codigo) : null,
                 'descripcion' => $request->descripcion,
+                'fecha_limite_respuesta' => $request->fecha_limite_respuesta,
                 'activo' => true,
             ]);
 
@@ -64,6 +66,7 @@ class TipoSolicitudController extends Controller
             'nombre' => 'required|string|max:100',
             'codigo' => 'nullable|string|max:20|unique:tipos_solicitud,codigo,' . $tipoSolicitud->id,
             'descripcion' => 'nullable|string|max:500',
+            'fecha_limite_respuesta' => 'nullable|integer|min:1|max:365',
         ]);
 
         try {
@@ -71,6 +74,7 @@ class TipoSolicitudController extends Controller
                 'nombre' => $request->nombre,
                 'codigo' => $request->codigo ? strtolower($request->codigo) : null,
                 'descripcion' => $request->descripcion,
+                'fecha_limite_respuesta' => $request->fecha_limite_respuesta,
             ]);
 
             return response()->json([
