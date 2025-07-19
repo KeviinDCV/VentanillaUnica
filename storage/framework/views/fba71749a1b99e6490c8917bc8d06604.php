@@ -954,13 +954,13 @@
                                     <div class="relative">
                                         <button type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
-                                                onclick="toggleDropdown('dropdown-radicado-<?php echo e($radicado->id); ?>')">
+                                                onclick="toggleDropdown('dropdown-radicado-recientes-<?php echo e($radicado->id); ?>')">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                             </svg>
                                         </button>
 
-                                        <div id="dropdown-radicado-<?php echo e($radicado->id); ?>"
+                                        <div id="dropdown-radicado-recientes-<?php echo e($radicado->id); ?>"
                                              class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
                                              data-dropdown-menu>
                                             <div class="py-1" role="menu">

@@ -993,8 +993,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnConsultarRadicados && modalConsultarRadicados) {
         // Abrir modal
         btnConsultarRadicados.addEventListener('click', function() {
-            modalConsultarRadicados.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            // Verificar si hay parámetros de búsqueda en la URL
+            const currentUrl = new URL(window.location);
+            const hasSearchParams = currentUrl.search && currentUrl.search !== '';
+
+            if (hasSearchParams) {
+                // Si hay parámetros de búsqueda, limpiar la URL y recargar
+                // Asegurarse de que vamos a la ruta base de radicación
+                const cleanUrl = currentUrl.origin + '/radicacion?modal=consultar';
+                window.location.href = cleanUrl;
+            } else {
+                // Si no hay parámetros, abrir modal normalmente
+                modalConsultarRadicados.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
         });
 
         // Cerrar modal con botón X
@@ -1020,34 +1032,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.style.overflow = 'auto';
             }
         });
+
+        // Verificar si se debe abrir el modal automáticamente
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('modal') === 'consultar') {
+            modalConsultarRadicados.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Limpiar el parámetro de la URL sin recargar
+            urlParams.delete('modal');
+            const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+            window.history.replaceState({}, '', newUrl);
+        }
     }
 
-    // Función para ver detalles del radicado desde el modal
-    window.verDetallesRadicado = function(radicadoId) {
-        // Cerrar el modal de consulta
-        if (modalConsultarRadicados) {
-            modalConsultarRadicados.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
 
-        // Redirigir a la página de detalles
-        window.location.href = `/radicacion/${radicadoId}`;
-    };
 
-    // Función para gestionar documentos desde el modal
-    window.gestionarDocumentos = function(radicadoId) {
-        // Cerrar el modal de consulta
-        if (modalConsultarRadicados) {
-            modalConsultarRadicados.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
 
-        // Abrir modal de documentos (si existe la función)
-        if (typeof window.abrirModalDocumentos === 'function') {
-            window.abrirModalDocumentos(radicadoId);
-        } else {
-            // Fallback: redirigir a la página de detalles
-            window.location.href = `/radicacion/${radicadoId}`;
-        }
-    };
 });
