@@ -984,4 +984,70 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('filtros-form')) {
         ConsultarRadicados.init();
     }
+
+    // Modal Consultar Radicados
+    const btnConsultarRadicados = document.getElementById('btn-consultar-radicados');
+    const modalConsultarRadicados = document.getElementById('modal-consultar-radicados');
+    const btnCerrarModalConsulta = document.getElementById('btn-cerrar-modal-consulta');
+
+    if (btnConsultarRadicados && modalConsultarRadicados) {
+        // Abrir modal
+        btnConsultarRadicados.addEventListener('click', function() {
+            modalConsultarRadicados.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Cerrar modal con botón X
+        if (btnCerrarModalConsulta) {
+            btnCerrarModalConsulta.addEventListener('click', function() {
+                modalConsultarRadicados.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        // Cerrar modal al hacer clic fuera del contenido
+        modalConsultarRadicados.addEventListener('click', function(e) {
+            if (e.target === modalConsultarRadicados) {
+                modalConsultarRadicados.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modalConsultarRadicados.classList.contains('hidden')) {
+                modalConsultarRadicados.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+
+    // Función para ver detalles del radicado desde el modal
+    window.verDetallesRadicado = function(radicadoId) {
+        // Cerrar el modal de consulta
+        if (modalConsultarRadicados) {
+            modalConsultarRadicados.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Redirigir a la página de detalles
+        window.location.href = `/radicacion/${radicadoId}`;
+    };
+
+    // Función para gestionar documentos desde el modal
+    window.gestionarDocumentos = function(radicadoId) {
+        // Cerrar el modal de consulta
+        if (modalConsultarRadicados) {
+            modalConsultarRadicados.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Abrir modal de documentos (si existe la función)
+        if (typeof window.abrirModalDocumentos === 'function') {
+            window.abrirModalDocumentos(radicadoId);
+        } else {
+            // Fallback: redirigir a la página de detalles
+            window.location.href = `/radicacion/${radicadoId}`;
+        }
+    };
 });

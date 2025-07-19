@@ -44,16 +44,502 @@
     <div class="py-12">
         <div class="container-minimal">
 
-            <!-- Botón Crear Radicado -->
-            <div class="mb-8 text-center">
-                <button id="btn-crear-radicado"
-                        class="inline-flex items-center px-8 py-4 bg-uniradical-blue text-white font-medium rounded-lg shadow-sm hover:bg-opacity-90 transition-colors duration-200">
-                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                    </svg>
-                    Crear Radicado
-                </button>
+            <!-- Sección Superior: Crear Radicado y Consultar Radicados -->
+            <div class="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Botón Crear Radicado (Izquierda) -->
+                <div class="flex justify-start">
+                    <button id="btn-crear-radicado"
+                            class="inline-flex items-center px-8 py-4 bg-uniradical-blue text-white font-medium rounded-lg shadow-sm hover:bg-opacity-90 transition-colors duration-200">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Crear Radicado
+                    </button>
+                </div>
+
+                <!-- Consultar Radicados (Derecha) -->
+                <div class="flex justify-end">
+                    <button id="btn-consultar-radicados"
+                            class="inline-flex items-center px-8 py-4 bg-white border-2 border-uniradical-blue text-uniradical-blue font-medium rounded-lg shadow-sm hover:bg-uniradical-blue hover:text-white transition-colors duration-200">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        Consultar Radicados
+                    </button>
+                </div>
             </div>
+
+            <!-- Modal Consultar Radicados -->
+            <div id="modal-consultar-radicados" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] overflow-y-auto">
+                        <!-- Header del Modal -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 class="text-xl font-semibold text-gray-800">Consultar Radicados</h3>
+                            <div class="flex items-center space-x-3">
+                                <?php if(isset($filtros) && count($filtros) > 0): ?>
+                                    <a href="<?php echo e(route('radicacion.exportar', request()->query())); ?>"
+                                       class="export-button">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Exportar
+                                    </a>
+                                <?php endif; ?>
+                                <button id="btn-cerrar-modal-consulta" class="text-gray-400 hover:text-gray-600 transition-colors">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Contenido del Modal -->
+                        <div class="p-6">
+                            <!-- Estadísticas Rápidas -->
+                            <?php if(isset($estadisticas)): ?>
+                            <div class="mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-500">Total</p>
+                                                <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['total'])); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-500">Pendientes</p>
+                                                <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['pendientes'])); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-500">En Proceso</p>
+                                                <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['en_proceso'])); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-500">Respondidos</p>
+                                                <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['respondidos'])); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <p class="text-sm font-medium text-gray-500">Vencidos</p>
+                                                <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['vencidos'])); ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
+                            <!-- Formulario de Búsqueda -->
+                            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                                <h4 class="text-lg font-medium text-gray-900 mb-4">Filtros de Búsqueda</h4>
+                                <form method="GET" action="<?php echo e(route('radicacion.index')); ?>" id="filtros-form-modal">
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                        <!-- Número de Radicado -->
+                                        <div>
+                                            <label for="numero_radicado_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Número de Radicado
+                                            </label>
+                                            <input type="text" name="numero_radicado" id="numero_radicado_modal"
+                                                   value="<?php echo e(request('numero_radicado')); ?>"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                                                   placeholder="E-2025-000001">
+                                        </div>
+
+                                        <!-- Documento del Remitente -->
+                                        <div>
+                                            <label for="documento_remitente_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Documento del Remitente
+                                            </label>
+                                            <input type="text" name="documento_remitente" id="documento_remitente_modal"
+                                                   value="<?php echo e(request('documento_remitente')); ?>"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                                                   placeholder="12345678">
+                                        </div>
+
+                                        <!-- Nombre del Remitente -->
+                                        <div>
+                                            <label for="nombre_remitente_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Nombre del Remitente
+                                            </label>
+                                            <input type="text" name="nombre_remitente" id="nombre_remitente_modal"
+                                                   value="<?php echo e(request('nombre_remitente')); ?>"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
+                                                   placeholder="Juan Pérez">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                        <!-- Dependencia Destino -->
+                                        <div>
+                                            <label for="dependencia_destino_id_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Dependencia Destino
+                                            </label>
+                                            <select name="dependencia_destino_id" id="dependencia_destino_id_modal"
+                                                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                                                <option value="">Todas las dependencias</option>
+                                                <?php $__currentLoopData = $dependencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dependencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($dependencia->id); ?>"
+                                                            <?php echo e(request('dependencia_destino_id') == $dependencia->id ? 'selected' : ''); ?>>
+                                                        <?php echo e($dependencia->nombre); ?>
+
+                                                    </option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </select>
+                                        </div>
+
+                                        <!-- Tipo -->
+                                        <div>
+                                            <label for="tipo_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Tipo de Radicado
+                                            </label>
+                                            <select name="tipo" id="tipo_modal"
+                                                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                                                <option value="">Todos los tipos</option>
+                                                <option value="entrada" <?php echo e(request('tipo') == 'entrada' ? 'selected' : ''); ?>>Entrada</option>
+                                                <option value="interno" <?php echo e(request('tipo') == 'interno' ? 'selected' : ''); ?>>Interno</option>
+                                                <option value="salida" <?php echo e(request('tipo') == 'salida' ? 'selected' : ''); ?>>Salida</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Estado -->
+                                        <div>
+                                            <label for="estado_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Estado
+                                            </label>
+                                            <select name="estado" id="estado_modal"
+                                                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                                                <option value="">Todos los estados</option>
+                                                <option value="pendiente" <?php echo e(request('estado') == 'pendiente' ? 'selected' : ''); ?>>Pendiente</option>
+                                                <option value="en_proceso" <?php echo e(request('estado') == 'en_proceso' ? 'selected' : ''); ?>>En Proceso</option>
+                                                <option value="respondido" <?php echo e(request('estado') == 'respondido' ? 'selected' : ''); ?>>Respondido</option>
+                                                <option value="archivado" <?php echo e(request('estado') == 'archivado' ? 'selected' : ''); ?>>Archivado</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Solo Vencidos -->
+                                        <div>
+                                            <label for="solo_vencidos_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Filtros Especiales
+                                            </label>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" name="solo_vencidos" id="solo_vencidos_modal" value="1"
+                                                       <?php echo e(request('solo_vencidos') ? 'checked' : ''); ?>
+
+                                                       class="h-4 w-4 text-uniradical-blue focus:ring-uniradical-blue border-gray-300 rounded">
+                                                <label for="solo_vencidos_modal" class="ml-2 text-sm text-gray-700">
+                                                    Solo vencidos
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                        <!-- Fecha Desde -->
+                                        <div>
+                                            <label for="fecha_desde_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Fecha Desde
+                                            </label>
+                                            <input type="date" name="fecha_desde" id="fecha_desde_modal"
+                                                   value="<?php echo e(request('fecha_desde')); ?>"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                                        </div>
+
+                                        <!-- Fecha Hasta -->
+                                        <div>
+                                            <label for="fecha_hasta_modal" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Fecha Hasta
+                                            </label>
+                                            <input type="date" name="fecha_hasta" id="fecha_hasta_modal"
+                                                   value="<?php echo e(request('fecha_hasta')); ?>"
+                                                   class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
+                                        </div>
+                                    </div>
+
+                                    <!-- Botones -->
+                                    <div class="flex justify-between">
+                                        <a href="<?php echo e(route('radicacion.index')); ?>"
+                                           class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
+                                            Limpiar Filtros
+                                        </a>
+                                        <button type="submit" name="buscar" value="1"
+                                                class="search-button">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                            </svg>
+                                            Buscar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Resultados de Búsqueda -->
+                            <div id="resultados-busqueda-modal">
+                                <?php if(isset($radicadosConsulta) && $radicadosConsulta->count() > 0): ?>
+                                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                                        <div class="p-4 border-b border-gray-200">
+                                            <div class="flex justify-between items-center">
+                                                <h4 class="text-lg font-medium text-gray-800">
+                                                    Resultados de Búsqueda (<?php echo e($radicadosConsulta->total()); ?> encontrados)
+                                                </h4>
+                                                <?php if(isset($filtros) && count($filtros) > 0): ?>
+                                                    <div class="text-sm text-gray-600">
+                                                        Filtros activos: <?php echo e(count($filtros)); ?>
+
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="table-container overflow-x-auto max-h-96">
+                                            <table class="table-responsive min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50 sticky top-0">
+                                                    <tr>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                                                            Número
+                                                        </th>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                                            Tipo
+                                                        </th>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Remitente
+                                                        </th>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                            Dependencia
+                                                        </th>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                                                            Estado
+                                                        </th>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                                                            Fecha
+                                                        </th>
+                                                        <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">
+                                                            Acciones
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    <?php $__currentLoopData = $radicadosConsulta; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $radicado): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <tr class="hover:bg-gray-50">
+                                                        <td class="px-3 py-4 whitespace-nowrap">
+                                                            <div class="text-sm font-medium text-blue-600">
+                                                                <button onclick="verDetallesRadicado(<?php echo e($radicado->id); ?>)"
+                                                                        class="hover:text-blue-800 hover:underline cursor-pointer">
+                                                                    <?php echo e($radicado->numero_radicado); ?>
+
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-3 py-4 whitespace-nowrap">
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                                <?php if($radicado->tipo === 'entrada'): ?> bg-blue-100 text-blue-800
+                                                                <?php elseif($radicado->tipo === 'interno'): ?> bg-green-100 text-green-800
+                                                                <?php elseif($radicado->tipo === 'salida'): ?> bg-orange-100 text-orange-800
+                                                                <?php endif; ?>">
+                                                                <?php echo e(ucfirst($radicado->tipo)); ?>
+
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-3 py-4">
+                                                            <div class="text-sm text-gray-900 truncate max-w-48" title="<?php echo e($radicado->remitente->nombre_completo); ?>">
+                                                                <?php echo e($radicado->remitente->nombre_completo); ?>
+
+                                                            </div>
+                                                            <div class="text-xs text-gray-500 truncate max-w-48">
+                                                                <?php echo e($radicado->remitente->identificacion_completa); ?>
+
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-3 py-4">
+                                                            <div class="text-sm text-gray-900 truncate max-w-48" title="<?php echo e($radicado->dependenciaDestino->nombre); ?>">
+                                                                <?php echo e($radicado->dependenciaDestino->nombre); ?>
+
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-3 py-4 whitespace-nowrap">
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                                <?php echo e($radicado->estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' : ''); ?>
+
+                                                                <?php echo e($radicado->estado === 'en_proceso' ? 'bg-blue-100 text-blue-800' : ''); ?>
+
+                                                                <?php echo e($radicado->estado === 'respondido' ? 'bg-green-100 text-green-800' : ''); ?>
+
+                                                                <?php echo e($radicado->estado === 'archivado' ? 'bg-gray-100 text-gray-800' : ''); ?>">
+                                                                <?php echo e(ucfirst(str_replace('_', ' ', $radicado->estado))); ?>
+
+                                                            </span>
+                                                            <?php if($radicado->estaVencido()): ?>
+                                                                <div class="text-xs text-red-600 mt-1">VENCIDO</div>
+                                                            <?php elseif($radicado->fecha_limite_respuesta && $radicado->dias_restantes !== null): ?>
+                                                                <div class="text-xs text-gray-500 mt-1">
+                                                                    <?php echo e($radicado->dias_restantes); ?> días
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                            <?php echo e($radicado->fecha_radicado->format('d/m/Y')); ?>
+
+                                                        </td>
+                                                        <td class="px-3 py-4 whitespace-nowrap text-sm font-medium">
+                                                            <div class="relative">
+                                                                <button type="button"
+                                                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-uniradical-blue"
+                                                                        onclick="toggleDropdown('dropdown-radicado-modal-<?php echo e($radicado->id); ?>')">
+                                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                                                    </svg>
+                                                                </button>
+
+                                                                <div id="dropdown-radicado-modal-<?php echo e($radicado->id); ?>"
+                                                                     class="hidden absolute right-0 top-full mt-1 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                                                                     data-dropdown-menu>
+                                                                    <div class="py-1" role="menu">
+                                                                        <!-- Ver Detalles -->
+                                                                        <button onclick="verDetallesRadicado(<?php echo e($radicado->id); ?>)"
+                                                                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                            <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                                            </svg>
+                                                                            Ver Detalles
+                                                                        </button>
+
+                                                                        <!-- Documentos -->
+                                                                        <button onclick="gestionarDocumentos(<?php echo e($radicado->id); ?>)"
+                                                                                class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                                            <svg class="w-4 h-4 mr-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                                            </svg>
+                                                                            Documentos
+                                                                        </button>
+
+                                                                        <!-- Editar -->
+                                                                        <?php
+                                                                            $puedeEditar = auth()->user()->isAdmin() ||
+                                                                                          (auth()->user()->isVentanilla() &&
+                                                                                           auth()->user()->id === $radicado->usuario_radica_id &&
+                                                                                           in_array($radicado->estado, ['pendiente', 'en_proceso']));
+                                                                        ?>
+
+                                                                        <button onclick="editarRadicado(<?php echo e($radicado->id); ?>)"
+                                                                                class="w-full text-left px-4 py-2 text-sm <?php echo e($puedeEditar ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-400 cursor-not-allowed'); ?> flex items-center">
+                                                                            <svg class="w-4 h-4 mr-3 <?php echo e($puedeEditar ? 'text-green-500' : 'text-gray-400'); ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                                            </svg>
+                                                                            Editar
+                                                                            <?php if(!$puedeEditar && !auth()->user()->isAdmin()): ?>
+                                                                                <span class="ml-auto text-xs text-gray-400">(No disponible)</span>
+                                                                            <?php endif; ?>
+                                                                        </button>
+
+                                                                        <?php if(auth()->user()->hasRole('admin')): ?>
+                                                                            <div class="border-t border-gray-100"></div>
+                                                                            <!-- Eliminar -->
+                                                                            <button onclick="eliminarRadicado(<?php echo e($radicado->id); ?>, '<?php echo e($radicado->numero_radicado); ?>')"
+                                                                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                                                <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                                                </svg>
+                                                                                Eliminar
+                                                                            </button>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Paginación -->
+                                        <?php if($radicadosConsulta->hasPages()): ?>
+                                            <div class="pagination-container px-4 py-4 border-t border-gray-200">
+                                                <?php echo e($radicadosConsulta->links()); ?>
+
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php elseif(isset($radicadosConsulta) && $radicadosConsulta->count() == 0 && (count($filtros ?? []) > 0 || request()->has('buscar'))): ?>
+                                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                                        <div class="p-12 text-center">
+                                            <div class="text-gray-500">
+                                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                <h3 class="mt-2 text-sm font-medium text-gray-900">No se encontraron resultados</h3>
+                                                <p class="mt-1 text-sm text-gray-500">Intenta ajustar los filtros de búsqueda.</p>
+                                                <div class="mt-6">
+                                                    <a href="<?php echo e(route('radicacion.index')); ?>"
+                                                       class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
+                                                        Limpiar Filtros
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Crear Radicado -->
 
             <!-- Modal Crear Radicado -->
             <div id="modal-crear-radicado" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
@@ -166,263 +652,10 @@
                 </div>
             </div>
 
-            <!-- Sección de Consulta de Radicados -->
-            <div class="bg-white border border-gray-200 rounded-lg shadow-sm mb-8">
-                <div class="p-6 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <button id="btn-toggle-consulta" class="flex items-center space-x-2 text-lg font-medium text-gray-800 hover:text-uniradical-blue transition-colors">
-                            <h3>Consultar Radicados</h3>
-                            <svg id="icono-consulta" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        <div class="flex space-x-3">
-                            <?php if(isset($filtros) && count($filtros) > 0): ?>
-                                <a href="<?php echo e(route('radicacion.exportar', request()->query())); ?>"
-                                   class="export-button">
-                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                    Exportar
-                                </a>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Contenido Desplegable -->
-                <div id="contenido-consulta" class="overflow-hidden transition-all duration-500 ease-out" style="max-height: 0; opacity: 0; transform: scale(1); transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-out, transform 0.2s ease-out;">
 
-                <!-- Estadísticas Rápidas -->
-                <?php if(isset($estadisticas)): ?>
-                <div class="p-6 border-b border-gray-200">
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-500">Total</p>
-                                    <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['total'])); ?></p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-500">Pendientes</p>
-                                    <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['pendientes'])); ?></p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-500">En Proceso</p>
-                                    <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['en_proceso'])); ?></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-500">Respondidos</p>
-                                    <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['respondidos'])); ?></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-500">Vencidos</p>
-                                    <p class="text-lg font-semibold text-gray-900"><?php echo e(number_format($estadisticas['vencidos'])); ?></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-
-                <!-- Formulario de Búsqueda -->
-                <div class="p-6">
-                    <form method="GET" action="<?php echo e(route('radicacion.index')); ?>" id="filtros-form">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <!-- Número de Radicado -->
-                            <div>
-                                <label for="numero_radicado" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Número de Radicado
-                                </label>
-                                <input type="text" name="numero_radicado" id="numero_radicado"
-                                       value="<?php echo e(request('numero_radicado')); ?>"
-                                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                                       placeholder="E-2025-000001">
-                            </div>
-
-                            <!-- Documento del Remitente -->
-                            <div>
-                                <label for="documento_remitente" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Documento del Remitente
-                                </label>
-                                <input type="text" name="documento_remitente" id="documento_remitente"
-                                       value="<?php echo e(request('documento_remitente')); ?>"
-                                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                                       placeholder="12345678">
-                            </div>
-
-                            <!-- Nombre del Remitente -->
-                            <div>
-                                <label for="nombre_remitente" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nombre del Remitente
-                                </label>
-                                <input type="text" name="nombre_remitente" id="nombre_remitente"
-                                       value="<?php echo e(request('nombre_remitente')); ?>"
-                                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue"
-                                       placeholder="Juan Pérez">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <!-- Dependencia Destino -->
-                            <div>
-                                <label for="dependencia_destino_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Dependencia Destino
-                                </label>
-                                <select name="dependencia_destino_id" id="dependencia_destino_id"
-                                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                    <option value="">Todas las dependencias</option>
-                                    <?php $__currentLoopData = $dependencias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $dependencia): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($dependencia->id); ?>"
-                                                <?php echo e(request('dependencia_destino_id') == $dependencia->id ? 'selected' : ''); ?>>
-                                            <?php echo e($dependencia->nombre); ?>
-
-                                        </option>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                            </div>
-
-                            <!-- Tipo -->
-                            <div>
-                                <label for="tipo" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tipo de Radicado
-                                </label>
-                                <select name="tipo" id="tipo"
-                                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                    <option value="">Todos los tipos</option>
-                                    <option value="entrada" <?php echo e(request('tipo') == 'entrada' ? 'selected' : ''); ?>>Entrada</option>
-                                    <option value="interno" <?php echo e(request('tipo') == 'interno' ? 'selected' : ''); ?>>Interno</option>
-                                    <option value="salida" <?php echo e(request('tipo') == 'salida' ? 'selected' : ''); ?>>Salida</option>
-                                </select>
-                            </div>
-
-                            <!-- Estado -->
-                            <div>
-                                <label for="estado" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Estado
-                                </label>
-                                <select name="estado" id="estado"
-                                        class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                                    <option value="">Todos los estados</option>
-                                    <option value="pendiente" <?php echo e(request('estado') == 'pendiente' ? 'selected' : ''); ?>>Pendiente</option>
-                                    <option value="en_proceso" <?php echo e(request('estado') == 'en_proceso' ? 'selected' : ''); ?>>En Proceso</option>
-                                    <option value="respondido" <?php echo e(request('estado') == 'respondido' ? 'selected' : ''); ?>>Respondido</option>
-                                    <option value="archivado" <?php echo e(request('estado') == 'archivado' ? 'selected' : ''); ?>>Archivado</option>
-                                </select>
-                            </div>
-
-                            <!-- Solo Vencidos -->
-                            <div>
-                                <label for="solo_vencidos" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Filtros Especiales
-                                </label>
-                                <div class="flex items-center">
-                                    <input type="checkbox" name="solo_vencidos" id="solo_vencidos" value="1"
-                                           <?php echo e(request('solo_vencidos') ? 'checked' : ''); ?>
-
-                                           class="h-4 w-4 text-uniradical-blue focus:ring-uniradical-blue border-gray-300 rounded">
-                                    <label for="solo_vencidos" class="ml-2 text-sm text-gray-700">
-                                        Solo vencidos
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <!-- Fecha Desde -->
-                            <div>
-                                <label for="fecha_desde" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Fecha Desde
-                                </label>
-                                <input type="date" name="fecha_desde" id="fecha_desde"
-                                       value="<?php echo e(request('fecha_desde')); ?>"
-                                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                            </div>
-
-                            <!-- Fecha Hasta -->
-                            <div>
-                                <label for="fecha_hasta" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Fecha Hasta
-                                </label>
-                                <input type="date" name="fecha_hasta" id="fecha_hasta"
-                                       value="<?php echo e(request('fecha_hasta')); ?>"
-                                       class="w-full border-gray-300 rounded-md shadow-sm focus:border-uniradical-blue focus:ring-uniradical-blue">
-                            </div>
-                        </div>
-
-                        <!-- Botones -->
-                        <div class="flex justify-between">
-                            <a href="<?php echo e(route('radicacion.index')); ?>"
-                               class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-200">
-                                Limpiar Filtros
-                            </a>
-                            <button type="submit" name="buscar" value="1"
-                                    class="search-button">
-                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                                Buscar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                </div> <!-- Fin contenido desplegable -->
-            </div>
 
             <!-- Resultados de Consulta -->
             <?php if(isset($radicadosConsulta) && $radicadosConsulta->count() > 0): ?>
@@ -995,9 +1228,9 @@
         // Variables globales
         window.userRole = '<?php echo e(auth()->user()->role); ?>';
 
-        // Variables globales para la funcionalidad de consulta
-        let estaExpandido = false;
-        let contenidoConsulta, iconoConsulta, expandirSeccion, colapsarSeccion;
+        // Variables globales para la funcionalidad de consulta - DESHABILITADAS (ahora es modal)
+        // let estaExpandido = false;
+        // let contenidoConsulta, iconoConsulta, expandirSeccion, colapsarSeccion;
 
         document.addEventListener('DOMContentLoaded', function() {
             const btnCrearRadicado = document.getElementById('btn-crear-radicado');
@@ -1497,42 +1730,10 @@
                 }
             }
 
-            // Funcionalidad de consulta desplegable
-            const btnToggleConsulta = document.getElementById('btn-toggle-consulta');
-            contenidoConsulta = document.getElementById('contenido-consulta');
-            iconoConsulta = document.getElementById('icono-consulta');
-
-            // Funciones para expandir/colapsar
-            expandirSeccion = function() {
-                estaExpandido = true;
-                contenidoConsulta.style.maxHeight = contenidoConsulta.scrollHeight + 'px';
-                contenidoConsulta.style.opacity = '1';
-                iconoConsulta.style.transform = 'rotate(180deg)';
-            };
-
-            colapsarSeccion = function() {
-                estaExpandido = false;
-                contenidoConsulta.style.maxHeight = '0px';
-                contenidoConsulta.style.opacity = '0';
-                iconoConsulta.style.transform = 'rotate(0deg)';
-                contenidoConsulta.style.transform = 'scale(1)';
-            };
-
-            // Estado inicial: expandido si hay filtros activos o resultados
-            const hayFiltrosActivos = <?php echo e(isset($filtros) && count($filtros) > 0 ? 'true' : 'false'); ?>;
-            const hayResultados = <?php echo e(isset($radicadosConsulta) ? 'true' : 'false'); ?>;
-
-            if (hayFiltrosActivos || hayResultados) {
-                expandirSeccion();
-            }
-
-            btnToggleConsulta.addEventListener('click', function() {
-                if (estaExpandido) {
-                    colapsarSeccion();
-                } else {
-                    expandirSeccion();
-                }
-            });
+            // Funcionalidad de consulta desplegable - DESHABILITADA (ahora es modal)
+            // const btnToggleConsulta = document.getElementById('btn-toggle-consulta');
+            // contenidoConsulta = document.getElementById('contenido-consulta');
+            // iconoConsulta = document.getElementById('icono-consulta');
 
             // Funcionalidad de consulta de radicados
             if (document.getElementById('filtros-form')) {
